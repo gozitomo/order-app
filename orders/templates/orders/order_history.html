@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>注文履歴</title>
+</head>
+<body>
+    <h1>{{ user.username }}さんの注文履歴</h1>
+
+    {% if orders %}
+        <ul>
+            {% for order in orders %}
+                <li>
+                    <strong>注文ID：</strong>{{ order.id }} /
+                    <strong>日付：</strong>{{ order.created_at|date:"Y-m-d H:i" }}/
+                    <strong>ステータス：</strong>{{ order.status }}
+
+                    <ul>
+                        {% for item in order.items.all %}
+                            <li>{{ item.product.name }} × {{ item.quantity }}</li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>注文履歴はまだありません。</p>
+    {% endif %}
+</body>
+</html>
