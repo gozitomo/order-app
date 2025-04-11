@@ -5,6 +5,7 @@
 </head>
 <body>
     <h1>{{ user.username }}さんの注文履歴</h1>
+    <p><a href="{% url 'place_order' %}">▶　新規発注はこちら</a></p>
 
     {% if orders %}
         <ul>
@@ -12,13 +13,48 @@
                 <li>
                     <strong>注文ID：</strong>{{ order.id }} /
                     <strong>日付：</strong>{{ order.created_at|date:"Y-m-d H:i" }}/
-                    <strong>ステータス：</strong>{{ order.status }}
+                    <strong>ステータス：</strong>
+                    {% if order.status == 'キャンセル' %}
+                        <span style="color: red;">{{ order.status }}</span>
+                    {% else %}
+                        {{ order.status }}
+                    {% endif %}
 
                     <ul>
                         {% for item in order.items.all %}
-                            <li>{{ item.product.name }} × {{ item.quantity }}</li>
+                            <li>{{ item.product.name }} × {{ item.quantity }}　小計：{{ item.subtotal }}円</li>
                         {% endfor %}
                     </ul>
+                    <table style="width:80%">
+                        <tr>
+                            <th style="text-align:left; width:50%;">合計</th>
+                            <td style="text-align:right; width:50%;">{{ order.total }}円</td>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left; width:50%;">送料</th>
+                            <td style="text-align:right; width:50%;">{{ order.shipping_fee }}円</td>
+                        </tr>
+                        <tr>
+                            <th style="text-align:left; width:50%;">総計</th>
+                            <td style="text-align:right; width:50%;">{{ order.final_total }}円</td>
+                        </tr>
+                    </table>
+                    <form method="GET" action="{% url 'order_detail' order.id %}">
+                        <button type="submit">注文詳細</button>
+                    </form>
+                    {% if order.status == '未処理' %}
+                    <form method="POST" action="{% url 'cancel_order' order.id %}">
+                        {% csrf_token %}
+                        <button type="submit" onclick="return confirm('この注文をキャンセルしますか？');">
+                            キャンセルする
+                        </button>
+                    </form>
+                    {% elif order.status == 'キャンセル不可' %}
+                        <span style="color: gray;">(キャンセル不可)</span>
+                    {% elif order.status == 'キャンセル' %}
+                        <span style="color: gray;">(キャンセル済みです。)</span>
+                    {% endif %}
+                    <hr>
                 </li>
             {% endfor %}
         </ul>
