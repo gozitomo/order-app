@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>新規会員登録</title>
+</head>
+<body>
+    <h1>新規会員登録</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">登録する</button>
+    </form>
+</body>
+</html>

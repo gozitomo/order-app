@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>注文確認</title>
+</head>
+<body>
+    <h1>注文内容の確認</h1>
+    {% if order.status == 'キャンセル' %}
+        <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
+    {% elif order.status == 'キャンセル不可' %}
+        <p style="color: red;"><strong>この注文は前日以前にお受けしていますのでキャンセル不可となります。
+        <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
+    {% endif %}
+
+    <p><strong>注文ID:</strong>{{ order.id }}</p>
+    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y-m-d H:i" }}</p>
+    
+    <table>
+        <tr>
+            <th>商品名</th>
+            <th>数量</th>
+            <th>単価</th>
+            <th>小計(内税) 
+            </th>
+        </tr>
+        {% for item in order.items.all %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.product.price }}</td>
+            <td>{{ item.subtotal }}円</td>
+        </tr>
+        {% endfor %}
+
+    </table>
+    <hr>
+    <p><strong>合計：</strong>{{ order.total }}円</p>
+    <hr>
+    <p><strong>送料：</strong>{{ order.shipping_fee }}円</p>
+    <p><strong>総計：</strong>{{ order.final_total }}円</p>
+
+    <p><a href="{% url 'order_history' %}">←　注文履歴に戻る</a></p>
+</body>
+</html>
