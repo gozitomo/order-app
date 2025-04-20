@@ -1,0 +1,57 @@
+{% extends "pdf/base_pdf.html" %}
+{% block title %}請求書PDF{% endblock %}
+{% block content %}
+    <style>
+        body { font-family: sans-serif; font-size: 14px;}
+        table { width: 100%; border-collapse: collapse; margin-top: 1em;}
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left;}
+        th { background-color: #eee;}
+    </style>
+    <h1>請求書</h1>
+    <p>注文ID:　{{ order.id }}</p>
+    <p>顧客:　{{ order.user.username }}</p>
+    <p>注文日:　{{ order.created_at|date:"Y年m月d日" }}</p>
+
+    <table width="100%">
+        <tr>
+            <th>商品名</th>
+            <th>数量</th>
+            <th>単価</th>
+            <th>税</th>
+           <th>小計(内税) </th>
+        </tr>
+        {% for item in order.items.all %}
+        <tr>
+            <td width:40%>{{ item.product.name }}</td>
+            <td style="text-align:right; width:15%">{{ item.quantity }} kg</td>
+            <td style="text-align:right; width:15%">{{ item.product.price }} 円</td>
+            <td  style="text-align:right; width:15%">{{ item.tax }} 円</td>
+            <td  style="text-align:right; width:15%">{{ item.subtotal }} 円</td>
+        </tr>
+        {% endfor %}
+    </table>
+<br>
+<br>
+    <table  width="100%">
+    <tr>
+        <th style="width: 40%;">商品計</th>
+        <td style="width: 60%; text-align: right;">{{ order.total_price }}円</td>
+    </tr>
+    <tr>
+        <th>消費税（8％）</th>
+        <td style="text-align: right;">{{ order.total_tax }}円</td>
+    </tr>
+    <tr>
+        <th>送料</th>
+        <td style="text-align: right;">{{ order.total_shipping_fee }}円</td>
+    </tr>
+    <tr>
+        <th>消費税（10％）</th>
+        <td style="text-align: right;">{{ order.shipping_tax }}円</td>
+    </tr>
+    <tr>
+        <th>合計</th>
+        <td style="text-align: right;">{{ order.final_total }}円</td>
+    </tr>
+
+{% endblock %}

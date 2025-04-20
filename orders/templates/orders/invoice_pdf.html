@@ -1,0 +1,77 @@
+{% extends "pdf/base_pdf.html" %}
+{% load humanize %}
+{% block title %}月次請求書PDF{% endblock %}
+{% block content %}
+    <style>
+        body { font-family: sans-serif; font-size: 14px;}
+        table { width: 100%; border-collapse: collapse; margin-top: 1em;}
+        th, td { border: 1px solid #ccc; padding: 6px; text-align: left;}
+        th { background-color: #eee;}
+    </style>
+    <h1>{{invoice.period_start|date:"Y年m月"}}請求書</h1>
+    <p>対象注文:　{{ invoice.period_start|date:"Y年m月d日" }}　〜　{{ invoice.period_end|date:"Y年m月d日" }}納品分</p>
+    <p>{{ user.username }}　様</p>
+
+    <table width="100%">
+        <tr>
+            <th>納品日</th>
+            <th>商品名</th>
+            <th>単価</th>
+            <th>数量</th>
+            <th>価格</th>
+        </tr>
+        {% for item in items.all %}
+        <tr>
+            <td width:40%>{{ item.delivery_date|date:"Y年m月d日" }}</td>
+            <td width:40%>{{ item.product.name }}</td>
+            <td style="text-align:right; width:15%">{{ item.product.price|intcomma }} 円</td>
+            <td style="text-align:right; width:15%">{{ item.quantity }} （{{ item.product.unit }}）</td>
+            <td style="text-align:right; width:15%">{{ item.subtotal|intcomma }} 円</td>
+        </tr>
+        <tr>
+            <td width:40%>{{ item.delivery_date|date:"Y年m月d日" }}</td>
+            <td>送料</td>
+            <td style="text-align:right; width:15%">{{ item.shipping_fee|intcomma }} 円</td>
+            <td style="text-align:right; width:15%">1</td>
+            <td style="text-align:right; width:15%">{{ item.shipping_fee|intcomma }} 円</td>
+        </tr>
+        {% endfor %}
+    </table>
+<br>
+    <table style="width: 50%;">
+    <tr>
+        <th style="width: 40%;">小計</th>
+        <td style="width: 60%; text-align: right;">{{ invoice.final_extax|intcomma }} 円</td>
+    </tr>
+    <tr>
+        <th style="width: 40%;">消費税額合計</th>
+        <td style="width: 60%; text-align: right;">{{ invoice.final_tax|intcomma }} 円</td>
+    </tr>
+    <tr>
+        <th>合計</th>
+        <td style="text-align: right;">{{ invoice.final_price|intcomma }}円</td>
+    </tr>
+    </table>
+    <br>
+    <table style="width: 50%;">◆　税率別内訳　◆
+    <tr>
+        <th>税率</th>
+        <th>税抜金額</th>
+        <th>消費税額</th>
+        <th>税込金額</th>
+    </tr>
+    <tr>
+        <td>8 ％</td>
+        <td style="text-align: right;">{{ invoice.total_extax|intcomma }}円</td>
+        <td style="text-align: right;">{{ invoice.tax8|intcomma }}円</td>
+        <td style="text-align: right;">{{ invoice.total_price|intcomma }}円</td>
+    </tr>
+    <tr>
+        <td>10 ％</td>
+        <td style="text-align: right;">{{ invoice.shipping_extax|intcomma }}円</td>
+        <td style="text-align: right;">{{ invoice.tax10|intcomma }}円</td>
+        <td style="text-align: right;">{{ invoice.shipping_fee|intcomma }}円</td>
+    </tr>
+    </table>
+
+{% endblock %}

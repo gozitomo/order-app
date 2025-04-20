@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+{% load static %}
+<head>
+    <meta charaset="UTF-8">
+    <title>{% block title %}業務用注文アプリ{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header style="margin-bottom: 1em; border-bottom: 1px solid #ccc;">
+        <nav>
+            {% if user.is_authenticated %}
+            <span>{{ user.username }} さん</span>
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">ログアウト</button>
+            </form>
+            {% else %}
+                <a href="{% url 'login' %}">別のユーザーでログイン</a>
+                <a href="{% url 'signup' %}">新規登録</a>
+            {% endif %}
+        </nav>
+    </header>
+    <div class="flex min-h-screen flex-col">
+    <div class = "flex flex-1">
+        <aside class="w-64 bg-blue-100 p-4 space-y-4">
+            <a href="{% url 'place_order' %}" class="block w-full text-center bg-orange-200 hover:bg-orange-300 text-gray-800 font-semibold py-2 rounded">新規発注</a>
+            <a href="{% url 'order_history' %}" class="block w-full text-center bg-orange-200 hover:bg-orange-300 text-gray-800 font-semibold py-2 rounded">マイページ</a>
+            <!--<a href="{% url 'my_invoices' %}" class="block w-full text-center bg-gray-200 hover:bg-orange-300 text-gray-800 font-semibold py-2 rounded">請求書一覧</a>-->
+            {% if user.is_superuser %}
+            <a href="{% url 'gyoumu_menu' %}" class="block w-full text-center bg-blue-200 hover:bg-orange-300 text-gray-800 font-semibold py-2 rounded">業務メニュー</a>
+            {% endif %}
+        </aside>
+        <main class="flex-1 p-6 bg-white">
+            {% block content %}
+            {% endblock %}
+        </main>
+    </div>
+    <footer class="bg-gray-100 text-center py-4 text-sm text-gray-600">
+        &copy; プログレスファーム
+    </footer>
+    </div>
+</body>
+</html>
