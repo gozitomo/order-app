@@ -1,11 +1,11 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>注文履歴</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}ご注文履歴{% endblock %}
+{% block content %}
     <h1>{{ user.username }}さんの注文履歴</h1>
-    <p><a href="{% url 'place_order' %}">▶　新規発注はこちら</a></p>
+    <br>
+    <table>
+
 
     {% if orders %}
         <ul>
@@ -22,25 +22,30 @@
 
                     <ul>
                         {% for item in order.items.all %}
-                            <li>{{ item.product.name }} × {{ item.quantity }}　小計：{{ item.subtotal }}円</li>
+                            <li>{{ item.product.name }} 　　 （{{ item.delivery_date|date:"Y-m-d" }}納品希望） 　　 {{ item.quantity }} kg　　小計：{{ item.subtotal|intcomma }}円</li>
+                            {% if item.tracking_id %}
+                                <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
+                                    ヤマト追跡ページ
+                                </a>（追跡番号：{{ item.tracking_id }}）
+                            {% endif %}
                         {% endfor %}
                     </ul>
                     <table style="width:80%">
                         <tr>
                             <th style="text-align:left; width:50%;">合計</th>
-                            <td style="text-align:right; width:50%;">{{ order.total }}円</td>
+                            <td style="text-align:right; width:50%;">{{ order.total_price|intcomma }}円</td>
                         </tr>
                         <tr>
                             <th style="text-align:left; width:50%;">送料</th>
-                            <td style="text-align:right; width:50%;">{{ order.shipping_fee }}円</td>
+                            <td style="text-align:right; width:50%;">{{ order.total_shipping_fee|intcomma }}円</td>
                         </tr>
                         <tr>
                             <th style="text-align:left; width:50%;">総計</th>
-                            <td style="text-align:right; width:50%;">{{ order.final_total }}円</td>
+                            <td style="text-align:right; width:50%;">{{ order.final_total|intcomma }}円</td>
                         </tr>
                     </table>
                     <form method="GET" action="{% url 'order_detail' order.id %}">
-                        <button type="submit">注文詳細</button>
+                        <button type="submit">ご注文明細</button>
                     </form>
                     {% if order.status == '未処理' %}
                     <form method="POST" action="{% url 'cancel_order' order.id %}">
@@ -61,5 +66,4 @@
     {% else %}
         <p>注文履歴はまだありません。</p>
     {% endif %}
-</body>
-</html>
+{% endblock %}

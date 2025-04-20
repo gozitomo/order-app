@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}過去の請求書{% endblock %}
+{% block content %}
+    <h1>過去の請求書</h1>
+    <ul>
+        {% for invoice in invoices%}
+        <li><a href="{% url 'invoice_pdf' invoice.id %}" target="_blank">
+            {{invoice.period_start|date:"Y年m月"}}請求書</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% endblock%}

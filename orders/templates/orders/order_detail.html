@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>注文確認</title>
-</head>
-<body>
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}ご注文明細{% endblock %}
+{% block content %}
     <h1>注文内容の確認</h1>
     {% if order.status == 'キャンセル' %}
         <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
@@ -14,31 +12,32 @@
 
     <p><strong>注文ID:</strong>{{ order.id }}</p>
     <p><strong>注文日時:</strong>{{ order.created_at|date:"Y-m-d H:i" }}</p>
-    
-    <table>
+
+    <table width="100%">
         <tr>
             <th>商品名</th>
+            <th>納品希望日</th>
             <th>数量</th>
             <th>単価</th>
-            <th>小計(内税) 
-            </th>
+            <th>小計(内税) </th>
         </tr>
         {% for item in order.items.all %}
         <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.product.price }}</td>
-            <td>{{ item.subtotal }}円</td>
+            <td width:40%>{{ item.product.name }}</td>
+            <td style="text-align:center; width:15%">{{ item.delivery_date|date:"Y-m-d" }}</td>
+            <td style="text-align:right; width:15%">{{ item.quantity }} kg</td>
+            <td style="text-align:right; width:15%">{{ item.product.price|intcomma }} 円</td>
+            <td style="text-align:right; width:15%">{{ item.subtotal|intcomma }} 円</td>
         </tr>
         {% endfor %}
 
     </table>
     <hr>
-    <p><strong>合計：</strong>{{ order.total }}円</p>
+    <p><strong>合計：</strong>{{ order.total_price|intcomma }}円</p>
     <hr>
-    <p><strong>送料：</strong>{{ order.shipping_fee }}円</p>
-    <p><strong>総計：</strong>{{ order.final_total }}円</p>
+    <p><strong>送料：</strong>{{ order.total_shipping_fee|intcomma }}円</p>
+    <p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>
 
+    <!--<p><a href="{% url 'order_invoice_pdf' order.id %}" target="_blank">請求書</a></p>-->
     <p><a href="{% url 'order_history' %}">←　注文履歴に戻る</a></p>
-</body>
-</html>
+{% endblock %}

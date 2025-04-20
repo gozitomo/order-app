@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charaset="UTF-8">
+    <style>
+        body {
+            font-family: "Noto Sans JP", sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .page {
+            width: 100%;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            gap: 20%;
+        }
+
+        .left-block {
+            width: 30%;
+        }
+
+        .right-block {
+            width: 40%;
+        }
+
+        .center-block {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+        }
+
+        .vertical-label {
+            writing-mode: vertical-rl;
+            font-size: 18px;
+        }
+
+        hr {
+            margin-top: 1em;
+            margin-bottom: 1em;
+        }
+    </style>
+
+    <title>{% block title %}帳票{% endblock %}</title>
+</head>
+<body>
+    <hr>
+    <div class="page">
+        <div class="header">
+            <!--宛先-->
+            <div class="left-block">
+                <p>〒{{ user.userprofile.postal_code }}</p>
+                <p>{{ user.userprofile.address }}</p>
+                <p>{{ user.get_full_name|default:user.username }} 様</p>
+            </div>
+            <!--請求書在中（縦書き）-->
+
+            <div class="center-block">
+                <span class="vertical-label">請求書在中</span>
+            </div>
+            <div class="right-block">
+                <p><strong>プログレスファーム</strong></p>
+                <p>〒381-0208</p>
+                <p>長野県上高井郡小布施町大字都住66番地4</p>
+                <p>TEL：090-8904-6773</p>
+            </div>
+        </div>
+    </div>
+    <hr>
+        {% block content %}
+        {% endblock %}
+</div>
+</body>
+</html>
