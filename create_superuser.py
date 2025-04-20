@@ -2,7 +2,7 @@ import os
 import django
 
 #settingsモジュールのパス指定
-os.environ.setdefault("DJANGO_SETTING_MODULE", "config.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 
 #Django セットアップ
 django.setup()
