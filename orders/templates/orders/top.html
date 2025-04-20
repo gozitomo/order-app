@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block title %}ようこそ{% endblock %}
+{% block content %}
+  <div class="text-center mt-10">
+    <h1 class="text-2xl font-bold">プログレスファーム<br>業務用注文アプリへようこそ</h1>
+    <div class="mt-6 flex justify-center gap-4">
+      <a href="{% url 'login' %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">ログイン</a>
+    </div>
+  </div>
+{% endblock %}

@@ -20,6 +20,9 @@ from weasyprint import HTML
 def admin_required(view_func):
     return user_passes_test(lambda u: u.is_superuser)(view_func)
 
+def top_page(request):
+    return render(request, 'orders/top.html')
+
 # Create your views here.
 
 def signup(request):
