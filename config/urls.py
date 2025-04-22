@@ -23,5 +23,7 @@ urlpatterns = [
     path('', include('orders.urls')),
     path('account/login/', auth_views.LoginView.as_view(), name='login'),
     path('account/logout/', auth_views.LoginView.as_view(), name='logout'),
-    path('__reload__/',include('django_browser_reload.urls')),
 ]
+
+if settings.DEBUG:
+    urlpatterns += [path('__reload__/', include('django_browser_reload.urls'))]
