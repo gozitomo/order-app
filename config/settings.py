@@ -149,3 +149,7 @@ LOGIN_REDIRECT_URL = '/mypage/'
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-key-for-dev')
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+
+if DEBUG:
+    INSTALLED_APPS += ["django_browser_reload"]
+    MIDDLEWARE += ["django_browser_reload.middleware.BrowserReloadMiddleware"]
