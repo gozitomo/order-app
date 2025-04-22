@@ -26,5 +26,5 @@ urlpatterns = [
     path('account/logout/', auth_views.LoginView.as_view(), name='logout'),
 ]
 
-if settings.DEBUG:
-    urlpatterns += [path('__reload__/', include('django_browser_reload.urls'))]
+#if settings.DEBUG:
+#    urlpatterns += [path('__reload__/', include('django_browser_reload.urls'))]
