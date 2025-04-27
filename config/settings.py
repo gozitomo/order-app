@@ -43,26 +43,27 @@ INSTALLED_APPS = [
     'products',
     'users.apps.UsersConfig',
     'django.contrib.humanize',
-    'tailwind',
-    'theme',
+    #'tailwind',
+    #'theme',
 ]
 
-TAILWIND_APP_NAME = "theme"
+#TAILWIND_APP_NAME = "theme"
 
 INTERNAL_IPS = ["127.0.0.1"]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'config.urls'
+WSGI_APPLICATION = 'config.wsgi.application'
 
 TEMPLATES = [
     {
@@ -79,7 +80,6 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
 
 
 # Database
