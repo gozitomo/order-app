@@ -34,6 +34,45 @@
             font-size: 1em;
         }
     </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(){
+            const priceData = {{ price_data_json|safe }};
+
+            {% for product in products %}
+            const gradeSelect_{{ product.id }} = document.querySelector('select[name="grade_{{ product.id }}"]');
+            const sizeSelect_{{ product.id }} = document.querySelector('select[name="size_{{ product.id }}"]');
+            const amountSelect_{{ product.id }} = document.querySelector('select[name="amount_{{ product.id }}"]');
+            const priceDisplay_{{ product.id }} = document.getElementById('price_display_{{ product.id }}');
+            const unitDisplay_{{ product.id }} = document.getElementById('unit_display_{{ product.id }}');
+
+            function updatePrice{{ product.id }}{}{
+                const selectedGrade = gradeSelect_{{ product.id }}.value;
+                const selectedSize = sizeSelect_{{ product.id }}.value;
+                const selectedAmount = amountSelect_{{ product.id }}.value;
+
+                const options = priceData["{{ product.id }}"];
+                const match = options.find(opt =>
+                    opt.grade === selectedGrade &&
+                    opt.size === selectedSize &&
+                    opt.amount === selectedAmount
+                );
+
+                if (match){
+                    priceDisplay_{{ product.id }}.textContent = match.price;
+                    unitDisplay_{{ product.id }}.textContent = match.unit;
+                }
+                else {
+                    priceDisplay_{{ product.id }}.textContent = "-";
+                    unitDisplay_{{ product.id }}.textContent = "-";
+                }
+            }
+            gradeSelect_{{ product.id }}.addEventListener('change', updatePrice{{ product.id }});
+            sizeSelect_{{ product.id }}.addEventListener('change', updatePrice{{ product.id }});
+            amountSelect_{{ product.id }}.addEventListener('change', updatePrice{{ product.id }});
+
+            {% endfor %}
+        });
+    </script>
     <h1>商品を選んで発注</h1>
 
     <form method="POST">
@@ -41,7 +80,9 @@
         <table style="width: 100%;">
             <tr>
                 <th width="20%">商品名</th>
-                <th width="40%">商品説明</th>
+                <th width="40%">等級</th>
+                <th width="40%">階級</th>
+                <th width="40%">量目</th>
                 <th width="20%">単価</th>
                 <th width="20%">納品希望日</th>
                 <th width="20%">数量</th>
@@ -49,8 +90,31 @@
             {% for product in products %}
             <tr>
                 <td style="text-align:center;">{{ product.name }}</td>
-                <td>{{ product.description }}</td>
-                <td style="text-align:center;">{{ product.price }}円／{{ product.unit }}</td>
+                <td>
+                    <select name="grade_{{ product.id }}">
+                        {% for grade in product.kind.options.all|dictsort:"grade" %}
+                        <option value="{{ grade.grade }}">{{ grade.grade }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="size_{{ product.id }}">
+                        {% for size in product.kind.options.all|dictsort:"size" %}
+                        <option value="{{ size.size }}">{{ size.size }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="amount_{{ product.id }}">
+                        {% for amount in product.kind.options.all|dictsort:"amount" %}
+                        <option value="{{ amount.amount }}">{{ amount.amount }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <span id="price_display_{{ product.id }}">{{ product.kind.options.first.price }}</span>円／
+                    <span id="unit_display_{{ product.id }}">{{ product.kind.options.first.unit }}</span>
+                </td>
                 <td>
                     <select name="delivery_{{ product.id }}">
                         {% for d in product.available_dates.all %}
@@ -60,7 +124,7 @@
                 </td>
                 <td style="text-align:center;">
                     <div style="display: flex; align-items: center; gap: 4px;">
-                        <input type="num" name="quantity_{{ product.id }}" style="text-align:right; width:40px;" min="0" value="0">{{ product.unit }}
+                        <input type="number" name="quantity_{{ product.id }}" style="text-align:right; width:40px;" min="0" value="0">{{ product.kind.options.first.unit }}
                     </div>
                 </td>
             </tr>
