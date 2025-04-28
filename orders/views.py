@@ -1,19 +1,21 @@
 from datetime import date, timedelta
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models import Sum
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
 from .models import Order, OrderItem, Invoice
-from products.models import Product
+from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
 from users.models import User
 from .utils import calculate_sipping_fee
 from .forms import CustomSignupForm
 from weasyprint import HTML
+import json
 
 # Create decorators
 
@@ -57,7 +59,7 @@ def order_detail(request, order_id):
         })
 
 def place_order(request):
-    products = Product.objects.all()
+    products = ProductName.objects.prefetch_related('kind__options').all()
 
     if request.method == 'POST':
         #新しい注文を作成
@@ -74,24 +76,31 @@ def place_order(request):
             if qty and int(qty) > 0:
                 quantity = int(qty)
                 total_quantity += quantity
-                subtotal = product.price * quantity
-                total_price += subtotal
-                shipping_fee = calculate_sipping_fee(quantity)
-                shipping_tax = shipping_fee / 1.1 * 0.1
-                total_shipping_fee += shipping_fee
-                total_shipping_tax = total_shipping_fee / 1.1 * 0.1
-                tax = subtotal / 1.08 * 0.08
-                total_tax += tax
 
-                OrderItem.objects.create(
-                    order=order,
-                    product=product,
-                    quantity=int(qty),
-                    subtotal=subtotal,
-                    shipping_fee = shipping_fee,
-                    tax = tax,
-                    shipping_tax = shipping_tax,
-                )
+                grade = request.POST.get(f'grade_{product.id}')
+                size = request.POST.get(f'size_{product.id}')
+                amount = request.POST.get(f'amount_{product.id}')
+
+                option = product.kind.options.filter(grade=grade, size=size, amount=amount).first()
+                if option:
+                    subtotal = option.price * quantity
+                    total_price += subtotal
+                    shipping_fee = calculate_shipping_fee(quantity)
+                    shipping_tax = shipping_fee / 1.1 * 0.1
+                    total_shipping_fee += shipping_fee
+                    total_shipping_tax = total_shipping_fee / 1.1 * 0.1
+                    tax = subtotal / 1.08 * 0.08
+                    total_tax += tax
+
+                    OrderItem.objects.create(
+                        order=order,
+                        product=product,
+                        quantity=int(qty),
+                        subtotal=subtotal,
+                        shipping_fee = shipping_fee,
+                        tax = tax,
+                        shipping_tax = shipping_tax,
+                    )
 
         order.total_quantity = total_quantity
         order.total_price = total_price
@@ -105,7 +114,23 @@ def place_order(request):
         #リダイレクト先は注文確認画面
         #return redirect('order_history')
 
-    return render(request, 'orders/place_order.html', {'products': products})
+    price_data = {}
+    for product in products:
+        options=[]
+        for opt in product.kind.options.all():
+            options.append({
+                "grade": opt.grade,
+                "size": opt.size,
+                "amount": opt.amount,
+                "price": opt.price,
+                "unit": opt.unit,
+            })
+        price_data[product.id] = options
+
+    return render(request, 'orders/place_order.html', {
+        'products': products,
+        'price_data_json': json.dumps(price_data, cls=DjangoJSONEncoder),
+        })
 
 def order_invoice_pdf(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)

@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='order',
-            name='total_quantity',
+            name='y',
             field=models.PositiveIntegerField(default=0),
         ),
         migrations.AddField(

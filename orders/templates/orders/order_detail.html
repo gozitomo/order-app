@@ -16,6 +16,9 @@
     <table width="100%">
         <tr>
             <th>商品名</th>
+            <th>等級</th>
+            <th>階級</th>
+            <th>量目</th>
             <th>納品希望日</th>
             <th>数量</th>
             <th>単価</th>
@@ -24,6 +27,9 @@
         {% for item in order.items.all %}
         <tr>
             <td width:40%>{{ item.product.name }}</td>
+            <td width:40%>{{ item.product.grade }}</td>
+            <td width:40%>{{ item.product.size }}</td>
+            <td width:40%>{{ item.product.amount }}</td>
             <td style="text-align:center; width:15%">{{ item.delivery_date|date:"Y-m-d" }}</td>
             <td style="text-align:right; width:15%">{{ item.quantity }} kg</td>
             <td style="text-align:right; width:15%">{{ item.product.price|intcomma }} 円</td>

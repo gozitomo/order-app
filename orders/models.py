@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from products.models import Product
+from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
 from datetime import date
 from django.utils.timezone import now
 
@@ -48,7 +48,7 @@ class Invoice(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    product = models.ForeignKey(ProductName, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     subtotal = models.PositiveIntegerField(default=0)
     tax = models.PositiveIntegerField(default=0)

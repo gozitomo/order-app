@@ -1,6 +1,6 @@
 from .models import ShippingFeeRule
 
-def calculate_sipping_fee(quantity):
+def calculate_shipping_fee(quantity):
     rule = ShippingFeeRule.objects.filter(
         min_qty__lte=quantity,
         max_qty__gte=quantity,
