@@ -96,6 +96,10 @@ def place_order(request):
                     OrderItem.objects.create(
                         order=order,
                         product=product,
+                        grade=grade,
+                        size=size,
+                        amount=amount,
+                        price=option.price,
                         quantity=total_quantity,
                         subtotal=subtotal,
                         shipping_fee = shipping_fee,

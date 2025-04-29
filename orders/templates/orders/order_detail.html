@@ -26,14 +26,14 @@
         </tr>
         {% for item in order.items.all %}
         <tr>
-            <td width:40%>{{ item.product.name }}</td>
-            <td width:40%>{{ item.product.grade }}</td>
-            <td width:40%>{{ item.product.size }}</td>
-            <td width:40%>{{ item.product.amount }}</td>
-            <td style="text-align:center; width:15%">{{ item.delivery_date|date:"Y-m-d" }}</td>
-            <td style="text-align:right; width:15%">{{ item.quantity }} kg</td>
-            <td style="text-align:right; width:15%">{{ item.product.price|intcomma }} 円</td>
-            <td style="text-align:right; width:15%">{{ item.subtotal|intcomma }} 円</td>
+            <td style="width:20%">{{ item.product.name }}</td>
+            <td style="width:10%">{{ item.grade }}</td>
+            <td style="width:10%">{{ item.size }}</td>
+            <td style="width:10%">{{ item.amount }}</td>
+            <td style="width:20%">{{ item.delivery_date|date:"Y-m-d" }}</td>
+            <td style="text-align:right width:10%">{{ item.quantity }} kg</td>
+            <td style="text-align:right width:10%">{{ item.price|intcomma }} 円</td>
+            <td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>
         </tr>
         {% endfor %}
 

@@ -49,6 +49,10 @@ class Invoice(models.Model):
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
     product = models.ForeignKey(ProductName, on_delete=models.CASCADE)
+    grade = models.CharField(max_length=20, default="")
+    size = models.CharField(max_length=20, default="")
+    amount = models.CharField(max_length=20, default="")
+    price = models.PositiveIntegerField(default=0)
     quantity = models.PositiveIntegerField()
     subtotal = models.PositiveIntegerField(default=0)
     tax = models.PositiveIntegerField(default=0)
@@ -58,6 +62,9 @@ class OrderItem(models.Model):
     delivery_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
     invoice_id = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.SET_NULL, related_name='items')
     tracking_id = models.CharField(max_length=20, null=True)
+
+    def __str__(self):
+        return f"{self.product.name} ({self.grade}/{self.size}/{self.amount})×{self.quantity}"
 
     def generate_delivery_number():
         today = now().date()

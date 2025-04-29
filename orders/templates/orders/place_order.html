@@ -38,9 +38,6 @@
     <script>
         document.addEventListener('DOMContentLoaded', function(){
             const priceData = {{ price_data_json|safe }};
-            const gradesData = {{ grades_data_json|safe }};
-            const sideData = {{ sizes_data_json|safe }};
-            const amountData = {{ amounts_data_json|safe }};
 
             {% for product in products %}
             const gradeSelect_{{ product.id }} = document.querySelector('select[name="grade_{{ product.id }}"]');
@@ -48,9 +45,6 @@
             const amountSelect_{{ product.id }} = document.querySelector('select[name="amount_{{ product.id }}"]');
             const priceDisplay_{{ product.id }} = document.getElementById('price_display_{{ product.id }}');
             const unitDisplay_{{ product.id }} = document.getElementById('unit_display_{{ product.id }}');
-
-
-
 
             function updatePrice{{ product.id }}(){
                 const selectedGrade = gradeSelect_{{ product.id }}.value;
@@ -79,6 +73,27 @@
 
             {% endfor %}
         });
+
+        //行追加
+        function addRow(productId) {
+            const tbody = document.getElementById('product-' + productId);
+            const originalRow = document.getElementById('row-' + productId);
+            const newRow = originalRow.cloneNode(true); //clone the last rows
+
+            //Reset select inside the new rows
+            const selects = newRow.querySelectorAll('select');
+            selects.forEach(select => {
+                select.selectedIndex = 0;
+            });
+
+            //Reset values inside the new rows
+            const inputs = newRow.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.value = 0;
+            });
+
+            tbody.appendChild(newRow);
+        }
     </script>
     <h1>商品を選んで発注</h1>
 
@@ -95,7 +110,8 @@
                 <th width="10%">数量</th>
             </tr>
             {% for product in products %}
-            <tr>
+            <tbody id="product-{{ product.id }}">
+            <tr id="row-{{ product.id }}">
                 <td style="text-align:center;">{{ product.name }}</td>
                 <td>
                     <select name="grade_{{ product.id }}">
@@ -134,6 +150,14 @@
                     </div>
                 </td>
             </tr>
+            </tbody>
+            <!-- Add button -->
+            <tr>
+                <td colspan="7" style="text-align:center;">
+                    <button type="button" onclick="addRow({{ product.id }})">+追加</button>
+                </td>
+            </tr>
+
             {% endfor %}
         </table>
         <br>
