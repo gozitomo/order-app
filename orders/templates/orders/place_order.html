@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load my_filters %}
 {% block title %}注文発注{% endblock %}
 {% block content %}
     <style>
@@ -37,6 +38,9 @@
     <script>
         document.addEventListener('DOMContentLoaded', function(){
             const priceData = {{ price_data_json|safe }};
+            const gradesData = {{ grades_data_json|safe }};
+            const sideData = {{ sizes_data_json|safe }};
+            const amountData = {{ amounts_data_json|safe }};
 
             {% for product in products %}
             const gradeSelect_{{ product.id }} = document.querySelector('select[name="grade_{{ product.id }}"]');
@@ -45,7 +49,10 @@
             const priceDisplay_{{ product.id }} = document.getElementById('price_display_{{ product.id }}');
             const unitDisplay_{{ product.id }} = document.getElementById('unit_display_{{ product.id }}');
 
-            function updatePrice{{ product.id }}{}{
+
+
+
+            function updatePrice{{ product.id }}(){
                 const selectedGrade = gradeSelect_{{ product.id }}.value;
                 const selectedSize = sizeSelect_{{ product.id }}.value;
                 const selectedAmount = amountSelect_{{ product.id }}.value;
@@ -80,34 +87,33 @@
         <table style="width: 100%;">
             <tr>
                 <th width="20%">商品名</th>
-                <th width="40%">等級</th>
-                <th width="40%">階級</th>
-                <th width="40%">量目</th>
+                <th width="10%">等級</th>
+                <th width="10%">階級</th>
+                <th width="10%">量目</th>
                 <th width="20%">単価</th>
                 <th width="20%">納品希望日</th>
-                <th width="20%">数量</th>
+                <th width="10%">数量</th>
             </tr>
             {% for product in products %}
             <tr>
                 <td style="text-align:center;">{{ product.name }}</td>
                 <td>
                     <select name="grade_{{ product.id }}">
-                        {% for grade in product.kind.options.all|dictsort:"grade" %}
-                        <option value="{{ grade.grade }}">{{ grade.grade }}</option>
+                        {% for grade in grades_data|get_item:product.id %}
+                        <option value="{{ grade }}">{{ grade }}</option>
                         {% endfor %}
                     </select>
                 </td>
                 <td>
                     <select name="size_{{ product.id }}">
-                        {% for size in product.kind.options.all|dictsort:"size" %}
-                        <option value="{{ size.size }}">{{ size.size }}</option>
+                        {% for size in sizes_data|get_item:product.id %}
+                        <option value="{{ size }}">{{ size }}</option>
                         {% endfor %}
-                    </select>
                 </td>
                 <td>
                     <select name="amount_{{ product.id }}">
-                        {% for amount in product.kind.options.all|dictsort:"amount" %}
-                        <option value="{{ amount.amount }}">{{ amount.amount }}</option>
+                        {% for amount in amounts_data|get_item:product.id %}
+                        <option value="{{ amount }}">{{ amount }}</option>
                         {% endfor %}
                     </select>
                 </td>

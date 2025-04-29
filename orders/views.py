@@ -12,7 +12,7 @@ from django.utils.timezone import localdate, now
 from .models import Order, OrderItem, Invoice
 from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
 from users.models import User
-from .utils import calculate_sipping_fee
+from .utils import calculate_shipping_fee
 from .forms import CustomSignupForm
 from weasyprint import HTML
 import json
@@ -75,7 +75,6 @@ def place_order(request):
             qty = request.POST.get(f'quantity_{product.id}')
             if qty and int(qty) > 0:
                 quantity = int(qty)
-                total_quantity += quantity
 
                 grade = request.POST.get(f'grade_{product.id}')
                 size = request.POST.get(f'size_{product.id}')
@@ -83,6 +82,7 @@ def place_order(request):
 
                 option = product.kind.options.filter(grade=grade, size=size, amount=amount).first()
                 if option:
+                    amt = int(option.amount.replace('kg', ''))
                     subtotal = option.price * quantity
                     total_price += subtotal
                     shipping_fee = calculate_shipping_fee(quantity)
@@ -91,11 +91,12 @@ def place_order(request):
                     total_shipping_tax = total_shipping_fee / 1.1 * 0.1
                     tax = subtotal / 1.08 * 0.08
                     total_tax += tax
+                    total_quantity += quantity * amt
 
                     OrderItem.objects.create(
                         order=order,
                         product=product,
-                        quantity=int(qty),
+                        quantity=total_quantity,
                         subtotal=subtotal,
                         shipping_fee = shipping_fee,
                         tax = tax,
@@ -115,21 +116,31 @@ def place_order(request):
         #return redirect('order_history')
 
     price_data = {}
+    grades_data = {}
+    sizes_data = {}
+    amounts_data = {}
+
     for product in products:
-        options=[]
-        for opt in product.kind.options.all():
-            options.append({
-                "grade": opt.grade,
-                "size": opt.size,
-                "amount": opt.amount,
-                "price": opt.price,
-                "unit": opt.unit,
-            })
-        price_data[product.id] = options
+        options=product.kind.options.all()
+
+        price_data[product.id] = list(options.values('grade', 'size', 'amount', 'price', 'unit'))
+
+        unique_grades = options.values_list('grade', flat=True).distinct()
+        grades_data[product.id] = list(unique_grades)
+        unique_sizes = options.values_list('size', flat=True).distinct()
+        sizes_data[product.id] = list(unique_sizes)
+        unique_amounts = options.values_list('amount', flat=True).distinct()
+        amounts_data[product.id] = list(unique_amounts)
+
+        print(sizes_data)
+
 
     return render(request, 'orders/place_order.html', {
         'products': products,
         'price_data_json': json.dumps(price_data, cls=DjangoJSONEncoder),
+        'grades_data': grades_data,
+        'sizes_data': sizes_data,
+        'amounts_data': amounts_data,
         })
 
 def order_invoice_pdf(request, order_id):
