@@ -10,7 +10,7 @@ from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryD
 
 def run():
     # Create fruits
-    peah = FruitKind.objects.get_or_create(name="桃")[0]
+    peach = FruitKind.objects.get_or_create(name="桃")[0]
     plum = FruitKind.objects.get_or_create(name="プラム")[0]
 
     # Create product names
@@ -68,3 +68,6 @@ def run():
             print(f"Created delivery dates for {product_name}")
         except ProductName.DoesNotExist:
             print(f"Product {product_name} not found.Please check spelling.")
+
+if __name__ == "__main__":
+    run()
