@@ -36,63 +36,88 @@
         }
     </style>
     <script>
-        document.addEventListener('DOMContentLoaded', function(){
-            const priceData = {{ price_data_json|safe }};
+        const priceData = {{ price_data_json|safe }};
+        let rowCounters = {};
 
-            {% for product in products %}
-            const gradeSelect_{{ product.id }} = document.querySelector('select[name="grade_{{ product.id }}"]');
-            const sizeSelect_{{ product.id }} = document.querySelector('select[name="size_{{ product.id }}"]');
-            const amountSelect_{{ product.id }} = document.querySelector('select[name="amount_{{ product.id }}"]');
-            const priceDisplay_{{ product.id }} = document.getElementById('price_display_{{ product.id }}');
-            const unitDisplay_{{ product.id }} = document.getElementById('unit_display_{{ product.id }}');
+        function attachPriceupdater(row, productId, rowIndex) {
+            const gradeSelect = row.querySelector('select[name="grade_' + productId + "_" + rowIndex + '"]');
+            const sizeSelect = row.querySelector('select[name="size_' + productId + "_" + rowIndex + '"]');
+            const amountSelect = row.querySelector('select[name="amount_' + productId + "_" + rowIndex + '"]');
+            //const priceDisplay = row.querySelector('.price_display');
+            //const unitDisplay = row.querySelector('.unit_display');
 
-            function updatePrice{{ product.id }}(){
-                const selectedGrade = gradeSelect_{{ product.id }}.value;
-                const selectedSize = sizeSelect_{{ product.id }}.value;
-                const selectedAmount = amountSelect_{{ product.id }}.value;
+            function updatePrice(){
+                const selectedGrade = gradeSelect.value;
+                const selectedSize = sizeSelect.value;
+                const selectedAmount = amountSelect.value;
 
-                const options = priceData["{{ product.id }}"];
+                const options = priceData[productId];
                 const match = options.find(opt =>
-                    opt.grade === selectedGrade &&
-                    opt.size === selectedSize &&
-                    opt.amount === selectedAmount
+                opt.grade === selectedGrade &&
+                opt.size === selectedSize &&
+                opt.amount === selectedAmount
                 );
 
-                if (match){
-                    priceDisplay_{{ product.id }}.textContent = match.price;
-                    unitDisplay_{{ product.id }}.textContent = match.unit;
-                }
-                else {
-                    priceDisplay_{{ product.id }}.textContent = "-";
-                    unitDisplay_{{ product.id }}.textContent = "-";
-                }
+                //if (match) {
+                //   if (priceDisplay) priceDisplay.textContent = match.price;
+                //    if (unitDisplay) unitDisplay.textContent = match.unit;
+                //} else {
+                //    if (priceDisplay) priceDisplay.textContent = "-";
+                //    if (unitDisplay) unitDisplay.textContent = "-";
+                //}
             }
-            gradeSelect_{{ product.id }}.addEventListener('change', updatePrice{{ product.id }});
-            sizeSelect_{{ product.id }}.addEventListener('change', updatePrice{{ product.id }});
-            amountSelect_{{ product.id }}.addEventListener('change', updatePrice{{ product.id }});
 
+            gradeSelect.addEventListener('change', updatePrice);
+            sizeSelect.addEventListener('change', updatePrice);
+            amountSelect.addEventListener('change', updatePrice);
+        }
+
+
+        
+        document.addEventListener('DOMContentLoaded', function(){
+            //Set up for all initial rows(indes _0)
+            {% for product in products %}
+            const row = document.getElementById('row_{{ product.id }}_0');
+            //attachPriceupdater(row, {{ product.id }}, 0);
+            rowCounters[{{ product.id }}] = 1;
             {% endfor %}
-        });
+        })
+
 
         //行追加
+
+
         function addRow(productId) {
-            const tbody = document.getElementById('product-' + productId);
-            const originalRow = document.getElementById('row-' + productId);
+
+            const tbody = document.getElementById('product_' + productId);
+            const originalRow = document.getElementById(`row_${productId}_0`);
             const newRow = originalRow.cloneNode(true); //clone the last rows
+            const newIndex = rowCounters[productId];
+
+            // Update names and inside
+            newRow.id = `row_${productId}_${newIndex}`;
 
             //Reset select inside the new rows
-            const selects = newRow.querySelectorAll('select');
-            selects.forEach(select => {
-                select.selectedIndex = 0;
+            newRow.querySelectorAll('select, input').forEach(el => {
+                if (el.name){
+                    el.name = el.name.replace(`_${productId}_0`, `_${productId}_${newIndex}`);
+                }
+                if (el.id){
+                    el.id = el.id.replace(`_${productId}_0`, `_${productId}_${newIndex}`);
+                }
+                if (el.tagName === 'INPUT') {
+                    el.value = 0;
+                }
             });
 
-            //Reset values inside the new rows
-            const inputs = newRow.querySelectorAll('input[type="number"]');
-            inputs.forEach(input => {
-                input.value = 0;
-            });
+            const priceEl = newRow.querySelector('.price_display');
+            if (priceEl) priceEl.textContent = "-";
+            const unitEl = newRow.querySelector('.unit_display');
+            if (unitEl) unitEl.textContent = "-";
 
             tbody.appendChild(newRow);
+            //attachPriceupdater(newRow, productId, newIndex);
+            rowCounters[productId] += 1;
         }
     </script>
     <h1>商品を選んで発注</h1>
@@ -110,35 +135,35 @@
                 <th width="10%">数量</th>
             </tr>
             {% for product in products %}
-            <tbody id="product-{{ product.id }}">
-            <tr id="row-{{ product.id }}">
+            <tbody id="product_{{ product.id }}">
+            <tr id="row_{{ product.id }}_0">
                 <td style="text-align:center;">{{ product.name }}</td>
                 <td>
-                    <select name="grade_{{ product.id }}">
+                    <select name="grade_{{ product.id }}_0">
                         {% for grade in grades_data|get_item:product.id %}
                         <option value="{{ grade }}">{{ grade }}</option>
                         {% endfor %}
                     </select>
                 </td>
                 <td>
-                    <select name="size_{{ product.id }}">
+                    <select name="size_{{ product.id }}_0">
                         {% for size in sizes_data|get_item:product.id %}
                         <option value="{{ size }}">{{ size }}</option>
                         {% endfor %}
                 </td>
                 <td>
-                    <select name="amount_{{ product.id }}">
+                    <select name="amount_{{ product.id }}_0">
                         {% for amount in amounts_data|get_item:product.id %}
                         <option value="{{ amount }}">{{ amount }}</option>
                         {% endfor %}
                     </select>
                 </td>
                 <td>
-                    <span id="price_display_{{ product.id }}">{{ product.kind.options.first.price }}</span>円／
-                    <span id="unit_display_{{ product.id }}">{{ product.kind.options.first.unit }}</span>
+                    <span id="price_display_{{ product.id }}_0" class="price_display">{{ product.kind.options.first.price }}</span>円／
+                    <span id="unit_display_{{ product.id }}_0" class="unit_display">{{ product.kind.options.first.unit }}</span>
                 </td>
                 <td>
-                    <select name="delivery_{{ product.id }}">
+                    <select name="delivery_{{ product.id }}_0">
                         {% for d in product.available_dates.all %}
                         <option value="{{ d.date }}">{{ d.date|date:"Y/m/d" }}</option>
                         {% endfor %}
@@ -146,7 +171,7 @@
                 </td>
                 <td style="text-align:center;">
                     <div style="display: flex; align-items: center; gap: 4px;">
-                        <input type="number" name="quantity_{{ product.id }}" style="text-align:right; width:40px;" min="0" value="0">{{ product.kind.options.first.unit }}
+                        <input type="number" name="quantity_{{ product.id }}_0" value="0" min="0" class="quantity" style="text-align:right; width:40px;" min="0" value="0">{{ product.kind.options.first.unit }}
                     </div>
                 </td>
             </tr>

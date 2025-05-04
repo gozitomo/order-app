@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
@@ -58,8 +58,28 @@ def order_detail(request, order_id):
         'order': order,
         })
 
-def place_order(request):
-    products = ProductName.objects.prefetch_related('kind__options').all()
+def neworder_1(request):
+    product = get_object_or_404(ProductName, id=1)
+    options = product.kind.options.all()
+    delivery_date = product.available_dates.all()
+
+    #価格テーブルを定義
+    price_data = list(options.values('grade', 'size', 'amount', 'price', 'unit'))
+    unique_grades = options.values_list('grade', flat=True).distinct()
+    grades_data = list(unique_grades)
+    unique_sizes = options.values_list('size', flat=True).distinct()
+    sizes_data = list(unique_sizes)
+    unique_amounts = options.values_list('amount', flat=True).distinct()
+    amounts_data = list(unique_amounts)
+    delivery_dates_raw = list(delivery_date.values_list('date', flat=True).distinct())
+
+    delivery_dates = [
+        {
+            'value': date.strftime('%Y-%m-%d'),
+            'label': date.strftime('%Y年%m月%d日')
+        }
+        for date in delivery_dates_raw
+    ]
 
     if request.method == 'POST':
         #新しい注文を作成
@@ -70,28 +90,42 @@ def place_order(request):
         tax = 0
         total_tax = 0
         total_shipping_fee = 0
+        subtotal = 0
+        price = 0
+        quantity = 0
 
-        for product in products:
-            qty = request.POST.get(f'quantity_{product.id}')
-            if qty and int(qty) > 0:
+        i = 0
+        while True:
+            qty = request.POST.get(f'quantity_{i}')
+            if not qty:
+                break
+
+            grade = request.POST.get(f'grade_{i}')
+            size = request.POST.get(f'size_{i}')
+            amount = request.POST.get(f'amount_{i}')
+            delivery_str = request.POST.get(f'delivery_date')
+
+            print(delivery_str)
+
+            delivery = datetime.strptime(delivery_str, '%Y-%m-%d').date()
+
+            print(delivery_str)
+
+            if int(qty) > 0:
                 quantity = int(qty)
-
-                grade = request.POST.get(f'grade_{product.id}')
-                size = request.POST.get(f'size_{product.id}')
-                amount = request.POST.get(f'amount_{product.id}')
-
-                option = product.kind.options.filter(grade=grade, size=size, amount=amount).first()
+                option = options.filter(grade=grade, size=size, amount=amount).first()
                 if option:
-                    amt = int(option.amount.replace('kg', ''))
+                    # amt = int(option.amount.replace('kg', ''))
                     subtotal = option.price * quantity
                     total_price += subtotal
-                    shipping_fee = calculate_shipping_fee(quantity)
-                    shipping_tax = shipping_fee / 1.1 * 0.1
-                    total_shipping_fee += shipping_fee
-                    total_shipping_tax = total_shipping_fee / 1.1 * 0.1
-                    tax = subtotal / 1.08 * 0.08
-                    total_tax += tax
-                    total_quantity += quantity * amt
+                    unit = option.unit
+                    # shipping_fee = calculate_shipping_fee(quantity)
+                    # shipping_tax = shipping_fee / 1.1 * 0.1
+                    # total_shipping_fee += shipping_fee
+                    # total_shipping_tax = total_shipping_fee / 1.1 * 0.1
+                    # tax = subtotal / 1.08 * 0.08
+                    # total_tax += tax
+                    # total_quantity += quantity * amt
 
                     OrderItem.objects.create(
                         order=order,
@@ -100,52 +134,42 @@ def place_order(request):
                         size=size,
                         amount=amount,
                         price=option.price,
-                        quantity=total_quantity,
+                        delivery_date=delivery,
+                        quantity=quantity,
                         subtotal=subtotal,
-                        shipping_fee = shipping_fee,
-                        tax = tax,
-                        shipping_tax = shipping_tax,
+                        unit=unit,
+                        # shipping_fee = shipping_fee,
+                        # tax = tax,
+                        # shipping_tax = shipping_tax,
                     )
+            i += 1
 
-        order.total_quantity = total_quantity
-        order.total_price = total_price
-        order.total_shipping_fee = total_shipping_fee
-        order.shipping_tax = total_shipping_tax
-        order.final_total = order.total_price + order.total_shipping_fee
-        order.total_tax = total_tax
-        order.save()
+            # order.total_quantity = total_quantity
+            order.total_price = total_price
+            # order.total_shipping_fee = total_shipping_fee
+            # order.shipping_tax = total_shipping_tax
+            # order.final_total = order.total_price + order.total_shipping_fee
+            # order.total_tax = total_tax
+            order.save()
 
-        return redirect('order_detail', order_id = order.id)
-        #リダイレクト先は注文確認画面
-        #return redirect('order_history')
+            return redirect('order_detail', order_id = order.id)
+            #リダイレクト先は注文確認画面
+            #return redirect('order_history')
+        
+        # Prepare pricing data for JavaScript
 
-    price_data = {}
-    grades_data = {}
-    sizes_data = {}
-    amounts_data = {}
+        print(price_data)
+        print(json.dumps(price_data, cls=DjangoJSONEncoder))
 
-    for product in products:
-        options=product.kind.options.all()
-
-        price_data[product.id] = list(options.values('grade', 'size', 'amount', 'price', 'unit'))
-
-        unique_grades = options.values_list('grade', flat=True).distinct()
-        grades_data[product.id] = list(unique_grades)
-        unique_sizes = options.values_list('size', flat=True).distinct()
-        sizes_data[product.id] = list(unique_sizes)
-        unique_amounts = options.values_list('amount', flat=True).distinct()
-        amounts_data[product.id] = list(unique_amounts)
-
-        print(sizes_data)
-
-
-    return render(request, 'orders/place_order.html', {
-        'products': products,
+    return render(request, 'orders/neworder_1.html', {
+        'product': product,
         'price_data_json': json.dumps(price_data, cls=DjangoJSONEncoder),
-        'grades_data': grades_data,
-        'sizes_data': sizes_data,
-        'amounts_data': amounts_data,
+        'grades': grades_data,
+        'sizes': sizes_data,
+        'amounts': amounts_data,
+        'delivery_dates': delivery_dates,
         })
+
 
 def order_invoice_pdf(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
