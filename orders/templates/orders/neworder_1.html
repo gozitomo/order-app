@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>{{ product.name }} を発注する</h2>
+<p>{{ product.description }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    <table border="0" cellpadding="8">
+        <tr>
+            <th>納品希望日1</th>
+            <td>
+                <select name="delivery_date">
+                    {% for date in delivery_dates %}
+                    <option value="{{ date.value }}">{{ date.label }}</option>
+                    {% endfor%}
+                </select>
+            </td>
+        </tr>
+    </table>
+    <table border="0" cellpadding="8">
+        <tr>
+            <th>等級</th>
+            <th>階級</th>
+            <th>量目</th>
+            <th>価格</th>
+            <th>数量</th>
+        </tr>
+        <tbody id="order-body">
+            <tr>
+                <td>
+                    <select name="grade_0">
+                        {% for grade in grades %}
+                        <option value="{{ grade }}">{{ grade }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="size_0">
+                        {% for size in sizes %}
+                        <option value="{{ size }}">{{ size }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="amount_0">
+                        {% for amount in amounts %}
+                        <option value="{{ amount }}">{{ amount }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <span class="price_display">-</span> 円／<span class="unit_display">-</span>
+                    <input type="hidden" name="unit_0" value="-" class="unit_hidden">
+                </td>
+                <td>
+                    <input type="number" name="quantity_0" value="0" min="0">
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <button type="button" onclick="addRow()">+ 行を追加</button>
+    <br><br>
+    <button type="submit">発注する</button>
+</form>
+
+<script>
+    const priceData = {{ price_data_json|safe }};
+    let rowIndex = 1;
+
+    function attachUpdater(row, index) {
+        const grade = row.querySelector(`select[name="grade_${index}"]`);
+        const size = row.querySelector(`select[name="size_${index}"]`);
+        const amount = row.querySelector(`select[name="amount_${index}"]`);
+        const price = row.querySelector('.price_display');
+        const unit = row.querySelector(`input[name="unit_${index}"]`);
+
+        const update = () => {
+            const match = priceData.find(opt =>
+                opt.grade === grade.value &&
+                opt.size === size.value &&
+                opt.amount === amount.value
+            );
+            price.textContent = match ? match.price : '-';
+            unit.textContent = match ? match.unit : '-';
+        };
+
+        grade.addEventListener('change', update);
+        size.addEventListener('change', update);
+        amount.addEventListener('change', update);
+
+        // Immediately update once on load
+        update();
+    }
+
+    function addRow() {
+        const tbody = document.getElementById('order-body');
+        const firstRow = tbody.querySelector('tr');
+        const newRow = firstRow.cloneNode(true);
+
+        newRow.querySelectorAll('select, input').forEach(el => {
+            if (el.name){
+            el.name = el.name.split('_')[0] + `_${rowIndex}`;
+            }
+            if (el.tagName === 'INPUT') {
+                el.value = 0;
+            }
+        });
+
+        tbody.appendChild(newRow);
+        attachUpdater(newRow, rowIndex);
+        rowIndex++;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const firstRow = document.getElementById('order-body').querySelector('tr');
+        attachUpdater(firstRow, 0);
+    });
+</script>
+{% endblock %}

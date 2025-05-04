@@ -52,6 +52,7 @@ class OrderItem(models.Model):
     grade = models.CharField(max_length=20, default="")
     size = models.CharField(max_length=20, default="")
     amount = models.CharField(max_length=20, default="")
+    unit = models.CharField(max_length=20, default="")
     price = models.PositiveIntegerField(default=0)
     quantity = models.PositiveIntegerField()
     subtotal = models.PositiveIntegerField(default=0)

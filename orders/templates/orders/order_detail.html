@@ -2,17 +2,19 @@
 {% load humanize %}
 {% block title %}ご注文明細{% endblock %}
 {% block content %}
+{% csrf_token %}
     <h1>注文内容の確認</h1>
-    {% if order.status == 'キャンセル' %}
-        <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
-    {% elif order.status == 'キャンセル不可' %}
-        <p style="color: red;"><strong>この注文は前日以前にお受けしていますのでキャンセル不可となります。
-        <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
-    {% endif %}
+    <form method="POST" action="{% url 'cancel_order' order.id%}">
+        {% csrf_token %}
+        {% if order.status == 'キャンセル' %}
+            <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
+        {% elif order.status == 'キャンセル不可' %}
+            <p style="color: red;"><strong>この注文は前日以前にお受けしていますのでキャンセル不可となります。
+            <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
+        {% endif %}
 
     <p><strong>注文ID:</strong>{{ order.id }}</p>
     <p><strong>注文日時:</strong>{{ order.created_at|date:"Y-m-d H:i" }}</p>
-
     <table width="100%">
         <tr>
             <th>商品名</th>
@@ -31,7 +33,7 @@
             <td style="width:10%">{{ item.size }}</td>
             <td style="width:10%">{{ item.amount }}</td>
             <td style="width:20%">{{ item.delivery_date|date:"Y-m-d" }}</td>
-            <td style="text-align:right width:10%">{{ item.quantity }} kg</td>
+            <td style="text-align:right width:10%">{{ item.quantity }} {{ item.unit }}</td>
             <td style="text-align:right width:10%">{{ item.price|intcomma }} 円</td>
             <td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>
         </tr>
@@ -43,6 +45,7 @@
     <hr>
     <p><strong>送料：</strong>{{ order.total_shipping_fee|intcomma }}円</p>
     <p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>
+    </form>
 
     <!--<p><a href="{% url 'order_invoice_pdf' order.id %}" target="_blank">請求書</a></p>-->
     <p><a href="{% url 'order_history' %}">←　注文履歴に戻る</a></p>
