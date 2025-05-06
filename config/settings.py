@@ -21,7 +21,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-@d@$jzccs9*izl4y$tc!qq2$^y$4@-82(*$&)d0^tx@drcs)$)'
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
@@ -144,9 +143,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/mypage/'
 
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'unsafe-key-for-dev')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = os.environ.get('DEBUG', 'True') == 'True'
+DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
 #if DEBUG:
 #    INSTALLED_APPS += ["django_browser_reload"]
