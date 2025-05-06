@@ -173,3 +173,8 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 node_modules/
+
+# SSH keys and Credentials
+.ssh/
+*.pem
+*.pub
