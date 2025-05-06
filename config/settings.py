@@ -141,7 +141,7 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/mypage/'
+LOGIN_REDIRECT_URL = '/orders/'
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
