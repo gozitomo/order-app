@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>注文</h2>
+
+<div class=width80>
+<p class="small text-muted">注文は商品ごと、納品希望日ごとにお願いします。<br>
+    ご注文はステータス画面にて「仮注文」として受け付け、農園確認後に「受注」となります。受注が難しい数量等の場合は連絡いたします。</p>
+<table class="table-borderless">
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td width="40%" align="center">
+                {% if product.status != 'closed' %}
+                    <a href="{% url 'new_order' product.id%}" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem;">注文</a>
+                {% else %}
+                    <span class="test-muted">（準備中）</span>
+                {% endif %}
+            </td>
+            <td align=><strong>{{ product.name }}</strong>（{{ product.kind.name }}）</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+{% endblock %}
