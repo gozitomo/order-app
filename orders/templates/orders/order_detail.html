@@ -3,8 +3,8 @@
 {% block title %}ご注文明細{% endblock %}
 {% block content %}
 {% csrf_token %}
-    <h1>注文内容の確認</h1>
-    <form method="POST" action="{% url 'cancel_order' order.id%}">
+    <h2>注文内容の確認</h2>
+    <form method="POST" action="{% url 'order_cancel' order.id%}">
         {% csrf_token %}
         {% if order.status == 'キャンセル' %}
             <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
@@ -15,31 +15,32 @@
 
     <p><strong>注文ID:</strong>{{ order.id }}</p>
     <p><strong>注文日時:</strong>{{ order.created_at|date:"Y-m-d H:i" }}</p>
-    <table width="100%">
-        <tr>
-            <th>商品名</th>
-            <th>等級</th>
-            <th>階級</th>
-            <th>量目</th>
-            <th>納品希望日</th>
-            <th>数量</th>
-            <th>単価</th>
-            <th>小計(内税) </th>
-        </tr>
-        {% for item in order.items.all %}
-        <tr>
-            <td style="width:20%">{{ item.product.name }}</td>
-            <td style="width:10%">{{ item.grade }}</td>
-            <td style="width:10%">{{ item.size }}</td>
-            <td style="width:10%">{{ item.amount }}</td>
-            <td style="width:20%">{{ item.delivery_date|date:"Y-m-d" }}</td>
-            <td style="text-align:right width:10%">{{ item.quantity }} {{ item.unit }}</td>
-            <td style="text-align:right width:10%">{{ item.price|intcomma }} 円</td>
-            <td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>
-        </tr>
-        {% endfor %}
+    <p><strong>納品希望日:</strong>{{ order.delivery_date|date:"Y-m-d" }}</p>
+    <div class="table-responsive">
+        <table class="thead-light">
+            <tr>
+                <th class="d-none d-sm-table-cell">商品名</th>
+                <th class="d-none d-sm-table-cell">等級</th>
+                <th class="d-none d-sm-table-cell">階級</th>
+                <th class="d-none d-sm-table-cell">量目</th>
+                <th class="d-none d-sm-table-cell">数量</th>
+                <th class="d-none d-sm-table-cell">単価</th>
+                <th class="d-none d-sm-table-cell">小計(内税) </th>
+            </tr>
+            {% for item in order.items.all %}
+            <tr>
+                <td style="width:20%">{{ item.product.name }}</td>
+                <td style="width:10%">{{ item.grade }}</td>
+                <td style="width:10%">{{ item.size }}</td>
+                <td style="width:10%">{{ item.amount }}</td>
+                <td style="text-align:right width:10%">{{ item.quantity }} {{ item.unit }}</td>
+                <td style="text-align:right width:10%">{{ item.price|intcomma }} 円</td>
+                <td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>
+            </tr>
+            {% endfor %}
 
-    </table>
+        </table>
+    </div>
     <hr>
     <p><strong>合計：</strong>{{ order.total_price|intcomma }}円</p>
     <hr>
@@ -48,5 +49,5 @@
     </form>
 
     <!--<p><a href="{% url 'order_invoice_pdf' order.id %}" target="_blank">請求書</a></p>-->
-    <p><a href="{% url 'order_history' %}">←　注文履歴に戻る</a></p>
+    <p><a href="{% url 'order_history' %}">←　注文履歴</a></p>
 {% endblock %}

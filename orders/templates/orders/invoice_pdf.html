@@ -8,7 +8,7 @@
         th, td { border: 1px solid #ccc; padding: 6px; text-align: left;}
         th { background-color: #eee;}
     </style>
-    <h1>{{invoice.period_start|date:"Y年m月"}}請求書</h1>
+    <h2>{{invoice.period_start|date:"Y年m月"}}請求書</h2>
     <p>対象注文:　{{ invoice.period_start|date:"Y年m月d日" }}　〜　{{ invoice.period_end|date:"Y年m月d日" }}納品分</p>
     <p>{{ user.username }}　様</p>
 

@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="alert alert-warning" role="alert">
+    <h3>{{ message }}　🙇‍♂️</h3>
+</div>
+    {% if return_url %}
+        <a href="{{ return_url }}" class="btn btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">戻る</a>
+    {% endif %}
+{% endblock %}

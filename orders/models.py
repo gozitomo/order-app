@@ -8,7 +8,8 @@ from django.utils.timezone import now
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=50, default='未処理')
+    delivery_date = models.DateField(default=date.today())
+    status = models.CharField(max_length=50, default='仮注文')
     total_quantity = models.PositiveIntegerField(default=0)
     total_price = models.PositiveIntegerField(default=0)
     final_total = models.PositiveIntegerField(default=0)
@@ -59,7 +60,6 @@ class OrderItem(models.Model):
     tax = models.PositiveIntegerField(default=0)
     shipping_fee = models.PositiveIntegerField(default=0)
     shipping_tax = models.PositiveIntegerField(default=0)
-    delivery_date = models.DateField(default=date.today())
     delivery_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
     invoice_id = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.SET_NULL, related_name='items')
     tracking_id = models.CharField(max_length=20, null=True)

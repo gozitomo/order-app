@@ -1,68 +1,61 @@
 {% extends "base.html" %}
 {% load humanize %}
-{% block title %}ご注文履歴{% endblock %}
+{% block title %}ステータス{% endblock %}
 {% block content %}
-    <h1>{{ user.username }}さんの注文履歴</h1>
+    <h2>ステータス</h2>
     <br>
     <table>
-
-
     {% if orders %}
-        <ul>
-            {% for order in orders %}
-                <li>
-                    <strong>注文ID：</strong>{{ order.id }} /
-                    <strong>日付：</strong>{{ order.created_at|date:"Y-m-d H:i" }}/
-                    <strong>ステータス：</strong>
-                    {% if order.status == 'キャンセル' %}
-                        <span style="color: red;">{{ order.status }}</span>
-                    {% else %}
-                        {{ order.status }}
-                    {% endif %}
-
-                    <ul>
-                        {% for item in order.items.all %}
-                            <li>{{ item.product.name }} 　　 （{{ item.delivery_date|date:"Y-m-d" }}納品希望） 　　 {{ item.quantity }} kg　　小計：{{ item.subtotal|intcomma }}円</li>
-                            {% if item.tracking_id %}
-                                <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
-                                    ヤマト追跡ページ
-                                </a>（追跡番号：{{ item.tracking_id }}）
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
-                    <table style="width:80%">
-                        <tr>
-                            <th style="text-align:left; width:50%;">合計</th>
-                            <td style="text-align:right; width:50%;">{{ order.total_price|intcomma }}円</td>
-                        </tr>
-                        <tr>
-                            <th style="text-align:left; width:50%;">送料</th>
-                            <td style="text-align:right; width:50%;">{{ order.total_shipping_fee|intcomma }}円</td>
-                        </tr>
-                        <tr>
-                            <th style="text-align:left; width:50%;">総計</th>
-                            <td style="text-align:right; width:50%;">{{ order.final_total|intcomma }}円</td>
-                        </tr>
-                    </table>
-                    <form method="GET" action="{% url 'order_detail' order.id %}">
-                        <button type="submit">ご注文明細</button>
-                    </form>
-                    {% if order.status == '未処理' %}
-                    <form method="POST" action="{% url 'cancel_order' order.id %}">
-                        {% csrf_token %}
-                        <button type="submit" onclick="return confirm('この注文をキャンセルしますか？');">
-                            キャンセルする
-                        </button>
-                    </form>
-                    {% elif order.status == 'キャンセル不可' %}
-                        <span style="color: gray;">(キャンセル不可)</span>
-                    {% elif order.status == 'キャンセル' %}
-                        <span style="color: gray;">(キャンセル済みです。)</span>
-                    {% endif %}
-                    <hr>
-                </li>
-            {% endfor %}
-        </ul>
+        {% for order in orders %}
+        <div class="bg-light text-dark py-0 px-0" style="width: 100vw; margin-left: -12px;">
+            <div class="d-flex justify-content-start bg-light align-items-center text-dark p-2 mb-3">
+                <div class="mb-0">
+                    <strong>納品希望日:</strong>{{ order.delivery_date|date:"Y/m/d" }}（{{ order.status }}）
+                </div>
+                {% if order.status == '仮注文' %}
+                <form method="GET" action="{% url 'order_change' order.id %}">
+                    <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
+                </form>
+                {% endif %}              
+            </div>
+        </div>
+            <p><strong>注文ID:</strong>{{ order.id }}</p>
+            <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
+            <div class="table-responsive">
+                <table class="thead-light">
+                    <tr>
+                        <th align="center" class="d-none d-sm-table-cell">商品名</th>
+                        <th align="center" class="d-none d-sm-table-cell">等級</th>
+                        <th align="center" class="d-none d-sm-table-cell">階級</th>
+                        <th align="center" class="d-none d-sm-table-cell">量目</th>
+                        <th align="center" class="d-none d-sm-table-cell">税込単価</th>
+                        <th align="center" class="d-none d-sm-table-cell">数量</th>
+                        <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
+                    </tr>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td align="center" style="width:20%">{{ item.product.name }}</td>
+                        <td align="center" style="width:10%">{{ item.grade }}</td>
+                        <td align="center" style="width:10%">{{ item.size }}</td>
+                        <td align="center" style="width:10%">{{ item.amount }}</td>
+                        <td align="center" style="text-align:right width:10%">{{ item.price|intcomma }} 円</td>
+                        <td align="center" style="text-align:right width:10%">{{ item.quantity }} {{ item.unit }}</td>
+                        <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
+                    </tr>
+                    {% endfor %}
+        
+                </table>
+            </div>
+            <br>
+            <p><strong>合計（税込）：</strong>{{ order.total_price|intcomma }}円（うち送料{{ order.total_shipping_fee|intcomma }}円）</p>
+            <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
+            </form>
+            {% if item.tracking_id %}
+                <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
+                    ヤマト追跡ページ
+                </a>（追跡番号：{{ item.tracking_id }}）
+            {% endif %}
+        {% endfor %}
     {% else %}
         <p>注文履歴はまだありません。</p>
     {% endif %}

@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ product.name }} を発注する</h2>
-<p>{{ product.description }}</p>
+<h2>{{ product.name }} </h2>
+<p class="small text-muted">{{ product.description }}</p>
 
 <form method="post">
     {% csrf_token %}
     <table border="0" cellpadding="8">
         <tr>
-            <th>納品希望日1</th>
+            <th>納品希望日</th>
             <td>
                 <select name="delivery_date">
                     {% for date in delivery_dates %}
@@ -53,14 +53,14 @@
                     <input type="hidden" name="unit_0" value="-" class="unit_hidden">
                 </td>
                 <td>
-                    <input type="number" name="quantity_0" value="0" min="0">
+                    <input type="number" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 100px;">
                 </td>
             </tr>
         </tbody>
     </table>
-    <button type="button" onclick="addRow()">+ 行を追加</button>
+    <button type="button" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;" onclick="addRow()">+ 行を追加</button>
     <br><br>
-    <button type="submit">発注する</button>
+    <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">仮注文</button>
 </form>
 
 <script>
