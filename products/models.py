@@ -32,7 +32,7 @@ class PriceTable(models.Model):
     grade = models.CharField(max_length=20)
     size = models.CharField(max_length=20)
     unit = models.CharField(max_length=20, default='4.3kg/箱')
-    weight = models.PositiveIntegerField()
+    weight = models.DecimalField(max_digits=10, decimal_places=2)
     price = models.PositiveIntegerField()
     tax10_flg = models.BooleanField(default=True)
     user_group = models.ForeignKey(UserGroup, default=1, on_delete=models.CASCADE)
