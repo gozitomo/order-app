@@ -444,9 +444,11 @@ def upload_pricetable(request):
                     kind=kind,
                     grade=row['grade'],
                     size=row['size'],
-                    amount=row['amount'],
+                    amount=row['weight'],
                     unit=row['unit'],
+                    tax10_flg=row['tax10_flg'],
                     price=row['price'],
+                    status=row['avl'],
                     user_group=user_group
                 )
             except Exception as e:
