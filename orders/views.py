@@ -449,7 +449,7 @@ def upload_pricetable(request):
                     tax10_flg=row['tax10_flg'],
                     price=row['price'],
                     status=row['avl'],
-                    user_group=null
+                    #user_group=null
                 )
             except Exception as e:
                 messages.error(request, f"アップロードエラー: {e}")
