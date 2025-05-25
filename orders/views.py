@@ -444,7 +444,7 @@ def upload_pricetable(request):
                     kind=kind,
                     grade=row['grade'],
                     size=row['size'],
-                    amount=row['weight'],
+                    weight=row['weight'],
                     unit=row['unit'],
                     tax10_flg=row['tax10_flg'],
                     price=row['price'],
