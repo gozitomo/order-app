@@ -48,7 +48,9 @@
                             </form>
                         </li>
                     {% else %}
+                        {% if not request.path == '/accounts/login/' %}
                         <a href="{% url 'login' %}">ログイン</a>
+                        {% endif %}
                     {% endif %}
                     </ul>
                 </div>

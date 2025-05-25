@@ -6,46 +6,43 @@
     <h2>注文内容の確認</h2>
     <form method="POST" action="{% url 'order_cancel' order.id%}">
         {% csrf_token %}
-        {% if order.status == 'キャンセル' %}
+        {% if order.status == 'canceled' %}
             <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
-        {% elif order.status == 'キャンセル不可' %}
-            <p style="color: red;"><strong>この注文は前日以前にお受けしていますのでキャンセル不可となります。
+        {% elif  order.status == 'prepareing' or  order.status == 'shipped' %}
+            <p style="color: red;"><strong>この注文はすでに準備中のためキャンセル不可となります。
             <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
         {% endif %}
 
     <p><strong>注文ID:</strong>{{ order.id }}</p>
-    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y-m-d H:i" }}</p>
-    <p><strong>納品希望日:</strong>{{ order.delivery_date|date:"Y-m-d" }}</p>
+    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
+    <p><strong>納品希望日:</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}</p>
     <div class="table-responsive">
         <table class="thead-light">
             <tr>
-                <th class="d-none d-sm-table-cell">商品名</th>
-                <th class="d-none d-sm-table-cell">等級</th>
-                <th class="d-none d-sm-table-cell">階級</th>
-                <th class="d-none d-sm-table-cell">量目</th>
-                <th class="d-none d-sm-table-cell">数量</th>
-                <th class="d-none d-sm-table-cell">単価</th>
-                <th class="d-none d-sm-table-cell">小計(内税) </th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">商品名</th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">等級</th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">階級</th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">荷姿</th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">数量</th>
+                <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
             </tr>
             {% for item in order.items.all %}
-            <tr>
-                <td style="width:20%">{{ item.product.name }}</td>
-                <td style="width:10%">{{ item.grade }}</td>
-                <td style="width:10%">{{ item.size }}</td>
-                <td style="width:10%">{{ item.amount }}</td>
-                <td style="text-align:right width:10%">{{ item.quantity }} {{ item.unit }}</td>
-                <td style="text-align:right width:10%">{{ item.price|intcomma }} 円</td>
-                <td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>
-            </tr>
+                {% if item.quantity > 0 %}
+                <tr>
+                    <td style="text-align:center; width:20%">{{ item.product.name }}</td>
+                    <td style="text-align:center; width:10%">{{ item.price_table.grade }}</td>
+                    <td style="text-align:center; width:10%">{{ item.price_table.size }}</td>
+                    <td style="text-align:center; width:20%" nowrap>{{ item.price_table.unit }}@{{ item.price_table.price|intcomma }}円</td>
+                    <td style="text-align:center; width:5%;">×{{ item.quantity }}</td>
+                   <!-- <td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
+                </tr>
+                {% endif %}
             {% endfor %}
 
         </table>
     </div>
     <hr>
-    <p><strong>合計：</strong>{{ order.total_price|intcomma }}円</p>
-    <hr>
-    <p><strong>送料：</strong>{{ order.total_shipping_fee|intcomma }}円</p>
-    <p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>
+    <p><strong>合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）</p>
     </form>
 
     <!--<p><a href="{% url 'order_invoice_pdf' order.id %}" target="_blank">請求書</a></p>-->

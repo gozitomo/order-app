@@ -1,12 +1,14 @@
 from .models import ShippingFeeRule
 
-def calculate_shipping_fee(quantity):
+def calculate_shipping_fee(total_weight, cool_flg):
     rule = ShippingFeeRule.objects.filter(
-        min_qty__lte=quantity,
-        max_qty__gte=quantity,
+        cool_flg=cool_flg,
+        min_weight__lt=total_weight,
+        max_weight__gte=total_weight,
     ).first()
+    print(rule.shipping_fee)
 
     if rule:
-        return rule.fee
+        return rule.shipping_fee
     return 0 #該当しない場合は送料無料
     

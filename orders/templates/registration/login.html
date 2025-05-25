@@ -1,14 +1,27 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>ログイン</title>
-</head>
-<body>
-    <h2>ログイン</h2>
-    <form method="post">
+{% extends "base.html" %}
+{% block title %}ログイン{% endblock %}
+
+{% block content %}
+<div class="container mt-5" style="max-width: 400px">
+    <h2 class="text-center" mb-4>ログイン</h2>
+    {% if form.errors %}
+        <div class="alert alert-danger">ユーザー名またはパスワードが正しくありません。</div>
+    {% endif %}
+
+    <form method="post" novalidate>
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">ログイン</button>
+        {% load my_filters %}
+        <div class="mb-3">
+            <label for="id_username" class="form-label">ユーザー名</label>
+            {{ form.username|add_class:"form-control" }}
+        </div>
+        <div class="mb-3">
+            <label for="id_password" class="form-label">パスワード</label>
+            {{ form.password|add_class:"form-control" }}
+        </div>
+        <div class="d-grid">
+            <button type="submit"  class="btn btn-primary me-2">ログイン</button>
+        </div>
     </form>
-</body>
-</html>
+</div>
+{% endblock %}

@@ -10,9 +10,9 @@
         <div class="bg-light text-dark py-0 px-0" style="width: 100vw; margin-left: -12px;">
             <div class="d-flex justify-content-start bg-light align-items-center text-dark p-2 mb-3">
                 <div class="mb-0">
-                    <strong>納品希望日:</strong>{{ order.delivery_date|date:"Y/m/d" }}（{{ order.status }}）
+                    <strong>納品希望日:</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}（{{ order.get_status_display }}）
                 </div>
-                {% if order.status == '仮注文' %}
+                {% if order.status == 'tentative' or order.status == 'received' %}
                 <form method="GET" action="{% url 'order_change' order.id %}">
                     <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
                 </form>
@@ -24,36 +24,36 @@
             <div class="table-responsive">
                 <table class="thead-light">
                     <tr>
-                        <th align="center" class="d-none d-sm-table-cell">商品名</th>
-                        <th align="center" class="d-none d-sm-table-cell">等級</th>
-                        <th align="center" class="d-none d-sm-table-cell">階級</th>
-                        <th align="center" class="d-none d-sm-table-cell">量目</th>
-                        <th align="center" class="d-none d-sm-table-cell">税込単価</th>
-                        <th align="center" class="d-none d-sm-table-cell">数量</th>
+                        <th style="text-align:center;" class="d-none d-sm-table-cell">商品名</th>
+                        <th style="text-align:center;" class="d-none d-sm-table-cell">等級</th>
+                        <th style="text-align:center;" class="d-none d-sm-table-cell">階級</th>
+                        <th style="text-align:center;" class="d-none d-sm-table-cell">荷姿</th>
+                        <th style="text-align:center;" class="d-none d-sm-table-cell">数量</th>
                         <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
                     </tr>
                     {% for item in order.items.all %}
-                    <tr>
-                        <td align="center" style="width:20%">{{ item.product.name }}</td>
-                        <td align="center" style="width:10%">{{ item.grade }}</td>
-                        <td align="center" style="width:10%">{{ item.size }}</td>
-                        <td align="center" style="width:10%">{{ item.amount }}</td>
-                        <td align="center" style="text-align:right width:10%">{{ item.price|intcomma }} 円</td>
-                        <td align="center" style="text-align:right width:10%">{{ item.quantity }} {{ item.unit }}</td>
-                        <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
-                    </tr>
+                        {% if item.quantity > 0 %}
+                        <tr>
+                            <td align="center" style="width:20%">{{ item.product.name }}</td>
+                            <td align="center" style="width:10%">{{ item.price_table.grade }}</td>
+                            <td align="center" style="width:10%">{{ item.price_table.size }}</td>
+                            <td align="center" style="width:20%" nowrap>{{ item.price_table.unit }}@{{ item.price_table.price|intcomma }}円</td>
+                            <td align="center" style="text-align:right width:5%">×{{ item.quantity }}</td>
+                            <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
+                        </tr>
+                        {% endif %}
                     {% endfor %}
         
                 </table>
             </div>
             <br>
-            <p><strong>合計（税込）：</strong>{{ order.total_price|intcomma }}円（うち送料{{ order.total_shipping_fee|intcomma }}円）</p>
+            <p><strong>合計（税込）：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）</p>
             <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
             </form>
-            {% if item.tracking_id %}
+            {% if order.tracking_id %}
                 <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
                     ヤマト追跡ページ
-                </a>（追跡番号：{{ item.tracking_id }}）
+                </a>（追跡番号：{{ order.tracking_id }}）
             {% endif %}
         {% endfor %}
     {% else %}

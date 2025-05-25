@@ -3,7 +3,7 @@
 <h2>{{ product.name }} </h2>
 <p class="small text-muted">{{ product.description }}</p>
 
-<form method="post">
+<form id="order-form" method="post">
     {% csrf_token %}
     <table border="0" cellpadding="8">
         <tr>
@@ -15,6 +15,12 @@
                     {% endfor%}
                 </select>
             </td>
+        </tr>
+        <tr>
+            <th>クール区分</th>
+                <input type="radio" name="cool_flg" value="false" checked>通常便
+                <input type="radio" name="cool_flg" value="true">冷蔵便
+            </p>
         </tr>
     </table>
     <table border="0" cellpadding="8">
@@ -42,15 +48,14 @@
                     </select>
                 </td>
                 <td>
-                    <select name="amount_0">
-                        {% for amount in amounts %}
-                        <option value="{{ amount }}">{{ amount }}</option>
+                    <select name="unit_0">
+                        {% for unit in units %}
+                        <option value="{{ unit }}">{{ unit }}</option>
                         {% endfor %}
                     </select>
                 </td>
                 <td>
-                    <span class="price_display">-</span> 円／<span class="unit_display">-</span>
-                    <input type="hidden" name="unit_0" value="-" class="unit_hidden">
+                    <span class="price_display">-</span> 円
                 </td>
                 <td>
                     <input type="number" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 100px;">
@@ -70,23 +75,21 @@
     function attachUpdater(row, index) {
         const grade = row.querySelector(`select[name="grade_${index}"]`);
         const size = row.querySelector(`select[name="size_${index}"]`);
-        const amount = row.querySelector(`select[name="amount_${index}"]`);
+        const unit = row.querySelector(`select[name="unit_${index}"]`);
         const price = row.querySelector('.price_display');
-        const unit = row.querySelector(`input[name="unit_${index}"]`);
 
         const update = () => {
             const match = priceData.find(opt =>
                 opt.grade === grade.value &&
                 opt.size === size.value &&
-                opt.amount === amount.value
+                opt.unit === unit.value
             );
             price.textContent = match ? match.price : '-';
-            unit.textContent = match ? match.unit : '-';
         };
 
         grade.addEventListener('change', update);
         size.addEventListener('change', update);
-        amount.addEventListener('change', update);
+        unit.addEventListener('change', update);
 
         // Immediately update once on load
         update();
@@ -114,6 +117,22 @@
     document.addEventListener('DOMContentLoaded', () => {
         const firstRow = document.getElementById('order-body').querySelector('tr');
         attachUpdater(firstRow, 0);
+    });
+
+    document.getElementById("order-form").addEventListener("submit", function(event){
+        const inputs = document.querySelectorAll('input[name^="quantity_"]');
+        let total = 0;
+        inputs.forEach(input => {
+            const val = parseInt(input.value);
+            if (!isNaN(val)){
+                total += val;
+            }
+        });
+
+        if (total === 0){
+            alert("注文数量を1以上にしてください。");
+            event.preventDefault(); //フォーム送信をブロック
+        }
     });
 </script>
 {% endblock %}
