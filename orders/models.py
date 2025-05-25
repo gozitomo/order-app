@@ -5,20 +5,7 @@ from datetime import date
 from django.utils.timezone import now
 
 # Create your models here.
-class Order(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(auto_now_add=True)
-    delivery_date = models.DateField(default=date.today())
-    status = models.CharField(max_length=50, default='仮注文')
-    total_quantity = models.PositiveIntegerField(default=0)
-    total_price = models.PositiveIntegerField(default=0)
-    final_total = models.PositiveIntegerField(default=0)
-    total_tax = models.PositiveIntegerField(default=0)
-    total_shipping_fee = models.PositiveIntegerField(default=0)
-    shipping_tax = models.PositiveIntegerField(default=0)
 
-    def __str__(self):
-        return f"注文ID:{self.id} - {self.user.username}"
 
 class Invoice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -27,15 +14,15 @@ class Invoice(models.Model):
     issued_date = models.DateField(auto_now_add=True)
     period_start = models.DateField()
     period_end = models.DateField()
-    total_extax = models.DecimalField(max_digits=10, decimal_places=0)
-    tax8 = models.DecimalField(max_digits=10, decimal_places=0)
-    total_price = models.DecimalField(max_digits=10, decimal_places=0)
-    shipping_extax = models.DecimalField(max_digits=10, decimal_places=0)
-    tax10 = models.DecimalField(max_digits=10, decimal_places=0)
-    shipping_fee = models.DecimalField(max_digits=10, decimal_places=0)
-    final_extax = models.DecimalField(max_digits=10, decimal_places=0)
-    final_tax = models.DecimalField(max_digits=10, decimal_places=0)
+    tax8_price = models.DecimalField(max_digits=10, decimal_places=0)
+    tax10_price = models.DecimalField(max_digits=10, decimal_places=0)
     final_price = models.DecimalField(max_digits=10, decimal_places=0)
+    tax8_extax = models.DecimalField(max_digits=10, decimal_places=0)
+    tax10_extax = models.DecimalField(max_digits=10, decimal_places=0)
+    final_extax = models.DecimalField(max_digits=10, decimal_places=0)
+    tax8 = models.DecimalField(max_digits=10, decimal_places=0)
+    tax10 = models.DecimalField(max_digits=10, decimal_places=0)
+    final_tax = models.DecimalField(max_digits=10, decimal_places=0)
     
     def generate_invoice_number():
         today = now().date()
@@ -47,44 +34,67 @@ class Invoice(models.Model):
         else:
             return f"{yyyymm}-001"
 
+class Order(models.Model):
+    def get_default_product_delivery_date():
+        return ProductDeliveryDate.objects.first().id
+
+
+    STATUS_CHOICES = [
+        ('tentative', '仮注文'),
+        ('received', '確認済み'),
+        ('preparing', '準備中'), #キャンセル不可
+        ('shipped', '発送済'), #キャンセル不可
+        ('canceled', 'キャンセル済'),
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+    product_delivery_date = models.ForeignKey(ProductDeliveryDate, on_delete=models.CASCADE, default=get_default_product_delivery_date)
+    tracking_id = models.CharField(max_length=20, null=True)
+    cool_flg = models.BooleanField(default=False)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='tentative')
+    tax8_price = models.PositiveIntegerField(default=0)
+    tax8 = models.PositiveIntegerField(default=0)
+    tax10_price = models.PositiveIntegerField(default=0)
+    tax10 = models.PositiveIntegerField(default=0)
+    total_weight = models.PositiveIntegerField(default=0)
+    shipping_price = models.PositiveIntegerField(default=0)
+    shipping_tax = models.PositiveIntegerField(default=0)
+    final_price = models.PositiveIntegerField(default=0)
+    remarks = models.TextField(blank=True, null=True)
+    invoice_id = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.SET_NULL, related_name='items')
+
+    def __str__(self):
+        return f"注文ID:{self.id} - {self.user.username}"
+    
+
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
+    price_table = models.ForeignKey(PriceTable, on_delete=models.CASCADE)
     product = models.ForeignKey(ProductName, on_delete=models.CASCADE)
-    grade = models.CharField(max_length=20, default="")
-    size = models.CharField(max_length=20, default="")
-    amount = models.CharField(max_length=20, default="")
-    unit = models.CharField(max_length=20, default="")
-    price = models.PositiveIntegerField(default=0)
     quantity = models.PositiveIntegerField()
     subtotal = models.PositiveIntegerField(default=0)
-    tax = models.PositiveIntegerField(default=0)
-    shipping_fee = models.PositiveIntegerField(default=0)
-    shipping_tax = models.PositiveIntegerField(default=0)
-    delivery_id = models.CharField(max_length=20, unique=True, null=True, blank=True)
-    invoice_id = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.SET_NULL, related_name='items')
-    tracking_id = models.CharField(max_length=20, null=True)
 
     def __str__(self):
-        return f"{self.product.name} ({self.grade}/{self.size}/{self.amount})×{self.quantity}"
+        return f"{self.product.name} ({self.price_table.grade}/{self.price_table.size}/{self.price_table.unit})×{self.quantity}"
 
-    def generate_delivery_number():
-        today = now().date()
-        yyyymmdd = OrderItem.objects.filter(delivery_number__startwith=yyyymmdd).order_by('-delivery_number').first()
-        if last_item and last_item.delivery_number:
-            last_seq = int(last_item.delivery_number[-3:])
-            return f"{yyyymmdd}-{last_seq+1:03d}"
-        else:
-            return f"{yyyymmdd}-001"
+    # def generate_delivery_number():
+    #     today = now().date()
+    #     yyyymmdd = OrderItem.objects.filter(delivery_number__startwith=yyyymmdd).order_by('-delivery_number').first()
+    #     if last_item and last_item.delivery_number:
+    #         last_seq = int(last_item.delivery_number[-3:])
+    #         return f"{yyyymmdd}-{last_seq+1:03d}"
+    #     else:
+    #         return f"{yyyymmdd}-001"
 
     def get_total_price(self):
-        return self.product.price * self.quautity
+        return self.price_table.price * self.quautity
 
 class ShippingFeeRule(models.Model):
-    min_qty = models.PositiveIntegerField()
-    max_qty = models.PositiveIntegerField()
-    fee = models.PositiveIntegerField()
-    tax = models.PositiveIntegerField(default=0)
+    min_weight = models.PositiveIntegerField()
+    max_weight = models.PositiveIntegerField()
+    cool_flg = models.BooleanField(default=False)
+    shipping_fee = models.PositiveIntegerField()
 
     def __str__(self):
-        return f"{self.min_qty}～{self.max_qty}kg：{self.fee}円"
+        return f"{self.min_weight}～{self.max_weight}kg：{self.shipping_fee}円 {self.cool_flg}"
 

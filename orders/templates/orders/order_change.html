@@ -4,7 +4,7 @@
 {% block content %}
 {% csrf_token %}
     <h2>ご注文内容の変更</h2>
-    <form method="POST" action="{% url 'order_change' order.id%}">
+    <form id="order-form" method="POST" action="{% url 'order_change' order.id%}">
         {% csrf_token %}
         {% if order.status == 'キャンセル' %}
             <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
@@ -12,65 +12,164 @@
             <p style="color: red;"><strong>この注文は納品希望日まで10日を切りましたので、キャンセル不可となります。
             <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
         {% endif %}
+        <p><strong>品名:</strong>        
+        <td style="width:20%">{{ product.name }}</td>
     <p><strong>納品希望日:</strong>
         <select name="delivery_date">
             {% for date in delivery_dates %}
             <option value="{{ date.value }}">{{ date.label }}</option>
             {% endfor%}
         </select>
+    </p>
+    <p><strong>クール区分</strong>           
+        <input type="radio" name="cool_flg" value="false" checked>通常便
+        <input type="radio" name="cool_flg" value="true">冷蔵便
+    </p>
     <p><strong>注文ID:</strong>{{ order.id }}</p>
-    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y-m-d H:i" }}</p>
+    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
     <div class="table-responsive">
         <table class="thead-light">
             <tr>
-                <th class="d-none d-sm-table-cell">商品名</th>
-                <th class="d-none d-sm-table-cell">等級</th>
-                <th class="d-none d-sm-table-cell">階級</th>
-                <th class="d-none d-sm-table-cell">量目</th>
-                <th class="d-none d-sm-table-cell">数量</th>
-                <th class="d-none d-sm-table-cell">単価</th>
-                <th class="d-none d-sm-table-cell">小計(内税) </th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">等級</th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">階級</th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">荷姿</th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">数量</th>
+                <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
             </tr>
             {% for item in order.items.all %}
             <tr>
-                <td style="width:20%">{{ item.product.name }}</td>
-                <td style="width:10%">{{ item.grade }}</td>
-                <td style="width:10%">{{ item.size }}</td>
-                <td style="width:10%">{{ item.amount }}</td>
-                <td style="text-align:right width:10%">
-                    <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 80px;">{{ item.unit }}
+                <td style="text-align:center; width:10%;">{{ item.price_table.grade }}</td>
+                <td style="text-align:center; width:10%;">{{ item.price_table.size }}</td>
+                <td style="text-align:center; width:20%;" nowrap>{{ item.price_table.unit }}@{{ item.price_table.price|intcomma }}円</td>
+                <td style="text-align:center; width:50%;" nowrap>
+                    ×<input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 60px;">
                 </td>
-                <td style="text-align:right width:10%">{{ item.price|intcomma }} 円</td>
-                <td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>
+                <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
             </tr>
             {% endfor %}
-
+            <tbody id="order-body">
+            </tbody>
         </table>
+        <!--非表示テンプレート-->
+        <table style="display: none;">
+            <tbody>
+                <tr id="row-template">
+                    <td>
+                        <select name="grade_0">
+                            {% for grade in grades %}
+                            <option value="{{ grade }}">{{ grade }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="size_0">
+                            {% for size in sizes %}
+                            <option value="{{ size }}">{{ size }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select name="unit_0">
+                            {% for unit in units %}
+                            <option value="{{ unit }}">{{ unit }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <span class="price_display">-</span> 円
+                    </td>
+                    <td>
+                        <input type="number" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 80px;">
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <button type="button" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;" onclick="addRow()">+ 行を追加</button>
     </div>
-    <hr>
-    <p><strong>合計：</strong>{{ order.total_price|intcomma }}円</p>
-    <hr>
-    <p><strong>送料：</strong>{{ order.total_shipping_fee|intcomma }}円</p>
-    <p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>
+    <!-- <hr>
+    <p><strong>総計：</strong>{{ order.final_total|intcomma }}円(うち送料){{ order.shipping_price|intcomma }}円</p> 
 
-    <!--<p><a href="{% url 'order_invoice_pdf' order.id %}" target="_blank">請求書</a></p>-->
+    <p><a href="{% url 'order_invoice_pdf' order.id %}" target="_blank">請求書</a></p>-->
     <div class="text-end mt-3">
         <button type="submit" class="btn btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">
           確定
         </button>
     </form>
-    {% if order.status == '仮注文' %}
+    {% if order.status == 'tentative' or order.status == 'received' %}
     <form method="POST" action="{% url 'order_cancel' order.id %}">
         {% csrf_token %}
         <button type="submit" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-link btn-sm text-decoration-none">
             この注文をキャンセルする
         </button>
     </form>
-    {% elif order.status == 'キャンセル不可' %}
+    {% elif order.status == 'preparing' or  order.status == 'shipped' %}
         <span style="color: gray;">(キャンセル不可)</span>
-    {% elif order.status == 'キャンセル' %}
+    {% elif order.status == 'canceled' %}
         <span style="color: gray;">(キャンセル済みです。)</span>
     {% endif %}
     <p><a href="{% url 'order_history' %}">←　注文履歴に戻る</a></p>
     </div>
+    <script>
+        const priceData = {{ price_data_json|safe }};
+        let rowIndex = 1;
+
+        function addRow(){
+            const tbody = document.getElementById('order-body');
+            const templateRow = document.getElementById('row-template');
+            const newRow = templateRow.cloneNode(true);
+            newRow.removeAttribute('id');
+
+            newRow.querySelectorAll('select, input').forEach(el => {
+                if(el.name){
+                el.name = el.name.split('_')[0] + `_${rowIndex}`;
+                }
+                if (el.tagName === 'INPUT'){
+                    el.value = 0;
+                }
+            });
+
+            tbody.appendChild(newRow);
+            attachUpdater(newRow, rowIndex);
+            rowIndex++;
+        }
+
+        function attachUpdater(row, index){
+            const grade = row.querySelector(`select[name="grade_${index}"]`);
+            const size = row.querySelector(`select[name="size_${index}"]`);
+            const unit = row.querySelector(`select[name="unit_${index}"]`);
+            const price = row.querySelector('.price_display');
+
+            const update = () => {
+                const match = priceData.find(opt =>
+                    opt.grade === grade.value &&
+                    opt.size === size.value &&
+                    opt.unit === unit.value
+                    );
+                    price.textContent = match ? match.price : '-';
+            };
+
+
+            grade.addEventListener('change', update);
+            size.addEventListener('change', update);
+            unit.addEventListener('change', update);
+
+            // Immediately update once on load
+            update();
+        }
+
+        document.getElementById("order-form").addEventListener("submit", function(event){
+            const inputs = document.querySelectorAll('input[name^="quantity_"]');
+            let total = 0;
+            inputs.forEach(input => {
+                const val = parseInt(input.value);
+                if (!isNaN(val)) {
+                    total += val;
+                }
+            });
+            if (total === 0) {
+                alert("注文数量を1以上にしてください。");
+                event.preventDefault(); //フォーム送信をブロック
+            }
+        })
+    </script>
 {% endblock %}

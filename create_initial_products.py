@@ -21,18 +21,18 @@ def run():
 
     # Create pricetable
     pricetable = [
-        {"kind": peach, "grade": "秀", "size": "LL", "amount": "5kg", "price": 5000, "unit": "箱"},
-        {"kind": peach,  "grade": "秀", "size": "L", "amount": "5kg", "price": 5000, "unit": "箱"},
-        {"kind": peach,  "grade": "秀", "size": "M", "amount": "5kg", "price": 4400, "unit": "箱"},
-        {"kind": peach,  "grade": "優", "size": "LL", "amount": "5kg", "price": 4200, "unit": "箱"},
-        {"kind": peach,  "grade": "優", "size": "L", "amount": "5kg", "price": 4200, "unit": "箱"},
-        {"kind": peach,  "grade": "優", "size": "M", "amount": "5kg", "price": 3600, "unit": "箱"},
-        {"kind":plum,  "grade": "秀", "size": "LL", "amount": "5kg", "price": 5000, "unit": "箱"},
-        {"kind":plum,  "grade": "秀", "size": "L", "amount": "5kg", "price": 5000, "unit": "箱"},
-        {"kind":plum,  "grade": "秀", "size": "M", "amount": "5kg", "price": 4400, "unit": "箱"},
-        {"kind":plum,  "grade": "優", "size": "LL", "amount": "5kg", "price": 4200, "unit": "箱"},
-        {"kind":plum,  "grade": "優", "size": "L", "amount": "5kg", "price": 4200, "unit": "箱"},
-        {"kind":plum,  "grade": "優", "size": "M", "amount": "5kg", "price": 3600, "unit": "箱"},
+        {"kind": peach, "grade": "秀", "size": "LL", "weight": "5", "price": 5000, "unit": "5kg/箱"},
+        {"kind": peach,  "grade": "秀", "size": "L", "weight": "5", "price": 5000, "unit": "5kg/箱"},
+        {"kind": peach,  "grade": "秀", "size": "M", "weight": "5", "price": 4400, "unit": "5kg/箱"},
+        {"kind": peach,  "grade": "優", "size": "LL", "weight": "5", "price": 4200, "unit": "5kg/箱"},
+        {"kind": peach,  "grade": "優", "size": "L", "weight": "5", "price": 4200, "unit": "5kg/箱"},
+        {"kind": peach,  "grade": "優", "size": "M", "weight": "5", "price": 3600, "unit": "5kg/箱"},
+        {"kind":plum,  "grade": "秀", "size": "LL", "weight": "5", "price": 5000, "unit": "5kg/箱"},
+        {"kind":plum,  "grade": "秀", "size": "L", "weight": "5", "price": 5000, "unit": "5kg/箱"},
+        {"kind":plum,  "grade": "秀", "size": "M", "weight": "5", "price": 4400, "unit": "5kg/箱"},
+        {"kind":plum,  "grade": "優", "size": "LL", "weight": "5", "price": 4200, "unit": "5kg/箱"},
+        {"kind":plum,  "grade": "優", "size": "L", "weight": "5", "price": 4200, "unit": "5kg/箱"},
+        {"kind":plum,  "grade": "優", "size": "M", "weight": "5", "price": 3600, "unit": "5kg/箱"},
         
     ]
 
@@ -41,7 +41,7 @@ def run():
             kind=row["kind"],
             grade=row["grade"],
             size=row["size"],
-            amount=row["amount"],
+            weight=row["weight"],
             price=row["price"],
             unit=row["unit"],
         )
