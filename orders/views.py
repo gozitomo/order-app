@@ -439,7 +439,7 @@ def upload_pricetable(request):
             print(row)
             try:
                 kind = FruitKind.objects.get(name=row['kind'])
-                user_group = UserGroup.objects.get(name=row['user_group'])
+                #user_group = UserGroup.objects.get(name=row['user_group'])
                 PriceTable.objects.create(
                     kind=kind,
                     grade=row['grade'],
@@ -449,7 +449,7 @@ def upload_pricetable(request):
                     tax10_flg=row['tax10_flg'],
                     price=row['price'],
                     status=row['avl'],
-                    user_group=user_group
+                    user_group=null
                 )
             except Exception as e:
                 messages.error(request, f"アップロードエラー: {e}")
