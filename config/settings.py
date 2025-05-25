@@ -146,7 +146,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGIN_REDIRECT_URL = '/orders/'
 LOGOUT_REDIRECT_URL = '/'
 
-SECRET_KEY = os.environ.get('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
