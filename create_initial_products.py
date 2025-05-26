@@ -10,41 +10,41 @@ from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryD
 
 def run():
     # Create fruits
-    peach = FruitKind.objects.get_or_create(name="桃")[0]
+    peach = FruitKind.objects.get_or_create(name="中生の桃")[0]
     plum = FruitKind.objects.get_or_create(name="プラム")[0]
 
-    # Create product names
+    Create product names
     akatsuki = ProductName.objects.get_or_create(kind=peach, name="あかつき", description="7月末〜8月頭頃に発送となります")[0]
     natsukko = ProductName.objects.get_or_create(kind=peach, name="なつっこ", description="8月末〜8月10日頃に発送となります")[0]
     ooishiwase = ProductName.objects.get_or_create(kind=plum, name="大石早生", description="7月頭〜中旬頃に発送となります")[0]
     sorudamu = ProductName.objects.get_or_create(kind=plum, name="ソルダム", description="7月下旬〜7月末頃に発送となります")[0]
 
-    # Create pricetable
-    pricetable = [
-        {"kind": peach, "grade": "秀", "size": "LL", "weight": "5", "price": 5000, "unit": "5kg/箱"},
-        {"kind": peach,  "grade": "秀", "size": "L", "weight": "5", "price": 5000, "unit": "5kg/箱"},
-        {"kind": peach,  "grade": "秀", "size": "M", "weight": "5", "price": 4400, "unit": "5kg/箱"},
-        {"kind": peach,  "grade": "優", "size": "LL", "weight": "5", "price": 4200, "unit": "5kg/箱"},
-        {"kind": peach,  "grade": "優", "size": "L", "weight": "5", "price": 4200, "unit": "5kg/箱"},
-        {"kind": peach,  "grade": "優", "size": "M", "weight": "5", "price": 3600, "unit": "5kg/箱"},
-        {"kind":plum,  "grade": "秀", "size": "LL", "weight": "5", "price": 5000, "unit": "5kg/箱"},
-        {"kind":plum,  "grade": "秀", "size": "L", "weight": "5", "price": 5000, "unit": "5kg/箱"},
-        {"kind":plum,  "grade": "秀", "size": "M", "weight": "5", "price": 4400, "unit": "5kg/箱"},
-        {"kind":plum,  "grade": "優", "size": "LL", "weight": "5", "price": 4200, "unit": "5kg/箱"},
-        {"kind":plum,  "grade": "優", "size": "L", "weight": "5", "price": 4200, "unit": "5kg/箱"},
-        {"kind":plum,  "grade": "優", "size": "M", "weight": "5", "price": 3600, "unit": "5kg/箱"},
+    # # Create pricetable
+    # pricetable = [
+    #     {"kind": peach, "grade": "秀", "size": "LL", "weight": "5", "price": 5000, "unit": "5kg/箱"},
+    #     {"kind": peach,  "grade": "秀", "size": "L", "weight": "5", "price": 5000, "unit": "5kg/箱"},
+    #     {"kind": peach,  "grade": "秀", "size": "M", "weight": "5", "price": 4400, "unit": "5kg/箱"},
+    #     {"kind": peach,  "grade": "優", "size": "LL", "weight": "5", "price": 4200, "unit": "5kg/箱"},
+    #     {"kind": peach,  "grade": "優", "size": "L", "weight": "5", "price": 4200, "unit": "5kg/箱"},
+    #     {"kind": peach,  "grade": "優", "size": "M", "weight": "5", "price": 3600, "unit": "5kg/箱"},
+    #     {"kind":plum,  "grade": "秀", "size": "LL", "weight": "5", "price": 5000, "unit": "5kg/箱"},
+    #     {"kind":plum,  "grade": "秀", "size": "L", "weight": "5", "price": 5000, "unit": "5kg/箱"},
+    #     {"kind":plum,  "grade": "秀", "size": "M", "weight": "5", "price": 4400, "unit": "5kg/箱"},
+    #     {"kind":plum,  "grade": "優", "size": "LL", "weight": "5", "price": 4200, "unit": "5kg/箱"},
+    #     {"kind":plum,  "grade": "優", "size": "L", "weight": "5", "price": 4200, "unit": "5kg/箱"},
+    #     {"kind":plum,  "grade": "優", "size": "M", "weight": "5", "price": 3600, "unit": "5kg/箱"},
         
-    ]
+    # ]
 
-    for row in pricetable:
-        PriceTable.objects.get_or_create(
-            kind=row["kind"],
-            grade=row["grade"],
-            size=row["size"],
-            weight=row["weight"],
-            price=row["price"],
-            unit=row["unit"],
-        )
+    # for row in pricetable:
+    #     PriceTable.objects.get_or_create(
+    #         kind=row["kind"],
+    #         grade=row["grade"],
+    #         size=row["size"],
+    #         weight=row["weight"],
+    #         price=row["price"],
+    #         unit=row["unit"],
+    #     )
     
     # Create delivery dates for each product
     from datetime import date, timedelta
@@ -53,7 +53,7 @@ def run():
     products_with_start_dates = {
         "あかつき": date(2025, 7, 25),
         "なつっこ": date(2025, 8, 3),
-        "大石早生": date(2025, 7, 5),
+        "大石早生": date(2025, 7, 1),
         "ソルダム": date(2025, 7, 20),
     }
 
