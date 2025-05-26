@@ -98,3 +98,5 @@ class ShippingFeeRule(models.Model):
     def __str__(self):
         return f"{self.min_weight}～{self.max_weight}kg：{self.shipping_fee}円 {self.cool_flg}"
 
+class ShippingRegion(models.Model):
+    region = models.CharField(max_length=20)
