@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order, OrderItem, ShippingFeeRule, Invoice
+from .models import Order, OrderItem, ShippingFeeRule, Invoice, ShippingRegion
 
 # Register your models here.
 
