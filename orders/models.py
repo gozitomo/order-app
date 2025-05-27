@@ -93,6 +93,9 @@ class OrderItem(models.Model):
 class ShippingRegion(models.Model):
     region = models.CharField(max_length=20)
 
+    def __str__(self):
+        return f"{self.region}"
+
 
 class ShippingFeeRule(models.Model):
     region = models.ForeignKey(ShippingRegion, related_name='shipping_fee_rules', on_delete=models.CASCADE, null=True)
