@@ -12,8 +12,8 @@ def run():
     # Create fruits
     peach = FruitKind.objects.get_or_create(name="中生の桃")[0]
     plum = FruitKind.objects.get_or_create(name="プラム")[0]
-
-    Create product names
+    
+    # Create productnames
     akatsuki = ProductName.objects.get_or_create(kind=peach, name="あかつき", description="7月末〜8月頭頃に発送となります")[0]
     natsukko = ProductName.objects.get_or_create(kind=peach, name="なつっこ", description="8月末〜8月10日頃に発送となります")[0]
     ooishiwase = ProductName.objects.get_or_create(kind=plum, name="大石早生", description="7月頭〜中旬頃に発送となります")[0]
