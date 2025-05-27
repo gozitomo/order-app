@@ -89,6 +89,11 @@ class OrderItem(models.Model):
     def get_total_price(self):
         return self.price_table.price * self.quautity
 
+
+class ShippingRegion(models.Model):
+    region = models.CharField(max_length=20)
+
+    
 class ShippingFeeRule(models.Model):
     region = models.ForeignKey(ShippingRegion, related_name='shipping_fee_rules', on_delete=models.CASCADE)
     min_weight = models.PositiveIntegerField()
@@ -98,6 +103,3 @@ class ShippingFeeRule(models.Model):
 
     def __str__(self):
         return f"{self.region}:{self.min_weight}～{self.max_weight}kg：{self.shipping_fee}円 {self.cool_flg}"
-
-class ShippingRegion(models.Model):
-    region = models.CharField(max_length=20)
