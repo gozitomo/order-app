@@ -1,7 +1,8 @@
 from .models import ShippingFeeRule
 
-def calculate_shipping_fee(total_weight, cool_flg):
+def calculate_shipping_fee(region, total_weight, cool_flg):
     rule = ShippingFeeRule.objects.filter(
+        region=region,
         cool_flg=cool_flg,
         min_weight__lt=total_weight,
         max_weight__gte=total_weight,

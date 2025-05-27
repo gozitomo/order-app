@@ -113,6 +113,7 @@ def order_change(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     user_profile = getattr(request.user, 'userprofile', None)
     user_group = getattr(user_profile, 'user_group', None)
+    user_region = getattr(user_profile, 'region', None)
     today = localdate()
     item = order.items.first()
     try:
@@ -220,7 +221,7 @@ def order_change(request, order_id):
             order.tax10 = tax10_price / 1.1 * 0.1
             order.total_weight = total_weight
             order.cool_flg = cool_flg
-            order.shipping_price = calculate_shipping_fee(total_weight, cool_flg)
+            order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
             order.shipping_tax = order.shipping_price / 1.1 * 0.1
             order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
             order.status = 'tentative'
@@ -258,6 +259,7 @@ def neworder(request, product_id):
     product = get_object_or_404(ProductName, id=product_id)
     user_profile = getattr(request.user, 'userprofile', None)
     user_group = getattr(user_profile, 'user_group', None)
+    user_region = getattr(user_profile, 'region', None)
     options = product.kind.options.filter(
         Q(user_group=user_group) | Q(user_group__name='Forall')
     )
@@ -346,7 +348,7 @@ def neworder(request, product_id):
         order.tax10 = tax10_price / 1.1 * 0.1
         order.total_weight = total_weight
         order.cool_flg = cool_flg
-        order.shipping_price = calculate_shipping_fee(total_weight, cool_flg)
+        order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
         order.shipping_tax = shipping_price / 1.1 * 0.1
         order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
         #order.remarks = remarks
