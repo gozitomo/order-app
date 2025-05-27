@@ -30,7 +30,7 @@
             <th>階級</th>
             <th>量目</th>
             <th>価格</th>
-            <th>数量</th>
+            <th>箱数</th>
         </tr>
         <tbody id="order-body">
             <tr>
@@ -59,7 +59,7 @@
                     <span class="price_display">-</span> 円
                 </td>
                 <td>
-                    <input type="number" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 100px;">
+                    <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 100px;">
                 </td>
             </tr>
         </tbody>
@@ -131,7 +131,7 @@
         });
 
         if (total === 0){
-            alert("注文数量を1以上にしてください。");
+            alert("注文箱数を1以上にしてください。");
             event.preventDefault(); //フォーム送信をブロック
         }
     });

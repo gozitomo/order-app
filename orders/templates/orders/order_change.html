@@ -33,7 +33,7 @@
                 <th style="text-align:center;" class="d-none d-sm-table-cell">等級</th>
                 <th style="text-align:center;" class="d-none d-sm-table-cell">階級</th>
                 <th style="text-align:center;" class="d-none d-sm-table-cell">荷姿</th>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">数量</th>
+                <th style="text-align:center;" class="d-none d-sm-table-cell">箱数</th>
                 <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
             </tr>
             {% for item in order.items.all %}
@@ -167,7 +167,7 @@
                 }
             });
             if (total === 0) {
-                alert("注文数量を1以上にしてください。");
+                alert("注文箱数を1以上にしてください。");
                 event.preventDefault(); //フォーム送信をブロック
             }
         })
