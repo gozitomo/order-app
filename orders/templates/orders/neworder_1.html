@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>{{ product.name }} </h2>
-<p class="small text-muted">{{ product.description }}</p>
+<p class="small text-muted">{{ product.description|linebreaksbr }}</p>
 
 <form id="order-form" method="post">
     {% csrf_token %}
