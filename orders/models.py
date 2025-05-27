@@ -91,11 +91,11 @@ class OrderItem(models.Model):
 
 
 class ShippingRegion(models.Model):
-    region = models.CharField(max_length=20, null=True)
+    region = models.CharField(max_length=20)
 
 
 class ShippingFeeRule(models.Model):
-    region = models.ForeignKey(ShippingRegion, related_name='shipping_fee_rules', on_delete=models.CASCADE)
+    region = models.ForeignKey(ShippingRegion, related_name='shipping_fee_rules', on_delete=models.CASCADE, null=True)
     min_weight = models.PositiveIntegerField()
     max_weight = models.PositiveIntegerField()
     cool_flg = models.BooleanField(default=False)
