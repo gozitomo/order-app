@@ -85,7 +85,7 @@
                 opt.size === size.value &&
                 opt.unit === unit.value
             );
-            price.textContent = match ? match.price : '-';
+            price.textContent = match ? Number(match.price).toLocaleString() : '-';
         };
 
         grade.addEventListener('change', update);
