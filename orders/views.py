@@ -1,14 +1,17 @@
 from datetime import date, timedelta, datetime
 from io import TextIOWrapper
+from django.apps import apps
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.mail import send_mail
 from django.conf import settings
+from django.db import models
 from django.db.models import Sum, Q
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
@@ -32,6 +35,29 @@ def top_page(request):
     return render(request, 'orders/top.html')
 
 # Create your views here.
+
+def parse_field_value(field, value):
+    field_type = field.get_internal_type()
+
+    if value == '' and not field.null:
+        return None
+
+    try:
+        if field_type == 'BooleanField':
+            return value.lower() in ('true', '1', 'yes', 'y', 't')
+        elif field_type in ('IntegerField', 'PositiveIntegerField'):
+            return int(value)
+        elif field_type == 'FloatField':
+            return float(value)
+        elif field_type == 'DecimalField':
+            return field.to_python(value)  # Decimal型を正確に
+        elif field_type == 'ForeignKey':
+            rel_model = field.remote_field.model
+            return rel_model.objects.get(name=value)  # ← name以外にしたければ調整
+        else:
+            return value  # TextField, CharField, etc.
+    except Exception as e:
+        raise ValueError(f"{field.name} の変換エラー: {e}")
 
 def signup(request):
     if request.method == 'POST':
@@ -431,36 +457,52 @@ def order_cancel(request, order_id):
     return redirect('order_detail', order_id=order.id)
 
 @admin_required
-def upload_pricetable(request):
+def upload_generic_csv(request):
     if request.method == 'POST' and request.FILES.get('csv_file'):
         csv_file = request.FILES['csv_file']
         decoded_file = TextIOWrapper(csv_file, encoding='utf-8')
-        reader = csv.DictReader(decoded_file)
+        reader = csv.reader(decoded_file)
+        rows = list(reader)
 
-        for row in reader:
-            print(row)
+        if not rows or len(rows) < 3:
+            messages.error(request, "CSV形式が不正です（最低3行必要です）")
+            return redirect('csv_upload')
+
+        raw_model_name = rows[0][0].strip()
+        try:
+            if '.' in raw_model_name:
+                app_label, model_name = raw_model_name.split('.')
+            else:
+                messages.error(request, "モデル名は'アプリ名.モデル名'の形式で指定してください")
+                return redirect('csv_upload')
+
+            model = apps.get_model(app_label, model_name)
+        except LookupError:
+            messages.error(request, f"モデル'{model_name}'が見つかりません。")
+            return redirect('csv_upload')
+
+        field_names = [f.strip() for f in rows[1]]
+        created_count = 0
+        fields = {f.name: f for f in model._meta.get_fields() if not f.auto_created}
+
+        for row in rows[2:]:
             try:
-                kind = FruitKind.objects.get(name=row['kind'])
-                #user_group = UserGroup.objects.get(name=row['user_group'])
-                PriceTable.objects.create(
-                    kind=kind,
-                    grade=row['grade'],
-                    size=row['size'],
-                    weight=row['weight'],
-                    unit=row['unit'],
-                    tax10_flg=row['tax10_flg'],
-                    price=row['price'],
-                    status=row['status'],
-                    #user_group=null
-                )
+                data = {}
+                for field_name, raw_value in zip(field_names, row):
+                    field = fields.get(field_name)
+                    if not field:
+                        continue #不明なカラムは無視
+                    data[field_name] = parse_field_value(field, raw_value)
+                model.objects.create(**data)
+                created_count += 1
             except Exception as e:
-                messages.error(request, f"アップロードエラー: {e}")
+                messages.error(request, f"{created_count}行の処理中にエラー: {e}")
                 continue
 
-        messages.success(request, "アップロードが完了しました。")
-        return redirect('gyoumu_menu')
+        messages.success(request, f"{created_count}件の{model_name}データを登録しました。")
+        return redirect('csv_upload')
 
-    return render(request, 'orders/upload_pricetable.html')
+    return render(request, 'orders/csv_uploader.html')
 
 
 @admin_required
@@ -512,7 +554,7 @@ def monthly_invoice_pdf(request):
 
         items.update(invoice_id=invoice)
     
-    return render(request, 'orders/gyoumu.html')
+    return render(request, 'csv_upload')
 
 
 @admin_required
