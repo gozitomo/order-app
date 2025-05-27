@@ -42,7 +42,7 @@
                 <td style="text-align:center; width:10%;">{{ item.price_table.size }}</td>
                 <td style="text-align:center; width:20%;" nowrap>{{ item.price_table.unit }}@{{ item.price_table.price|intcomma }}円</td>
                 <td style="text-align:center; width:50%;" nowrap>
-                    ×<input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 60px;">
+                    ×<input inputmode="numeric" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 60px;">
                 </td>
                 <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
             </tr>
@@ -79,7 +79,7 @@
                         <span class="price_display">-</span> 円
                     </td>
                     <td>
-                        <input type="number" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 80px;">
+                        <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 80px;">
                     </td>
                 </tr>
             </tbody>
