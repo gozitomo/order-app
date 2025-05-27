@@ -1,8 +1,9 @@
 {% extends "base.html" %}
-{% block title %}業務一括操作{% endblock %}
+{% block title %}業務メニュー{% endblock %}
 {% block content %}
-    <h2>業務一括操作</h2>
+    <h2>業務メニュー</h2>
+    <p><a href='/admin/'>管理画面</a></p>
     <p><a href="{% url 'generate_monthly_invoice' %}">月次請求書を一括発行</a></p>
-    <p><a href="{% url 'upload_pricetable' %}">価格表csvアップロード</a></p>
+    <p><a href="{% url 'csv_upload' %}">csvアップロード</a></p>
     
 {% endblock %}
