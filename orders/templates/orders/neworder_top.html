@@ -7,7 +7,13 @@
     ご注文はステータス画面にて「仮注文」として受け付け、農園確認後に「受注」となります。受注が難しい箱数等の場合は連絡いたします。</p>
 <table class="table-borderless">
     <tbody>
-        {% for product in products %}
+        {% for kind in kinds %}
+        <tr>
+            <td width="40%" align="left">
+                {{ kind.name }}
+            </td>
+        </tr>
+            {% for product in kind.products.all %}
         <tr>
             <td width="40%" align="center">
                 {% if product.status != 'closed' %}
@@ -16,7 +22,8 @@
                     <span class="test-muted">（準備中）</span>
                 {% endif %}
             </td>
-            <td align=><strong>{{ product.name }}</strong>（{{ product.kind.name }}）</td>
+            <td align=><strong>{{ product.name }}</strong>（{{ product.season }}）</td>
+            {% endfor %}
         </tr>
         {% endfor %}
     </tbody>

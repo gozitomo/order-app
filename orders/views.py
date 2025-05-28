@@ -74,8 +74,12 @@ def signup(request):
 
 @login_required
 def order_top(request):
-    products = ProductName.objects.select_related('kind').all().order_by('kind__name', 'name')
-    return render(request, 'orders/neworder_top.html', {'products': products})
+    kinds = FruitKind.objects.all().order_by('id')
+    products = ProductName.objects.select_related('kind').all().order_by('sort_no')
+    return render(request, 'orders/neworder_top.html', {
+        'kinds': kinds,
+        'products': products
+        })
 
 @login_required
 def order_history(request):
