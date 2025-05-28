@@ -22,7 +22,7 @@
         <!-- Navbar(Hamburger for mobile) -->
         <nav class="navbar navbar-expand-md navbar-light bg-light">
             <div class="container-fluid">
-                <a class="navbar-brand" href={% url 'top_page'%}>プログレスファームB2B</a>
+                <a class="navbar-brand" href={% url 'order_top'%}>プログレスファームB2B</a>
                 {% if user.is_authenticated %}
 
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMenu" aria-controls="navbarMenu" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,6 +30,9 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarMenu">
                     <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'top_page' %}">ホーム</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'order_top' %}">発注</a>
                         </li>

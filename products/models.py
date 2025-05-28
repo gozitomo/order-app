@@ -18,6 +18,8 @@ class ProductName(models.Model):
     name = models.CharField(max_length=50)
     kind = models.ForeignKey(FruitKind, on_delete=models.CASCADE, related_name="products")
     description = models.TextField(blank=True)
+    season = models.CharField(max_length=50, null=True)
+    sort_no = models.PositiveIntegerField(null=True)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='available')
 
     def __str__(self):
