@@ -98,7 +98,7 @@ class ShippingRegion(models.Model):
 
 
 class ShippingFeeRule(models.Model):
-    region = models.ForeignKey(ShippingRegion, related_name='shipping_fee_rules', on_delete=models.CASCADE, null=True)
+    region = models.ForeignKey(ShippingRegion, related_name='shipping_fee_rules', on_delete=models.CASCADE)
     min_weight = models.PositiveIntegerField()
     max_weight = models.PositiveIntegerField()
     cool_flg = models.BooleanField(default=False)
