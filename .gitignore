@@ -178,8 +178,3 @@ node_modules/
 .ssh/
 *.pem
 *.pub
-
-# 例: アプリが orders, products, users なら
-orders/migrations/
-products/migrations/
-users/migrations/
