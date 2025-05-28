@@ -75,7 +75,7 @@ def signup(request):
 @login_required
 def order_top(request):
     kinds = FruitKind.objects.all().order_by('id')
-    products = ProductName.objects.select_related('kind').all().order_by('sort_no')
+    products = ProductName.objects.select_related('kind').all().order_by('-sort_no')
     return render(request, 'orders/neworder_top.html', {
         'kinds': kinds,
         'products': products
