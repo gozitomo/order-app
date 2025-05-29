@@ -14,7 +14,7 @@ class UserProfile(models.Model):
     company_name = models.CharField(max_length=255, blank=True)
     postal_code = models.CharField(max_length=255, default='000-0000')
     address = models.CharField(max_length=255)
-    region = models.ForeignKey('orders.ShippingRegion', related_name='users', on_delete=models.CASCADE)
+    region = models.ForeignKey('orders.ShippingRegion', related_name='users',null=True, on_delete=models.CASCADE)
     user_group = models.ForeignKey(UserGroup, null=True, blank=True, on_delete=models.CASCADE)
     def __str__(self):
         return f"{self.user.username}のプロフィール"
