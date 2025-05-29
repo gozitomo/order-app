@@ -48,7 +48,7 @@ class Order(models.Model):
     ]
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    product_delivery_date = models.ForeignKey(ProductDeliveryDate, on_delete=models.CASCADE, default=get_default_product_delivery_date)
+    product_delivery_date = models.ForeignKey(ProductDeliveryDate, on_delete=models.CASCADE, null=True)
     tracking_id = models.CharField(max_length=20, null=True)
     cool_flg = models.BooleanField(default=False)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='tentative')
@@ -91,7 +91,7 @@ class OrderItem(models.Model):
 
 
 class ShippingRegion(models.Model):
-    region = models.CharField(max_length=20, null=True)
+    region = models.CharField(max_length=20)
 
     def __str__(self):
         return f"{self.region}"
