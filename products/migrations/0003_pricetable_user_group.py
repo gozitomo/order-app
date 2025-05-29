@@ -18,3 +18,4 @@ class Migration(migrations.Migration):
             field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.PROTECT, to='users.usergroup'),
         ),
     ]
+
