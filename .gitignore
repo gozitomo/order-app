@@ -6,7 +6,7 @@ __pycache__/
 # C extensions
 *.so
 
-# Distribution / packaging
+# Distribution / packagingch
 .Python
 build/
 develop-eggs/
@@ -178,4 +178,3 @@ node_modules/
 .ssh/
 *.pem
 *.pub
-.DS_Store
