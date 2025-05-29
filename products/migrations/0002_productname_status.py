@@ -16,3 +16,4 @@ class Migration(migrations.Migration):
             field=models.CharField(choices=[('available', '在庫あり'), ('preorder', '予約受付中'), ('closed', 'シーズン終了')], default='available', max_length=20),
         ),
     ]
+

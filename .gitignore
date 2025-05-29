@@ -178,3 +178,4 @@ node_modules/
 .ssh/
 *.pem
 *.pub
+.DS_Store

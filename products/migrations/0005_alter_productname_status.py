@@ -16,3 +16,4 @@ class Migration(migrations.Migration):
             field=models.CharField(choices=[('available', '受付中'), ('closed', '準備中')], default='available', max_length=20),
         ),
     ]
+
