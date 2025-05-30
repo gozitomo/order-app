@@ -3,8 +3,6 @@ from django.contrib.auth import views as auth_views
 from . import views
 
 urlpatterns = [
-    path('', views.top_page, name='top_page'),
-    path('signup/', views.signup, name='signup'),
     path('orders/history/', views.order_history, name='order_history'),
     path('orders/', views.order_top, name='order_top'),
     path('orders/new/<int:product_id>/', views.neworder, name='new_order'),
