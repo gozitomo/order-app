@@ -21,7 +21,7 @@ from users.models import UserProfile, UserGroup
 from users.models import UserProfile
 from users.models import User
 from .utils import calculate_shipping_fee
-from .forms import CustomSignupForm
+
 from weasyprint import HTML
 import json
 import csv
@@ -30,9 +30,6 @@ import csv
 
 def admin_required(view_func):
     return user_passes_test(lambda u: u.is_superuser)(view_func)
-
-def top_page(request):
-    return render(request, 'orders/top.html')
 
 # Create your views here.
 
@@ -59,18 +56,6 @@ def parse_field_value(field, value):
     except Exception as e:
         raise ValueError(f"{field.name} の変換エラー: {e}")
 
-def signup(request):
-    if request.method == 'POST':
-        form = CustomSignupForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            address = form.cleaned_data['address']
-            UserProfile.objects.create(user=user, address=address)
-            login(request, user)
-            return redirect('order_history')
-    else:
-        form = CustomSignupForm()
-    return render(request, 'orders/signup.html', {'form': form})
 
 @login_required
 def order_top(request):
@@ -506,7 +491,7 @@ def upload_generic_csv(request):
         messages.success(request, f"{created_count}件の{model_name}データを登録しました。")
         return redirect('csv_upload')
 
-    return render(request, 'orders/csv_uploader.html')
+    return render(request, 'gyoumu/csv_uploader.html')
 
 
 @admin_required
@@ -563,4 +548,4 @@ def monthly_invoice_pdf(request):
 
 @admin_required
 def gyoumu_menu(request):
-    return render(request, 'orders/gyoumu.html')
+    return render(request, 'gyoumu/gyoumu.html')

@@ -12,7 +12,6 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
-
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -44,6 +43,7 @@ INSTALLED_APPS = [
     'products',
     'users.apps.UsersConfig',
     'django.contrib.humanize',
+    'sitecontent',
     #'tailwind',
     #'theme',
 ]
@@ -76,6 +76,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'sitecontent.context_processors.hero_content',
             ],
         },
     },
