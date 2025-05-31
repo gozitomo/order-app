@@ -491,17 +491,19 @@ def upload_generic_csv(request):
             try:
                 data = {}
                 for field_name, raw_value in zip(field_names, row):
+                    print(f"{field_name=}, {raw_value=}")  # デバッグ出力
                     field = fields.get(field_name)
                     if not field:
                         continue #不明なカラムは無視
                     data[field_name] = parse_field_value(field, raw_value)
-                    unique_keys = ['user'] if model.__name__ == 'UserProfile' else[]
-                    if unique_keys:
-                        lookup = {k: data[k] for k in unique_keys}
-                        defaults = {k: v for k, v in data.items() if k not in unique_keys}
-                        obj, created = model.objects.update_or_create(**lookup, defaults=defaults)
-                    else:
-                        model.objects.create(**data)
+                print(data)
+                unique_keys = ['user'] if model.__name__ == 'UserProfile' else[]
+                if unique_keys:
+                    lookup = {k: data[k] for k in unique_keys}
+                    defaults = {k: v for k, v in data.items() if k not in unique_keys}
+                    obj, created = model.objects.update_or_create(**lookup, defaults=defaults)
+                else:
+                    model.objects.create(**data)
                 created_count += 1
             except Exception as e:
                 messages.error(request, f"{created_count}行の処理中にエラー: {e}")
