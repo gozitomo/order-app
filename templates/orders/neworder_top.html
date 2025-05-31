@@ -15,14 +15,14 @@
         </tr>
             {% for product in kind.products.all %}
         <tr>
-            <td width="40%" align="center">
+            <td align="center">
                 {% if product.status != 'closed' %}
                     <a href="{% url 'new_order' product.id%}" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem;">注文</a>
                 {% else %}
                     <span class="test-muted">（準備中）</span>
                 {% endif %}
             </td>
-            <td align=><strong>{{ product.name }}</strong>（{{ product.season }}）</td>
+            <td align="left" nowrap><strong>{{ product.name }}</strong>（{{ product.season }}）</td>
             {% endfor %}
         </tr>
         {% endfor %}
