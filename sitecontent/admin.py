@@ -5,3 +5,5 @@ from .models import HeroContent, HomeContent
 
 admin.site.register(HeroContent)
 admin.site.register(HomeContent)
+admin.site.register(OrderNote)
+admin.site.register(OrderHistoryNote)
