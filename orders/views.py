@@ -506,7 +506,7 @@ def upload_generic_csv(request):
                     raw_password = data.pop('password', None)
                     obj = model(**data)
                     if raw_password:
-                        obj.set_password(data['password']) #ハッシュ化
+                        obj.set_password(raw_password)) #ハッシュ化
                     obj.save()
                 else:
                     unique_keys = ['user'] if model.__name__  == 'UserProfile' else[]
