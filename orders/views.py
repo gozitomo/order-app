@@ -159,6 +159,7 @@ def order_change(request, order_id):
         if request.method == 'POST':
             cool_flg = request.POST.get(f'cool_flg') == "true"
             delivery_id = request.POST.get(f'delivery_date')
+            remarks = request.POST.get(f'remarks')
             delivery_date_obj = get_object_or_404(ProductDeliveryDate, id=delivery_id)
 
             tax8_price = 0
@@ -240,7 +241,7 @@ def order_change(request, order_id):
             order.shipping_tax = order.shipping_price / 1.1 * 0.1
             order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
             order.status = 'tentative'
-            #order.remarks = remarks
+            order.remarks = remarks
             order.save()
 
             try:
@@ -315,7 +316,7 @@ def neworder(request, product_id):
 
         delivery_id = request.POST.get(f'delivery_date')
         delivery_date_obj = get_object_or_404(ProductDeliveryDate, id=delivery_id)
-        #remarks = request.POST.get(f'remarks')
+        remarks = request.POST.get(f'remarks')
 
 
         i = 0
@@ -366,7 +367,7 @@ def neworder(request, product_id):
         order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
         order.shipping_tax = shipping_price / 1.1 * 0.1
         order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
-        #order.remarks = remarks
+        order.remarks = remarks
         order.save()
 
         print('注文保存完了、メールを送ります')

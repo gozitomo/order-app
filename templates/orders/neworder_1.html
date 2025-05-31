@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
-<h2>{{ product.name }} </h2>
+<table>
+    <tr>
+        <td nowrap class="me-4">{{ product.name }} </td>
+        <td nowrap class="small text-muted">（{{ product.season }}）</td>
+    </tr>
+</table>
 <p class="small text-muted">{{ product.description|linebreaksbr }}</p>
 
 <form id="order-form" method="post">
@@ -29,7 +34,7 @@
             <th>等級</th>
             <th>階級</th>
             <th>量目</th>
-            <th>価格</th>
+            <th>税込価格</th>
             <th>箱数</th>
         </tr>
         <tbody id="order-body">
@@ -64,6 +69,9 @@
             </tr>
         </tbody>
     </table>
+    特記事項
+    <input type=text name="remarks" class="form-control" style="max-width: 450px;">
+    <br>
     <button type="button" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;" onclick="addRow()">+ 行を追加</button>
     <br><br>
     <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">仮注文</button>
