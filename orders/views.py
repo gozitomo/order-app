@@ -494,6 +494,7 @@ def upload_generic_csv(request):
 
         for row in rows[2:]:
             try:
+                print(f"\n--- 処理中の行 {created_count}: {row}")
                 data = {}
                 for field_name, raw_value in zip(field_names, row):
                     print(f"{field_name=}, {raw_value=}")  # デバッグ出力
@@ -502,10 +503,14 @@ def upload_generic_csv(request):
                         continue #不明なカラムは無視
                     data[field_name] = parse_field_value(field, raw_value)
 
+                print(f"  処理後のデータ: {data}")
+
+
                 if model.__name__ == 'User':
                     raw_password = data.pop('password', None)
                     obj = model(**data)
                     if raw_password:
+                        print("ハッシュ化します")
                         obj.set_password(raw_password) #ハッシュ化
                     obj.save()
                 else:
