@@ -501,7 +501,7 @@ def upload_generic_csv(request):
                     if not field:
                         continue #不明なカラムは無視
                     data[field_name] = parse_field_value(field, raw_value)
-                unique_keys = ['user'] if model.__name__ == 'UserProfile' else[]
+                unique_keys = ['user'] if model.__name__  == 'UserProfile' else[]
                 if unique_keys:
                     lookup = {k: data[k] for k in unique_keys}
                     defaults = {k: v for k, v in data.items() if k not in unique_keys}
