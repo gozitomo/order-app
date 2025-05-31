@@ -501,17 +501,19 @@ def upload_generic_csv(request):
                     if not field:
                         continue #不明なカラムは無視
                     data[field_name] = parse_field_value(field, raw_value)
-                unique_keys = ['user'] if model.__name__  == 'UserProfile' else[]
-                if unique_keys:
-                    lookup = {k: data[k] for k in unique_keys}
-                    defaults = {k: v for k, v in data.items() if k not in unique_keys}
-                    obj, created = model.objects.update_or_create(**lookup, defaults=defaults)
-                elif model.__name__ == 'User':
+
+                if model.__name__ == 'User':
                     obj = model(**data)
                     obj.set_password(data['password']) #ハッシュ化
                     obj.save()
                 else:
-                    model.objects.create(**data)
+                    unique_keys = ['user'] if model.__name__  == 'UserProfile' else[]
+                    if unique_keys:
+                        lookup = {k: data[k] for k in unique_keys}
+                        defaults = {k: v for k, v in data.items() if k not in unique_keys}
+                        obj, created = model.objects.update_or_create(**lookup, defaults=defaults)
+                    else:
+                        model.objects.create(**data)
                 created_count += 1
             except Exception as e:
                 messages.error(request, f"{created_count}行の処理中にエラー: {e}")
