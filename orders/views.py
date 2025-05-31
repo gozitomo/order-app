@@ -54,7 +54,7 @@ def parse_field_value(field, value):
             return field.to_python(value)  # Decimal型を正確に
         elif field_type == 'ForeignKey':
             rel_model = field.remote_field.model
-            return rel_model.objects.get(name=value)  # ← name以外にしたければ調整
+            return rel_model.objects.get(username=value)  # ← name以外にしたければ調整
         else:
             return value  # TextField, CharField, etc.
     except Exception as e:
