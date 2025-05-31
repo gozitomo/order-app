@@ -39,7 +39,7 @@ class PriceTable(models.Model):
     price = models.PositiveIntegerField()
     tax10_flg = models.BooleanField(default=True)
     user_group = models.ForeignKey(UserGroup, default=1, on_delete=models.CASCADE)
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='available')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='closed')
 
     def __str__(self):
         return f"{self.kind.name} {self.grade} {self.size}"
