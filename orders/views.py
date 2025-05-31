@@ -17,6 +17,7 @@ from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
 from .models import Order, OrderItem, Invoice
 from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
+from sitecontent.models import OrderNote, OrderHistoryNote
 from users.models import UserProfile, UserGroup
 from users.models import UserProfile
 from users.models import User
@@ -72,9 +73,11 @@ def parse_field_value(field, value):
 def order_top(request):
     kinds = FruitKind.objects.all().order_by('id')
     products = ProductName.objects.select_related('kind').all().order_by('-sort_no')
+    notes = OrderNote.objects.all()
     return render(request, 'orders/neworder_top.html', {
         'kinds': kinds,
-        'products': products
+        'products': products,
+        'notes': notes
         })
 
 @login_required
@@ -83,6 +86,7 @@ def order_history(request):
         user=request.user,
         total_weight__gt=0).prefetch_related('items').order_by('product_delivery_date')
     today = localdate()
+    notes = OrderHistoryNote.objects.all()
 
     for order in orders:
 
@@ -93,6 +97,7 @@ def order_history(request):
 
     return render(request, 'orders/order_history.html', {
         'orders': orders,
+        'notes': notes
         })
 
 @login_required
@@ -496,7 +501,6 @@ def upload_generic_csv(request):
                     if not field:
                         continue #不明なカラムは無視
                     data[field_name] = parse_field_value(field, raw_value)
-                print(data)
                 unique_keys = ['user'] if model.__name__ == 'UserProfile' else[]
                 if unique_keys:
                     lookup = {k: data[k] for k in unique_keys}
