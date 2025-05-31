@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroContent, HomeContent
+from .models import HeroContent, HomeContent, OrderNote, OrderHistoryNote
 
 # Register your models here.
 
