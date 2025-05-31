@@ -138,7 +138,8 @@ def order_change(request, order_id):
     try:
         product = item.product
         options = product.kind.options.filter(
-            Q(user_group=user_group) | Q(user_group__name='Forall')
+            Q(user_group=user_group) | Q(user_group__name='Forall'),
+            status='available'
         )
 
         #価格テーブルを定義
