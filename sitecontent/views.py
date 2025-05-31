@@ -11,7 +11,7 @@ from users.models import User
 def admin_required(view_func):
     return user_passes_test(lambda u: u.is_superuser)(view_func)
 
-
+@login_required
 def home_page(request):
     home_contents = HomeContent.objects.all()
 
