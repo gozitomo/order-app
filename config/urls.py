@@ -18,9 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.conf import settings
+from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('robots.txt', TemplateView.as_view(
+        template_name='robots.txt', content_type='text/plain'
+    )),
     path('', include('orders.urls')),
     path('', include('sitecontent.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(template_name='sitecontent/login.html'), name='login'),
