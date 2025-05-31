@@ -503,8 +503,10 @@ def upload_generic_csv(request):
                     data[field_name] = parse_field_value(field, raw_value)
 
                 if model.__name__ == 'User':
+                    raw_password = data.pop('password', None)
                     obj = model(**data)
-                    obj.set_password(data['password']) #ハッシュ化
+                    if row_password:
+                        obj.set_password(data['password']) #ハッシュ化
                     obj.save()
                 else:
                     unique_keys = ['user'] if model.__name__  == 'UserProfile' else[]
