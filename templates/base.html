@@ -50,12 +50,12 @@
                                 <button type="submit" class="btn btn-link nav-link" style="padding: 2;">ログアウト</button>
                             </form>
                         </li>
+                    </ul>
                     {% else %}
                         {% if not request.path == '/accounts/login/' %}
-                        <a href="{% url 'login' %}">ログイン</a>
+                            <a href="{% url 'login' %}">ログイン</a>
                         {% endif %}
                     {% endif %}
-                    </ul>
                 </div>
             </div>
         </nav>

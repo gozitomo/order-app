@@ -1,13 +1,9 @@
 {% extends "base.html" %}
-{% block title %}プログレスファームB2B{% endblock %}
+{% block title %}B2B発注アプリ{% endblock %}
 {% block content %}
   <div class="mt-10">
-    <h2 class="text-center text-2xl font-bold">プログレスファームB2B</h2>
       {% for home_content in home_contents %}
           {{ home_content.content|safe }}
       {% endfor %}
-    <div class="mt-6 flex justify-center gap-4">
-        <a href="{% url 'login' %}" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">ログイン</a>
-    </div>
   </div>
 {% endblock %}
