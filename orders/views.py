@@ -54,6 +54,13 @@ def parse_field_value(field, value):
             return field.to_python(value)  # Decimal型を正確に
         elif field_type == 'ForeignKey':
             rel_model = field.remote_field.model
+            # モデルごとに解決キーを切り替える
+            lookup_field = {
+                'User': 'username',
+                'ShippingRegion': 'name',
+                'UserGroup': 'name',
+                'FruitKind': 'name',
+            }.get(rel_model.__name__, 'name')
             return rel_model.objects.get(name=value)  # ← name以外にしたければ調整
         else:
             return value  # TextField, CharField, etc.
