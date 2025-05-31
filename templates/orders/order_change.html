@@ -4,7 +4,7 @@
 {% block content %}
 {% csrf_token %}
     <h2>ご注文内容の変更</h2>
-    <form id="order-form" method="POST" action="{% url 'order_change' order.id%}">
+    <form id="order-form" method="POST" action="{% url 'order_change' order.order_id%}">
         {% csrf_token %}
         {% if order.status == 'キャンセル' %}
             <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
@@ -25,7 +25,7 @@
         <input type="radio" name="cool_flg" value="false" checked>通常便
         <input type="radio" name="cool_flg" value="true">冷蔵便
     </p>
-    <p><strong>注文ID:</strong>{{ order.id }}</p>
+    <p><strong>注文ID:</strong>{{ order.order_id }}</p>
     <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
     <div class="table-responsive">
         <table class="thead-light">
@@ -40,9 +40,9 @@
             <tr>
                 <td style="text-align:center; width:10%;">{{ item.price_table.grade }}</td>
                 <td style="text-align:center; width:10%;">{{ item.price_table.size }}</td>
-                <td style="text-align:center; width:20%;" nowrap>{{ item.price_table.unit }}@{{ item.price_table.price|intcomma }}円</td>
-                <td style="text-align:center; width:50%;" nowrap>
-                    ×<input inputmode="numeric" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 60px;">
+                <td style="text-align:center; width:20%; white-space: nowrap;">{{ item.price_table.unit }}@{{ item.price_table.price|intcomma }}円</td>
+                <td style="text-align:center; width:20%; white-space: nowrap;">
+                    ×<input inputmode="numeric" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 60px; display: inline-block; vertical-align: middle;">
                 </td>
                 <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
             </tr>
@@ -85,21 +85,21 @@
             </tbody>
         </table>
             特記事項
-        <input type=text name="remarks" value={{ order.remarks }} class="form-control" style="max-width: 450px;">
+        <input type=text, name="remarks", value="{{ order.remarks }}", class="form-control", style="max-width: 450px;">
         <br>
-        <button type="button" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;" onclick="addRow()">+ 行を追加</button>
+        <button type="button", class="btn btn-sm btn-primary me-2", style="padding: 2px 8px; font-size: 0.75rem;", onclick="addRow()">+ 行を追加</button>
     </div>
     <!-- <hr>
     <p><strong>総計：</strong>{{ order.final_total|intcomma }}円(うち送料){{ order.shipping_price|intcomma }}円</p> 
 
-    <p><a href="{% url 'order_invoice_pdf' order.id %}" target="_blank">請求書</a></p>-->
+    <p><a href="{% url 'order_invoice_pdf' order.order_id %}" target="_blank">請求書</a></p>-->
     <div class="text-end mt-3">
         <button type="submit" class="btn btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">
           確定
         </button>
     </form>
     {% if order.status == 'tentative' or order.status == 'received' %}
-    <form method="POST" action="{% url 'order_cancel' order.id %}">
+    <form method="POST" action="{% url 'order_cancel' order.order_id %}">
         {% csrf_token %}
         <button type="submit" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-link btn-sm text-decoration-none">
             この注文をキャンセルする

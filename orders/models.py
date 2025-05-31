@@ -7,6 +7,18 @@ from django.utils.timezone import now
 # Create your models here.
 
 
+def generate_order_id():
+    this_year = now().year %100
+    prefix = f"{this_year:02d}"
+    print(prefix)
+    last_order = Order.objects.filter(order_id__startswith=prefix).order_by('-order_id').first()
+    if last_order:
+        last_number = int(last_order.order_id[-4:])
+        new_number = last_number + 1
+    else:
+        new_number = 1
+    return f"{prefix}{new_number:04d}"
+
 class Invoice(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     invoice_type = models.CharField(max_length=10)
@@ -34,10 +46,34 @@ class Invoice(models.Model):
         else:
             return f"{yyyymm}-001"
 
+
+class DeliNote(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    deli_note_id = models.CharField(max_length=20, unique=True)
+    deli_date = models.DateField(auto_now_add=True)
+    tax8_price = models.DecimalField(max_digits=10, decimal_places=0)
+    tax10_price = models.DecimalField(max_digits=10, decimal_places=0)
+    final_price = models.DecimalField(max_digits=10, decimal_places=0)
+    tax8_extax = models.DecimalField(max_digits=10, decimal_places=0)
+    tax10_extax = models.DecimalField(max_digits=10, decimal_places=0)
+    final_extax = models.DecimalField(max_digits=10, decimal_places=0)
+    tax8 = models.DecimalField(max_digits=10, decimal_places=0)
+    tax10 = models.DecimalField(max_digits=10, decimal_places=0)
+    final_tax = models.DecimalField(max_digits=10, decimal_places=0)
+    
+    def generate_deli_note_id():
+        today = now().date()
+        yyyymm = today.strftime("%Y%m")
+        last_deli_note = DeliNote.objects.filter(deli_note_id__startswith=yyyymm).order_by('-deli_note_id').first()
+        if last_deli_note:
+            last_seq = int(last_deli_note.invoice_id[-3:])
+            return f"{yyyymm}-{last_seq + 1:03d}"
+        else:
+            return f"{yyyymm}-001"
+
 class Order(models.Model):
     def get_default_product_delivery_date():
         return ProductDeliveryDate.objects.first().id
-
 
     STATUS_CHOICES = [
         ('tentative', '仮注文'),
@@ -46,6 +82,7 @@ class Order(models.Model):
         ('shipped', '発送済'), #キャンセル不可
         ('canceled', 'キャンセル済'),
     ]
+    order_id = models.CharField(primary_key=True, max_length=6)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     product_delivery_date = models.ForeignKey(ProductDeliveryDate, on_delete=models.CASCADE, null=True)
@@ -62,6 +99,12 @@ class Order(models.Model):
     final_price = models.PositiveIntegerField(default=0)
     remarks = models.TextField(blank=True, null=True)
     invoice_id = models.ForeignKey(Invoice, null=True, blank=True, on_delete=models.SET_NULL, related_name='items')
+    deli_note_id = models.ForeignKey(DeliNote, null=True, blank=True, on_delete=models.SET_NULL, related_name='items')
+
+    def save(self, *args, **kwargs):
+        if not self.order_id:
+            self.order_id = generate_order_id()
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"注文ID:{self.id} - {self.user.username}"

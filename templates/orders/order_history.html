@@ -16,13 +16,13 @@
                     <strong>納品希望日:</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}（{{ order.get_status_display }}）
                 </div>
                 {% if order.status == 'tentative' or order.status == 'received' %}
-                <form method="GET" action="{% url 'order_change' order.id %}">
+                <form method="GET" action="{% url 'order_change' order.order_id %}">
                     <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
                 </form>
                 {% endif %}              
             </div>
         </div>
-            <p><strong>注文ID:</strong>{{ order.id }}</p>
+            <p><strong>注文ID:</strong>{{ order.order_id }}</p>
             <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
             <div class="table-responsive">
                 <table class="thead-light">

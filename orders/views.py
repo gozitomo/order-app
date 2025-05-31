@@ -102,7 +102,7 @@ def order_history(request):
 
 @login_required
 def order_detail(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = get_object_or_404(Order, order_id=order_id, user=request.user)
     return render(request, 'orders/order_detail.html', {
         'order': order,
         })
@@ -113,12 +113,12 @@ def sendmail(order, subject):
     注文情報をメール送信
     """
 
-    print(order.id)
+    print(order.order_id)
     print(subject)
 
 
     message = f"""
-    【注文ID】{order.id}
+    【注文ID】{order.order_id}
     【注文者】{order.user.userprofile.company_name}
     【納品予定日】{order.product_delivery_date.date.strftime}
 
@@ -141,7 +141,7 @@ def sendmail(order, subject):
 
 @login_required
 def order_change(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = get_object_or_404(Order, order_id=order_id, user=request.user)
     user_profile = getattr(request.user, 'userprofile', None)
     user_group = getattr(user_profile, 'user_group', None)
     user_region = getattr(user_profile, 'region', None)
@@ -266,7 +266,7 @@ def order_change(request, order_id):
             except Exception as e:
                 print('メール送信エラー：', e)
 
-            return redirect('order_detail', order_id=order.id)
+            return redirect('order_detail', order_id=order.order_id)
         
     except Exception as e:
         message = ''
@@ -392,7 +392,7 @@ def neworder(request, product_id):
         sendmail(order, subject="【仮注文確定】ご注文ありがとうございます")
 
 
-        return redirect('order_detail', order_id = order.id)
+        return redirect('order_detail', order_id = order.order_id)
         #リダイレクト先は注文確認画面
         #return redirect('order_history')
     
@@ -416,7 +416,7 @@ def order_invoice_pdf(request, order_id):
     pdf_file = HTML(string=html_string).write_pdf()
 
     response = HttpResponse(pdf_file, content_type='application/pdf')
-    response['Content-Disposition'] = f'filename="invoice_{order.id}.pdf"'
+    response['Content-Disposition'] = f'filename="invoice_{order.order_id}.pdf"'
     return response
 
 
@@ -461,7 +461,7 @@ def order_cancel(request, order_id):
         messages.success(request, "注文をキャンセルしました。")
 
     #リダイレクト先は注文詳細
-    return redirect('order_detail', order_id=order.id)
+    return redirect('order_detail', order_id=order.order_id)
 
 @admin_required
 def upload_generic_csv(request):
