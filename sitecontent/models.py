@@ -22,4 +22,11 @@ class OrderNote(models.Model):
     note = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
-        return f"注文注意書き({ self.note })" if self.note else "注文注意書き"
+        return f"注文ページの内容"
+        
+class OrderHistoryNote(models.Model):
+    content = models.TextField()
+    note = models.CharField(max_length=200, blank=True)
+
+    def __str__(self):
+        return f"注文履歴ページの内容"
