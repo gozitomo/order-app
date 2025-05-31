@@ -4,23 +4,24 @@ from users.models import UserGroup
 # Create your models here.
 class FruitKind(models.Model):
     """ kind of fruit, like Peach, Plum, Chestnut, etc"""
+    STATUS_CHOICES = [
+        ('available', '受付中'),
+        ('closed', '準備中'),
+    ]
     name = models.CharField(max_length=50)
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='available')
+
 
     def __str__(self):
         return self.name
 
 class ProductName(models.Model):
     """ Product name like あかつき, なつっこ, etc. """
-    STATUS_CHOICES = [
-        ('available', '受付中'),
-        ('closed', '準備中'),
-    ]
     name = models.CharField(max_length=50)
     kind = models.ForeignKey(FruitKind, on_delete=models.CASCADE, related_name="products")
     description = models.TextField(blank=True)
     season = models.CharField(max_length=50)
     sort_no = models.PositiveIntegerField()
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='available')
 
     def __str__(self):
         return f"{self.name} ({self.kind.name})"
