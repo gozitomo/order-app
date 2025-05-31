@@ -46,6 +46,10 @@ def parse_field_value(field, value):
             return int(value)
         elif field_type == 'FloatField':
             return float(value)
+        elif field_type == 'DateField':
+            return datetime.strptime(value, '%Y-%m-%d').date()
+        elif field_type == 'DateTimeField':
+            return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
         elif field_type == 'DecimalField':
             return field.to_python(value)  # Decimal型を正確に
         elif field_type == 'ForeignKey':
