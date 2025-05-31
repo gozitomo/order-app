@@ -52,7 +52,7 @@ def parse_field_value(field, value):
             return datetime.strptime(value, '%Y-%m-%d %H:%M:%S')
         elif field_type == 'DecimalField':
             return field.to_python(value)  # Decimal型を正確に
-        elif field_type == 'ForeignKey':
+        elif field_type == ('ForeignKey', 'OneToOneField'):
             rel_model = field.remote_field.model
             # モデルごとに解決キーを切り替える
             lookup_field = {
