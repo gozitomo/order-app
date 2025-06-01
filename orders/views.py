@@ -15,6 +15,7 @@ from django.db import models
 from django.db.models import Sum, Q
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
+from email.utils import formataddr
 from .models import Order, OrderItem, Invoice
 from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
 from sitecontent.models import OrderNote, OrderHistoryNote
@@ -93,11 +94,11 @@ def sendmail(order, subject):
     message += f"/n【合計金額】{order.final_price}円（うち送料{order.shipping_price}円）/n"
 
     print(message)
-
+    from_email = formataddr(("プログレスファーム（B2B発注アプリ）", settings.DEFAULT_FROM_EMAIL))
     send_mail(
         subject=subject,
         message=message,
-        from_email=settings.DEFAULT_FROM_EMAIL,
+        from_email=from_email,
         recipient_list=[order.user.email],
         fail_silently=False
     )
