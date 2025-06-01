@@ -9,7 +9,7 @@ class FruitKindAdmin(admin.ModelAdmin):
 
 @admin.register(PriceTable)
 class PriceTableAdmin(admin.ModelAdmin):
-    list_display = ('user_group', 'kind', 'grade', 'size', 'unit')
+    list_display = ('kind', 'grade', 'size', 'unit', 'user_group')
     list_filter = ('user_group', 'kind')
 
 admin.site.register(ProductName)

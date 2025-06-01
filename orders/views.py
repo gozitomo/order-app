@@ -259,7 +259,8 @@ def neworder(request, product_id):
     user_group = getattr(user_profile, 'user_group', None)
     user_region = getattr(user_profile, 'region', None)
     options = product.kind.options.filter(
-        Q(user_group=user_group) | Q(user_group__name='Forall')
+        Q(user_group=user_group) | Q(user_group__name='Forall'),
+        status = 'available'
     )
 
     #価格テーブルを定義
