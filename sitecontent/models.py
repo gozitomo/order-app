@@ -53,6 +53,7 @@ class ErrLog(models.Model):
     user = models.ForeignKey('auth.User', null=True, blank=True, on_delete=models.SET_NULL)
     message = models.TextField()
     traceback = models.TextField(blank=True, help_text="詳細なトレース（あれば）")
+    resolved = models.BooleanField(default=False, help_text="解決済みフラグ")
 
     def __str__(self):
         return f"[{self.timestamp}] {self.level} -{self.message[:50]}"
