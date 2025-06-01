@@ -8,7 +8,7 @@
         th { background-color: #eee;}
     </style>
     <h2>請求書</h2>
-    <p>注文ID:　{{ order.id }}</p>
+    <p>注文番号:　{{ order.id }}</p>
     <p>顧客:　{{ order.user.username }}</p>
     <p>注文日:　{{ order.created_at|date:"Y年m月d日" }}</p>
 
@@ -23,10 +23,10 @@
         {% for item in order.items.all %}
         <tr>
             <td width:40%>{{ item.product.name }}</td>
-            <td style="text-align:right; width:15%">{{ item.quantity }} kg</td>
-            <td style="text-align:right; width:15%">{{ item.product.price }} 円</td>
-            <td  style="text-align:right; width:15%">{{ item.tax }} 円</td>
-            <td  style="text-align:right; width:15%">{{ item.subtotal }} 円</td>
+            <td style="text-align:right; width:15%">{{ item.quantity }}kg</td>
+            <td style="text-align:right; width:15%">{{ item.product.price }}円</td>
+            <td  style="text-align:right; width:15%">{{ item.tax }}円</td>
+            <td  style="text-align:right; width:15%">{{ item.subtotal }}円</td>
         </tr>
         {% endfor %}
     </table>

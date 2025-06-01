@@ -83,7 +83,7 @@ def sendmail(order, subject):
 
 
     message = f"""
-    【注文ID】{order.order_id}
+    【注文番号】{order.order_id}
     【注文者】{order.user.userprofile.company_name}
     【納品予定日】{order.product_delivery_date.date.strftime}
 

@@ -12,19 +12,19 @@
             <p style="color: red;"><strong>この注文は納品希望日まで10日を切りましたので、キャンセル不可となります。
             <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
         {% endif %} 
-    <p><strong>納品希望日:</strong>
+    <p><strong>注文番号:</strong>{{ order.order_id }}</p>
+    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
+    <p><strong>納品希望:</strong>
         <select name="delivery_date">
             {% for date in delivery_dates %}
             <option value="{{ date.value }}">{{ date.label }}</option>
             {% endfor%}
         </select>
     </p>
-    <p><strong>クール区分</strong>           
+    <p><strong>配送区分:</strong>           
         <input type="radio" name="cool_flg" value="false" checked>通常便
         <input type="radio" name="cool_flg" value="true">冷蔵便
     </p>
-    <p><strong>注文ID:</strong>{{ order.order_id }}</p>
-    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
     <p><strong>品種:</strong>{{ product.name }}</p>
     <div class="table-responsive">
         <table class="thead-light">

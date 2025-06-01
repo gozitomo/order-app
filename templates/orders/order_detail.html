@@ -13,7 +13,7 @@
             <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
         {% endif %}
 
-    <p><strong>注文ID:</strong>{{ order.order_id }}</p>
+    <p><strong>注文番号:</strong>{{ order.order_id }}</p>
     <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
     <p><strong>納品希望日:</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}</p>
     <div class="table-responsive">
