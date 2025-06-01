@@ -8,7 +8,7 @@
 </table>
 <p class="small text-muted">{{ product.description|safe }}</p>
 
-<form id="order-form" method="post">
+<form id="order-form" method="post" onsubmit="return handleSubmit(event)">
     {% csrf_token %}
     <p><strong>納品希望:</strong>
         <select name="delivery_date">
@@ -69,7 +69,7 @@
     <strong>特記事項</strong>
     <input type=text name="remarks" class="form-control" style="max-width: 450px;">
     <br>
-    <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">仮注文</button>
+    <button type="submit" id="kari-order" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">仮注文</button>
 
 </form>
 
@@ -119,12 +119,7 @@
         rowIndex++;
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-        const firstRow = document.getElementById('order-body').querySelector('tr');
-        attachUpdater(firstRow, 0);
-    });
-
-    document.getElementById("order-form").addEventListener("submit", function(event){
+    function handleSubmit(event){
         const inputs = document.querySelectorAll('input[name^="quantity_"]');
         let total = 0;
         inputs.forEach(input => {
@@ -138,6 +133,16 @@
             alert("数量を1以上にしてください。");
             event.preventDefault(); //フォーム送信をブロック
         }
+        const btn = document.getElementById('kari-order');
+        btn.disabled = true;
+        btn.innerText = "送信中..."
+
+        return true;
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const firstRow = document.getElementById('order-body').querySelector('tr');
+        attachUpdater(firstRow, 0);
     });
 </script>
 {% endblock %}

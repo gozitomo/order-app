@@ -415,7 +415,7 @@ def my_invoices(request):
 @login_required
 @require_POST
 def order_cancel(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = get_object_or_404(Order, order_id=order_id, user=request.user)
     if order.status == 'キャンセル':
         messages.info(request, "すでにキャンセル済みです。")
     elif order.status == 'キャンセル不可':

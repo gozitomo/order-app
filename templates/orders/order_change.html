@@ -4,7 +4,7 @@
 {% block content %}
 {% csrf_token %}
     <h2>注文変更</h2>
-    <form id="order-form" method="POST" action="{% url 'order_change' order.order_id%}">
+    <form id="order-form" method="POST" onsubmit="return handleSubmit(event)" action="{% url 'order_change' order.order_id%}">
         {% csrf_token %}
         {% if order.status == 'キャンセル' %}
             <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
@@ -100,7 +100,7 @@
 
     <p><a href="{% url 'order_invoice_pdf' order.order_id %}" target="_blank">請求書</a></p>-->
     <div class="text-start">
-        <button type="submit" class="btn btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">
+        <button type="submit" id="fix-order" class="btn btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">
           確定
         </button>
     </form>
@@ -166,19 +166,26 @@
             update();
         }
 
-        document.getElementById("order-form").addEventListener("submit", function(event){
+        function handleSubmit(event){
             const inputs = document.querySelectorAll('input[name^="quantity_"]');
             let total = 0;
             inputs.forEach(input => {
                 const val = parseInt(input.value);
-                if (!isNaN(val)) {
+                if (!isNaN(val)){
                     total += val;
                 }
             });
-            if (total === 0) {
+
+            if (total === 0){
                 alert("数量を1以上にしてください。");
                 event.preventDefault(); //フォーム送信をブロック
             }
-        })
+            const btn = document.getElementById('fix-order');
+            btn.disabled = true;
+            btn.innerText = "送信中..."
+
+            return true;
+        }
+
     </script>
 {% endblock %}
