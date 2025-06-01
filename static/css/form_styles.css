@@ -1,0 +1,35 @@
+/* 数値・テキスト入力欄 */
+input[type="text"],
+input[type="number"],
+input[inputmode="numeric"],
+input.form-control {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    padding: 0.2rem 0.4rem !important;
+    height: auto !important;
+    -webkit-text-size-adjust: none !important;
+}
+
+/* セレクトボックス */
+select,
+select.form-control {
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    padding: 0.2rem 0.4rem !important;
+    height: auto !important;
+    -webkit-text-size-adjust: none !important;
+}
+
+/* テーブル全体 */
+th, td {
+    font-size: 12px !important;
+    vertical-align: middle !important;
+    -webkit-text-size-adjust: none !important;
+}
+
+/* 表示用の価格表示 */
+.price_display {
+    font-size: 12px !important;
+    font-family: Arial, sans-serif !important;
+    -webkit-text-size-adjust: none !important;
+}
