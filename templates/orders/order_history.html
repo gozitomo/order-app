@@ -63,7 +63,7 @@
                     <td colspan=5>
                         <strong>税込合計: </strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
                         <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
-                        <br>
+                        <br><br>
                     </td>    
                 </tr>
                 {% if order.tracking_id %}
