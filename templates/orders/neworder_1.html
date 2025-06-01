@@ -6,36 +6,29 @@
         <td nowrap class="small">（{{ product.season }}）</td>
     </tr>
 </table>
-<p class="small text-muted">{{ product.description|linebreaksbr }}</p>
+<p class="small text-muted">{{ product.description|safe }}</p>
 
 <form id="order-form" method="post">
     {% csrf_token %}
-    <table border="0" cellpadding="8">
+    <p><strong>納品希望日:</strong>
+        <select name="delivery_date">
+            {% for date in delivery_dates %}
+            <option value="{{ date.value }}">{{ date.label }}</option>
+            {% endfor%}
+        </select>
+    </p>
+    <p><strong>クール区分</strong>           
+        <input type="radio" name="cool_flg" value="false" checked>通常便
+        <input type="radio" name="cool_flg" value="true">冷蔵便
+    </p>
+    <div class="table-responsive">
+    <table>
         <tr>
-            <th>納品希望日</th>
-            <td>
-                <select name="delivery_date">
-                    {% for date in delivery_dates %}
-                    <option value="{{ date.value }}">{{ date.label }}</option>
-                    {% endfor%}
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <th>クール区分</th>
-            <td>
-                <input type="radio" name="cool_flg" value="false">通常便
-                <input type="radio" name="cool_flg" value="true" checked>冷蔵便
-            </td>
-        </tr>
-    </table>
-    <table border="0" cellpadding="8">
-        <tr>
-            <th>等級</th>
-            <th>階級</th>
-            <th>量目</th>
-            <th>税込価格</th>
-            <th>箱数</th>
+             <th class="text-center d-none d-sm-table-cell">等級</th>
+             <th class="text-center d-none d-sm-table-cell">階級</th>
+             <th class="text-center d-none d-sm-table-cell">ユニット</th>
+             <th class="text-center d-none d-sm-table-cell">税込価格</th>
+             <th class="text-center d-none d-sm-table-cell">数量</th>
         </tr>
         <tbody id="order-body">
             <tr>
@@ -61,20 +54,23 @@
                     </select>
                 </td>
                 <td>
-                    <span class="price_display">-</span> 円
+                    <span class="price_display">-</span>円
                 </td>
                 <td>
-                    <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 100px;">
+                    <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 50px;">
                 </td>
             </tr>
         </tbody>
     </table>
-    特記事項
-    <input type=text name="remarks" class="form-control" style="max-width: 450px;">
+    </div>
     <br>
     <button type="button" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;" onclick="addRow()">+ 行を追加</button>
     <br><br>
+    <strong>特記事項</strong>
+    <input type=text name="remarks" class="form-control" style="max-width: 450px;">
+    <br>
     <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">仮注文</button>
+
 </form>
 
 <script>
@@ -139,7 +135,7 @@
         });
 
         if (total === 0){
-            alert("注文箱数を1以上にしてください。");
+            alert("数量を1以上にしてください。");
             event.preventDefault(); //フォーム送信をブロック
         }
     });
