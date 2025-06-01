@@ -46,7 +46,7 @@
                 <td class="text-center" style="white-space: nowrap;">{{ item.price_table.unit }}</td>
                 <td class="text-center" style="white-space: nowrap;">{{ item.price_table.price|intcomma }}円</td>
                 <td class="text-center" style="white-space: nowrap;">
-                    <input inputmode="numeric" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 50px; display: inline-block; vertical-align: middle;">
+                    <input inputmode="numeric" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 50px; font-size: 14px;">
                 </td>
                 <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }}円</td>-->
             </tr>
@@ -83,7 +83,7 @@
                         <span class="price_display">-</span>円
                     </td>
                     <td class="text-center">
-                        <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 50px;">
+                        <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 50px; font-size: 0.85rem;">
                     </td>
                 </tr>
             </tbody>
@@ -93,7 +93,7 @@
     <button type="button" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;" onclick="addRow()">+ 行を追加</button>
     <br><br>
     <strong>特記事項</strong>
-    <input type=text name="remarks" class="form-control" style="max-width: 450px;">
+    <input type=text name="remarks" class="form-control" style="max-width: 450px; font-size: 0.85rem;">
     <br>
     <!-- <hr>
     <p><strong>総計：</strong>{{ order.final_total|intcomma }}円(うち送料){{ order.shipping_price|intcomma }}円</p> 
