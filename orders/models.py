@@ -77,7 +77,7 @@ class Order(models.Model):
 
     STATUS_CHOICES = [
         ('tentative', '仮注文'),
-        ('received', '確認済み'),
+        ('recieved', '確認済み'),
         ('preparing', '準備中'), #キャンセル不可
         ('shipped', '発送済'), #キャンセル不可
         ('canceled', 'キャンセル済'),
