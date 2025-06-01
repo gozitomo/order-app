@@ -33,7 +33,15 @@ class OrderHistoryNote(models.Model):
     def __str__(self):
         return f"注文履歴ページの内容"
 
-class ErrorLog(models.Model):
+class ErrMsg(models.Model):
+    key = models.CharField(max_length=100, unique=True, help_text="テンプレート側で使うキー")
+    message = models.TextField(help_text="表示するメッセージ本文（html可）")
+    is_active = models.BooleanField(default=True, help_text="有効フラグ")
+
+    def __str__(self):
+        return f"{self.key}-{self.message[:50]}"
+
+class ErrLog(models.Model):
     timestamp = models.DateTimeField(default=now)
     level = models.CharField(max_length=50, choices=[
         ('INFO', 'info'),

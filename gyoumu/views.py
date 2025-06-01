@@ -2,11 +2,12 @@ from io import TextIOWrapper
 import csv
 
 from django.apps import apps
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.db import models
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.utils.timezone import localdate, now
 
 from orders.models import Order, OrderItem, Invoice
 from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
@@ -180,3 +181,31 @@ def monthly_invoice_pdf(request):
 @admin_required
 def gyoumu_menu(request):
     return render(request, 'gyoumu/gyoumu.html')
+
+
+@admin_required
+def order_confirm(request, order_id=None):
+    if request.method == 'POST' and order_id is not None:
+        order = get_object_or_404(Order, order_id=order_id)
+        order.status = 'recieved'
+        order.save()
+
+        return redirect('order_confirm')
+
+    orders = Order.objects.filter(
+        total_weight__gt=0).prefetch_related('items').order_by('product_delivery_date')
+    today = localdate()
+    notes = OrderHistoryNote.objects.all()
+
+    for order in orders:
+
+        #本日注文分でなければ、#納品日まで10日を切ったらキャンセル不可とする
+        if  order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
+            order.status = 'preparing'
+            order.save()
+        order.userprofile = getattr(order.user, 'userprofile', None)
+
+    return render(request, 'gyoumu/order_confirm.html', {
+        'orders': orders,
+        'notes': notes,
+        })
