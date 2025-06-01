@@ -18,7 +18,7 @@
                     </div>
                 </div>
             {% endifchanged %}
-            <table class="thead-light" style="margin-left: 5%">
+            <table style="margin-left: 5%">
                 <tr>
                     <td colspan=6>
                         <div class="d-flex justify-content-start">
@@ -37,6 +37,34 @@
                         <strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}
                     </td>
                 </tr>
+                <tr>
+                    <td colspan=6>
+                        <strong>配送区分：</strong>
+                        {% if order.cool_flg == true %}
+                            冷蔵
+                        {% else %}
+                            常温
+                        {% endif %}
+                        {% if order.tracking_id %}
+                        <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
+                            ヤマト追跡ページ
+                        </a>（追跡番号：{{ order.tracking_id }}）
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="text-end">
+                        <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
+                        <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
+                    </td> 
+                </tr>
+                <tr>
+                    <td colspan=6>
+                        <strong>注文内容：</strong>
+                    </td>
+                </tr>
+                </table>
+                <table class="table">
                 <tr>
                     <th class="text-center d-none d-sm-table-cell">商品名</th>
                     <th class="text-center d-none d-sm-table-cell">等級</th>
@@ -59,24 +87,9 @@
                     </tr>
                     {% endif %}
                 {% endfor %}
-                <tr>
-                    <td colspan=5>
-                        <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
-                        <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
-                        <br><br>
-                    </td>    
-                </tr>
-                {% if order.tracking_id %}
-                <tr>
-                    <td colspan=6>
-                        <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
-                            ヤマト追跡ページ
-                        </a>（追跡番号：{{ order.tracking_id }}）
-                    </td>
-                </tr>
-                {% endif %}
+                </table>
+                <br>
             {% endfor %}
-            </table>
     {% else %}
         <p>注文履歴はまだありません。</p>
     {% endif %}

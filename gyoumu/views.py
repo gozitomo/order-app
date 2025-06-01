@@ -7,6 +7,7 @@ from django.db import models
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.http import HttpResponse
 from django.utils.timezone import localdate, now
 
 from orders.models import Order, OrderItem, Invoice
@@ -124,6 +125,35 @@ def upload_generic_csv(request):
         return redirect('csv_upload')
 
     return render(request, 'gyoumu/csv_uploader.html')
+
+@admin_required
+def export_model_csv(request, app_label=None, model_name=None):
+
+    if request.method == 'POST' and (app_label==None or model_name==None):
+        app_label = request.POST.get('app_label')
+        model_name = request.POST.get('model_name')
+        Model = apps.get_model(app_label, model_name)
+        objects = Model.objects.all()
+        if not objects.exists():
+            return HttpResponse("No data available", content_type="text/plain")
+
+        #csvレスポンス設定
+        response = HttpResponse(content_type="text/csv")
+        response['Content-Disposition'] = f'attachment; filename="{app_label}.{model_name}.csv"'
+
+        #フィールド名取得
+        field_names = [field.name for field in Model._meta.fields]
+
+        writer = csv.writer(response)
+        writer.writerow(field_names)
+
+        for obj in objects:
+            row = [getattr(obj, field) for field in field_names]
+            writer.writerow(row)
+        
+        return response
+
+    return render(request, 'gyoumu/export_model_csv.html')
 
 
 @admin_required

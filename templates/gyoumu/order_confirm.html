@@ -48,6 +48,16 @@
                 </tr>
                 <tr>
                     <td colspan=6>
+                        <strong>配送区分：</strong>
+                        {% if order.cool_flg == true %}
+                            冷蔵
+                        {% else %}
+                            常温
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=6>
                         <strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}
                     </td>
                 </tr>

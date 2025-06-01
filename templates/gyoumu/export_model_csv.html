@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>CSV Export</h2>
+<form method="post">
+    {% csrf_token %}
+    アプリ名：<input type="text" name="app_label">
+    モデル名：<input type="text" name="model_name">
+    <button type="submit" class="btn btn-sm btn-primary mt-2"  style="padding: 2px 8px; font-size: 0.75rem;">Export</button>
+</form>
+{% for message in messages %}
+<p style="color: {% if message.tags == 'error' %}red{% else %}green{% endif %};">
+    {{ message }}
+</p>
+{% endfor %}
+{% endblock %}
