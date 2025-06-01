@@ -24,16 +24,16 @@
         <tr>
             <td width:40%>{{ item.delivery_date|date:"Y年m月d日" }}</td>
             <td width:40%>{{ item.product.name }}</td>
-            <td style="text-align:right; width:15%">{{ item.product.price|intcomma }} 円</td>
+            <td style="text-align:right; width:15%">{{ item.product.price|intcomma }}円</td>
             <td style="text-align:right; width:15%">{{ item.quantity }} （{{ item.product.unit }}）</td>
-            <td style="text-align:right; width:15%">{{ item.subtotal|intcomma }} 円</td>
+            <td style="text-align:right; width:15%">{{ item.subtotal|intcomma }}円</td>
         </tr>
         <tr>
             <td width:40%>{{ item.delivery_date|date:"Y年m月d日" }}</td>
             <td>送料</td>
-            <td style="text-align:right; width:15%">{{ item.shipping_fee|intcomma }} 円</td>
+            <td style="text-align:right; width:15%">{{ item.shipping_fee|intcomma }}円</td>
             <td style="text-align:right; width:15%">1</td>
-            <td style="text-align:right; width:15%">{{ item.shipping_fee|intcomma }} 円</td>
+            <td style="text-align:right; width:15%">{{ item.shipping_fee|intcomma }}円</td>
         </tr>
         {% endfor %}
     </table>
@@ -41,11 +41,11 @@
     <table style="width: 50%;">
     <tr>
         <th style="width: 40%;">小計</th>
-        <td style="width: 60%; text-align: right;">{{ invoice.final_extax|intcomma }} 円</td>
+        <td style="width: 60%; text-align: right;">{{ invoice.final_extax|intcomma }}円</td>
     </tr>
     <tr>
         <th style="width: 40%;">消費税額合計</th>
-        <td style="width: 60%; text-align: right;">{{ invoice.final_tax|intcomma }} 円</td>
+        <td style="width: 60%; text-align: right;">{{ invoice.final_tax|intcomma }}円</td>
     </tr>
     <tr>
         <th>合計</th>
