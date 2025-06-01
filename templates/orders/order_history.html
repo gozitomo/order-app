@@ -63,6 +63,7 @@
                     <td colspan=5>
                         <strong>税込合計: </strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
                         <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
+                        <br>
                     </td>    
                 </tr>
                 {% if order.tracking_id %}
@@ -71,11 +72,6 @@
                         <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
                             ヤマト追跡ページ
                         </a>（追跡番号：{{ order.tracking_id }}）
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <br>
                     </td>
                 </tr>
                 {% endif %}
