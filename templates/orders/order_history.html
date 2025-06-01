@@ -19,7 +19,7 @@
             <table class="thead-light">
                 <tr>
                     <td colspan=3>
-                        <strong>注文ID:</strong>{{ order.order_id }}
+                        <strong>注文番号:</strong>{{ order.order_id }}
                     </td>
                     <td colspan=3>
                         <div class="d-flex justify-content-end">
@@ -61,8 +61,7 @@
                 {% endfor %}
                 <tr>
                     <td colspan=5>
-                        <br>
-                        <strong>合計（税込）：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
+                        <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
                         <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
                     </td>    
                 </tr>

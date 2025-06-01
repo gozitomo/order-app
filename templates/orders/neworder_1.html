@@ -10,14 +10,14 @@
 
 <form id="order-form" method="post">
     {% csrf_token %}
-    <p><strong>納品希望日:</strong>
+    <p><strong>納品希望:</strong>
         <select name="delivery_date">
             {% for date in delivery_dates %}
             <option value="{{ date.value }}">{{ date.label }}</option>
             {% endfor%}
         </select>
     </p>
-    <p><strong>クール区分</strong>           
+    <p><strong>配送区分:</strong>           
         <input type="radio" name="cool_flg" value="false" checked>通常便
         <input type="radio" name="cool_flg" value="true">冷蔵便
     </p>
