@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load humanize %}
-{% block title %}ご注文明細{% endblock %}
+{% block title %}注文変更{% endblock %}
 {% block content %}
 {% csrf_token %}
-    <h2>ご注文内容の変更</h2>
+    <h2>注文変更</h2>
     <form id="order-form" method="POST" action="{% url 'order_change' order.order_id%}">
         {% csrf_token %}
         {% if order.status == 'キャンセル' %}
@@ -11,9 +11,7 @@
         {% elif order.status == 'キャンセル不可' %}
             <p style="color: red;"><strong>この注文は納品希望日まで10日を切りましたので、キャンセル不可となります。
             <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
-        {% endif %}
-        <p><strong>品名:</strong>        
-        <td style="width:20%">{{ product.name }}</td>
+        {% endif %} 
     <p><strong>納品希望日:</strong>
         <select name="delivery_date">
             {% for date in delivery_dates %}
@@ -27,24 +25,30 @@
     </p>
     <p><strong>注文ID:</strong>{{ order.order_id }}</p>
     <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
+    <p><strong>品種:</strong>{{ product.name }}</p>
     <div class="table-responsive">
         <table class="thead-light">
+            {% comment %} <tr>
+            <td colspan=5 class="text-left">{{ product.name }}</td>
+            </tr> {% endcomment %}
             <tr>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">等級</th>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">階級</th>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">荷姿</th>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">箱数</th>
+                <th class="text-center d-none d-sm-table-cell">等級</th>
+                <th class="text-center d-none d-sm-table-cell">階級</th>
+                <th class="text-center d-none d-sm-table-cell">ユニット</th>
+                <th class="text-center d-none d-sm-table-cell">税込価格</th>
+                <th class="text-center d-none d-sm-table-cell">数量</th>
                 <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
             </tr>
             {% for item in order.items.all %}
             <tr>
-                <td style="text-align:center; width:10%;">{{ item.price_table.grade }}</td>
-                <td style="text-align:center; width:10%;">{{ item.price_table.size }}</td>
-                <td style="text-align:center; width:20%; white-space: nowrap;">{{ item.price_table.unit }}@{{ item.price_table.price|intcomma }}円</td>
-                <td style="text-align:center; width:20%; white-space: nowrap;">
-                    ×<input inputmode="numeric" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 60px; display: inline-block; vertical-align: middle;">
+                <td class="text-center">{{ item.price_table.grade }}</td>
+                <td class="text-center">{{ item.price_table.size }}</td>
+                <td class="text-center" style="white-space: nowrap;">{{ item.price_table.unit }}</td>
+                <td class="text-center" style="white-space: nowrap;">{{ item.price_table.price|intcomma }}円</td>
+                <td class="text-center" style="white-space: nowrap;">
+                    <input inputmode="numeric" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0" class="form-control" style="max-width: 50px; display: inline-block; vertical-align: middle;">
                 </td>
-                <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
+                <!--<td style="text-align:right width:10%">{{ item.subtotal|intcomma }}円</td>-->
             </tr>
             {% endfor %}
             <tbody id="order-body">
@@ -54,46 +58,48 @@
         <table style="display: none;">
             <tbody>
                 <tr id="row-template">
-                    <td>
+                    <td class="text-center">
                         <select name="grade_0">
                             {% for grade in grades %}
                             <option value="{{ grade }}">{{ grade }}</option>
                             {% endfor %}
                         </select>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <select name="size_0">
                             {% for size in sizes %}
                             <option value="{{ size }}">{{ size }}</option>
                             {% endfor %}
                         </select>
                     </td>
-                    <td>
+                    <td class="text-center">
                         <select name="unit_0">
                             {% for unit in units %}
                             <option value="{{ unit }}">{{ unit }}</option>
                             {% endfor %}
                         </select>
                     </td>
-                    <td>
-                        <span class="price_display">-</span> 円
+                    <td class="text-center">
+                        <span class="price_display">-</span>円
                     </td>
-                    <td>
-                        <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 80px;">
+                    <td class="text-center">
+                        <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 50px;">
                     </td>
                 </tr>
             </tbody>
         </table>
-            特記事項
-        <input type=text, name="remarks", value="{{ order.remarks }}", class="form-control", style="max-width: 450px;">
-        <br>
-        <button type="button", class="btn btn-sm btn-primary me-2", style="padding: 2px 8px; font-size: 0.75rem;", onclick="addRow()">+ 行を追加</button>
     </div>
+    <br>
+    <button type="button" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;" onclick="addRow()">+ 行を追加</button>
+    <br><br>
+    <strong>特記事項</strong>
+    <input type=text name="remarks" class="form-control" style="max-width: 450px;">
+    <br>
     <!-- <hr>
     <p><strong>総計：</strong>{{ order.final_total|intcomma }}円(うち送料){{ order.shipping_price|intcomma }}円</p> 
 
     <p><a href="{% url 'order_invoice_pdf' order.order_id %}" target="_blank">請求書</a></p>-->
-    <div class="text-end mt-3">
+    <div class="text-start">
         <button type="submit" class="btn btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">
           確定
         </button>
@@ -170,7 +176,7 @@
                 }
             });
             if (total === 0) {
-                alert("注文箱数を1以上にしてください。");
+                alert("数量を1以上にしてください。");
                 event.preventDefault(); //フォーム送信をブロック
             }
         })

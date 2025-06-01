@@ -1,4 +1,6 @@
 from django.db import models
+from django.utils.timezone import now
+
 
 # Create your models here.
 
@@ -30,3 +32,19 @@ class OrderHistoryNote(models.Model):
 
     def __str__(self):
         return f"注文履歴ページの内容"
+
+class ErrorLog(models.Model):
+    timestamp = models.DateTimeField(default=now)
+    level = models.CharField(max_length=50, choices=[
+        ('INFO', 'info'),
+        ('WARNING', 'warning'),
+        ('ERROR', 'error'),
+        ('CRITICAL', 'critical'),
+    ])
+    module = models.CharField(max_length=255, blank=True, help_text="エラーが発生した機能や画面名")
+    user = models.ForeignKey('auth.User', null=True, blank=True, on_delete=models.SET_NULL)
+    message = models.TextField()
+    traceback = models.TextField(blank=True, help_text="詳細なトレース（あれば）")
+
+    def __str__(self):
+        return f"[{self.timestamp}] {self.level} -{self.message[:50]}"

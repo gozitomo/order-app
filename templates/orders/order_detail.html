@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load humanize %}
-{% block title %}ご注文明細{% endblock %}
+{% block title %}注文確認{% endblock %}
 {% block content %}
 {% csrf_token %}
-    <h2>注文内容の確認</h2>
+    <h2>注文確認</h2>
     <form method="POST" action="{% url 'order_cancel' order.order_id%}">
         {% csrf_token %}
         {% if order.status == 'canceled' %}
@@ -19,22 +19,22 @@
     <div class="table-responsive">
         <table class="thead-light">
             <tr>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">商品名</th>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">等級</th>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">階級</th>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">荷姿</th>
-                <th style="text-align:center;" class="d-none d-sm-table-cell">箱数</th>
+                <th class="d-none d-sm-table-cell">商品名</th>
+                <th class="d-none d-sm-table-cell">等級</th>
+                <th class="d-none d-sm-table-cell">階級</th>
+                <th class="d-none d-sm-table-cell">荷姿</th>
+                <th class="d-none d-sm-table-cell">数量</th>
                 <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
             </tr>
             {% for item in order.items.all %}
                 {% if item.quantity > 0 %}
                 <tr>
-                    <td style="text-align:center; width:20%">{{ item.product.name }}</td>
-                    <td style="text-align:center; width:10%">{{ item.price_table.grade }}</td>
-                    <td style="text-align:center; width:10%">{{ item.price_table.size }}</td>
-                    <td style="text-align:center; width:20%" nowrap>{{ item.price_table.unit }}@{{ item.price_table.price|intcomma }}円</td>
-                    <td style="text-align:center; width:5%;">×{{ item.quantity }}</td>
-                   <!-- <td style="text-align:right width:10%">{{ item.subtotal|intcomma }} 円</td>-->
+                    <td class="text-center nowrap"> {{ item.product.name }} </td>
+                    <td class="text-center nowrap"> {{ item.price_table.grade }} </td>
+                    <td class="text-center nowrap"> {{ item.price_table.size }} </td>
+                    <td class="text-center nowrap"> {{ item.price_table.unit }} @ {{ item.price_table.price|intcomma }}円 </td>
+                    <td class="text-center nowrap"> ×{{ item.quantity }} </td>
+                   <!-- <td style="text-align:right width:10%">{{ item.subtotal|intcomma }}円</td>-->
                 </tr>
                 {% endif %}
             {% endfor %}
@@ -46,5 +46,5 @@
     </form>
 
     <!--<p><a href="{% url 'order_invoice_pdf' order.order_id %}" target="_blank">請求書</a></p>-->
-    <p><a href="{% url 'order_history' %}">←　注文履歴</a></p>
+    <p><a href="{% url 'order_history' %}">← 注文履歴</a></p>
 {% endblock %}

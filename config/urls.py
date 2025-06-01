@@ -27,6 +27,7 @@ urlpatterns = [
     )),
     path('', include('orders.urls')),
     path('', include('sitecontent.urls')),
+    path('', include('gyoumu.urls')),
     path('accounts/login/', auth_views.LoginView.as_view(template_name='sitecontent/login.html'), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]

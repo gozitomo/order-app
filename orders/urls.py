@@ -10,9 +10,6 @@ urlpatterns = [
     path('orders/change/<int:order_id>/', views.order_change, name='order_change'),
     path('orders/cancel/<int:order_id>/', views.order_cancel, name='order_cancel'),
     path('orders/<int:order_id>/invoice/pdf/',views.order_invoice_pdf, name='order_invoice_pdf'),
-    path('menu/',views.gyoumu_menu, name='gyoumu_menu'),
-    path('menu/csv_uploader/',views.upload_generic_csv, name='csv_upload'),
-    path('invoice/monthly/generate/',views.monthly_invoice_pdf, name='generate_monthly_invoice'),
     path('invoice/<int:invoice_id>/pdf/',views.invoice_pdf, name='invoice_pdf'),
     path('orders/my_invoice_list',views.my_invoices, name='my_invoices'),
 ]
