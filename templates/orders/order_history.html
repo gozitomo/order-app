@@ -13,30 +13,28 @@
                 <div class="bg-light text-dark py-0 px-0" style="margin-left: 0; margin-right: calc(-50vw + 50%); width: auto;">
                     <div class="d-flex justify-content-start bg-light align-items-center text-dark p-2 mb-3">
                         <div class="mb-0">
-                            <strong>納品希望日:</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}
+                            <strong>納品希望日: </strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}
                         </div>      
                     </div>
                 </div>
             {% endifchanged %}
             <table class="thead-light">
                 <tr>
-                    <td colspan=3>
-                        <strong>注文番号:</strong>{{ order.order_id }}
-                    </td>
-                    <td colspan=3>
-                        <div class="d-flex justify-content-end">
-                        <span>（{{ order.get_status_display }}）</span>
-                        {% if order.status == 'tentative' or order.status == 'received' %}
-                            <form method="GET" action="{% url 'order_change' order.order_id %}">
-                                <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
-                            </form>
-                        {% endif %}
+                    <td colspan=6>
+                        <div class="d-flex justify-content-start">
+                            <strong>注文番号: </strong>{{ order.order_id }}
+                            <span>（{{ order.get_status_display }}）</span>
+                            {% if order.status == 'tentative' or order.status == 'received' %}
+                                <form method="GET" action="{% url 'order_change' order.order_id %}">
+                                    <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
+                                </form>
+                            {% endif %}
                         </div>
                     </td>
                 </tr>
                 <tr>
                     <td colspan=6>
-                        <strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}
+                        <strong>注文日時: </strong>{{ order.created_at|date:"Y/m/d H:i" }}
                     </td>
                 </tr>
                 <tr>
@@ -63,7 +61,7 @@
                 {% endfor %}
                 <tr>
                     <td colspan=5>
-                        <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
+                        <strong>税込合計: </strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
                         <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
                     </td>    
                 </tr>
@@ -73,6 +71,11 @@
                         <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
                             ヤマト追跡ページ
                         </a>（追跡番号：{{ order.tracking_id }}）
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <br>
                     </td>
                 </tr>
                 {% endif %}
