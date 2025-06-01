@@ -7,6 +7,10 @@ from .models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
 class FruitKindAdmin(admin.ModelAdmin):
     list_display = ['id', 'name']
 
+@admin.register(PriceTable)
+class PriceTableAdmin(admin.ModelAdmin):
+    list_display = ('user_group', 'kind', 'grade', 'size', 'unit')
+    list_filter = ('user_group', 'kind')
+
 admin.site.register(ProductName)
-admin.site.register(PriceTable)
 admin.site.register(ProductDeliveryDate)
