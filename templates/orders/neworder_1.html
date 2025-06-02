@@ -77,27 +77,62 @@
     const priceData = {{ price_data_json|safe }};
     let rowIndex = 1;
 
+    function updateSelectOptions(select, validOptions, currentValue){
+        select.innerHTML = ""; //一旦全削除
+        validOptions.forEach(opt => {
+            const option = document.createElement("option");
+            option.value = opt;
+            option.text = opt;
+            select.appendChild(option);
+        });
+
+        //前の値がまだ有効なら保持
+        if (validOptions.includes(currentValue)){
+            select.value = currentValue;
+        }
+    }
+
     function attachUpdater(row, index) {
         const grade = row.querySelector(`select[name="grade_${index}"]`);
         const size = row.querySelector(`select[name="size_${index}"]`);
         const unit = row.querySelector(`select[name="unit_${index}"]`);
         const price = row.querySelector('.price_display');
 
-        const update = () => {
+        function updateOptions(){
+            const selectedGrade = grade.value;
+            const selectedSize = size.value;
+            const selectedUnit = unit.value;
+
+            const validForGrade = [...new Set(priceData
+                .filter(p => p.size === selectedSize && p.unit === selectedUnit)
+                .map(p => p.grade))];
+
+            const validForSize = [...new Set(priceData
+                .filter(p => p.grade === selectedGrade && p.unit === selectedUnit)
+                .map(p => p.size))];
+
+            const validForUnit = [...new Set(priceData
+                .filter(p => p.size === selectedSize && p.grade === selectedGrade)
+                .map(p => p.unit))];
+        
+            //各selectの更新
+            updateSelectOptions(grade, validForGrade);
+            updateSelectOptions(size, validForSize);
+            updateSelectOptions(unit, validForUnit);
+
             const match = priceData.find(opt =>
                 opt.grade === grade.value &&
                 opt.size === size.value &&
                 opt.unit === unit.value
             );
             price.textContent = match ? Number(match.price).toLocaleString() : '-';
-        };
+        }
 
-        grade.addEventListener('change', update);
-        size.addEventListener('change', update);
-        unit.addEventListener('change', update);
+        grade.addEventListener("change", updateOptions);
+        size.addEventListener("change", updateOptions);
+        unit.addEventListener("change", updateOptions);
 
-        // Immediately update once on load
-        update();
+        updateOptions();
     }
 
     function addRow() {
@@ -118,6 +153,8 @@
         attachUpdater(newRow, rowIndex);
         rowIndex++;
     }
+
+    window.addRow = addRow;
 
     function handleSubmit(event){
         //submit元が明確でない場合、処理を中断
