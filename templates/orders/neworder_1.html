@@ -57,7 +57,7 @@
                     <span class="price_display">-</span>円
                 </td>
                 <td>
-                    <input inputmode="numeric" name="quantity_0" value="0" min="0" class="form-control" style="max-width: 50px;">
+                    <input inputmode="numeric" name="quantity_0" value="" min="0" class="form-control" style="max-width: 50px;">
                 </td>
             </tr>
         </tbody>
@@ -110,7 +110,7 @@
             el.name = el.name.split('_')[0] + `_${rowIndex}`;
             }
             if (el.tagName === 'INPUT') {
-                el.value = 0;
+                el.value = "";
             }
         });
 
@@ -120,6 +120,11 @@
     }
 
     function handleSubmit(event){
+        //submit元が明確でない場合、処理を中断
+        if (event.submitter && event.submitter.id !== "kari-order") {
+            return false;
+        }
+        else{
         const inputs = document.querySelectorAll('input[name^="quantity_"]');
         let total = 0;
         inputs.forEach(input => {
@@ -139,6 +144,21 @@
 
         return true;
     }
+    }
+
+    document.addEventListener("DOMContentLoaded", function(){
+        // すべての input に対して Enter キーをブロック
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(function(input) {
+            input.addEventListener('keydown', function(event) {
+                if (event.key === "Enter") {
+                    if (event.target.type !== "submit" && event.target.tagName !== "TEXTAREA") {
+                        event.preventDefault();
+                    }
+                }
+            });
+        });
+    });
 
     document.addEventListener('DOMContentLoaded', () => {
         const firstRow = document.getElementById('order-body').querySelector('tr');

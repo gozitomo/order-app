@@ -155,7 +155,6 @@ def export_model_csv(request, app_label=None, model_name=None):
 
     return render(request, 'gyoumu/export_model_csv.html')
 
-
 @admin_required
 def monthly_invoice_pdf(request):
     today = date.today()
