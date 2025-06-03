@@ -77,62 +77,100 @@
     const priceData = {{ price_data_json|safe }};
     let rowIndex = 1;
 
-    function updateSelectOptions(select, validOptions, currentValue){
-        select.innerHTML = ""; //一旦全削除
-        validOptions.forEach(opt => {
-            const option = document.createElement("option");
-            option.value = opt;
-            option.text = opt;
-            select.appendChild(option);
+    function updateSelectStyles(select, validOptions){
+        [...select.options].forEach(option => {
+            if(validOptions.includes(option.value)){
+                option.disabled = false;
+            } else {
+                option.disabled = true;
+            }
         });
-
-        //前の値がまだ有効なら保持
-        if (validOptions.includes(currentValue)){
-            select.value = currentValue;
-        }
     }
 
-    function attachUpdater(row, index) {
+    function updatePrice(row, index){
         const grade = row.querySelector(`select[name="grade_${index}"]`);
         const size = row.querySelector(`select[name="size_${index}"]`);
         const unit = row.querySelector(`select[name="unit_${index}"]`);
         const price = row.querySelector('.price_display');
 
-        function updateOptions(){
-            const selectedGrade = grade.value;
-            const selectedSize = size.value;
-            const selectedUnit = unit.value;
+        const match = priceData.find(p => p.grade === grade.value
+                                    && p.size === size.value
+                                    && p.unit === unit.value);
+        price.textContent = match ? Number(match.price).toLocaleString(): '-';
+    }
 
-            const validForGrade = [...new Set(priceData
-                .filter(p => p.size === selectedSize && p.unit === selectedUnit)
-                .map(p => p.grade))];
+    function handleGradeChange(row, index) {
+        const grade = row.querySelector(`select[name="grade_${index}"]`);
+        const size = row.querySelector(`select[name="size_${index}"]`);
+        const unit = row.querySelector(`select[name="unit_${index}"]`);
 
-            const validForSize = [...new Set(priceData
-                .filter(p => p.grade === selectedGrade && p.unit === selectedUnit)
-                .map(p => p.size))];
+        const selectedGrade = grade.value;
 
-            const validForUnit = [...new Set(priceData
-                .filter(p => p.size === selectedSize && p.grade === selectedGrade)
-                .map(p => p.unit))];
-        
-            //各selectの更新
-            updateSelectOptions(grade, validForGrade);
-            updateSelectOptions(size, validForSize);
-            updateSelectOptions(unit, validForUnit);
+        const validSizes = [...new Set(priceData
+            .filter(p => p.grade === selectedGrade)
+            .map(p => p.size))];
 
-            const match = priceData.find(opt =>
-                opt.grade === grade.value &&
-                opt.size === size.value &&
-                opt.unit === unit.value
-            );
-            price.textContent = match ? Number(match.price).toLocaleString() : '-';
-        }
+        const validUnits = [...new Set(priceData
+            .filter(p => p.grade === selectedGrade)
+            .map(p => p.unit))]; 
 
-        grade.addEventListener("change", updateOptions);
-        size.addEventListener("change", updateOptions);
-        unit.addEventListener("change", updateOptions);
+        updateSelectStyles(size, validSizes);
+        updateSelectStyles(unit, validUnits);
 
-        updateOptions();
+        updatePrice(row, index);
+    }
+
+    function handleSizeChange(row, index) {
+        const grade = row.querySelector(`select[name="grade_${index}"]`);
+        const size = row.querySelector(`select[name="size_${index}"]`);
+        const unit = row.querySelector(`select[name="unit_${index}"]`);
+
+        const selectedSize = size.value;
+
+        const validGrades = [...new Set(priceData
+            .filter(p => p.size === selectedSize)
+            .map(p => p.grade))];
+
+        const validUnits = [...new Set(priceData
+            .filter(p => p.size === selectedSize)
+            .map(p => p.unit))]; 
+
+        updateSelectStyles(grade, validGrades);
+        updateSelectStyles(unit, validUnits);
+
+        updatePrice(row, index);
+    }
+
+    function handleUnitChange(row, index) {
+        const grade = row.querySelector(`select[name="grade_${index}"]`);
+        const size = row.querySelector(`select[name="size_${index}"]`);
+        const unit = row.querySelector(`select[name="unit_${index}"]`);
+
+        const selectedUnit = unit.value;
+
+        const validSizes = [...new Set(priceData
+            .filter(p => p.unit === selectedUnit)
+            .map(p => p.size))];
+
+        const validGrades = [...new Set(priceData
+            .filter(p => p.unit === selectedUnit)
+            .map(p => p.grade))]; 
+
+        updateSelectStyles(size, validSizes);
+        updateSelectStyles(grade, validGrades);
+
+        updatePrice(row, index);
+    }
+
+    function attachUpdater(row, index){
+
+        const grade = row.querySelector(`select[name="grade_${index}"]`)
+        const size = row.querySelector(`select[name="size_${index}"]`)
+        const unit = row.querySelector(`select[name="unit_${index}"]`)
+
+        grade.addEventListener("change", () => handleGradeChange(row, index));
+        size.addEventListener("change", () => handleSizeChange(row, index));
+        unit.addEventListener("change", () => handleUnitChange(row, index));
     }
 
     function addRow() {
@@ -151,6 +189,7 @@
 
         tbody.appendChild(newRow);
         attachUpdater(newRow, rowIndex);
+        handleGradeChange(newRow, rowIndex);
         rowIndex++;
     }
 
@@ -199,7 +238,9 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         const firstRow = document.getElementById('order-body').querySelector('tr');
+        handleGradeChange(firstRow, 0);
         attachUpdater(firstRow, 0);
     });
+
 </script>
 {% endblock %}
