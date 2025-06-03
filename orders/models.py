@@ -88,6 +88,7 @@ class Order(models.Model):
     product_delivery_date = models.ForeignKey(ProductDeliveryDate, on_delete=models.CASCADE, null=True)
     tracking_id = models.CharField(max_length=20, null=True)
     cool_flg = models.BooleanField(default=False)
+    pickup_flg = models.BooleanField(default=False)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='tentative')
     tax8_price = models.PositiveIntegerField(default=0)
     tax8 = models.PositiveIntegerField(default=0)
