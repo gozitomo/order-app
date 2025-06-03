@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load humanize %}
-{% block title %}注文確認{% endblock %}
+{% block title %}仮注文受付{% endblock %}
 {% block content %}
 {% csrf_token %}
-    <h2>注文確認</h2>
+    <h2>仮注文受付</h2>
     <form method="POST" action="{% url 'order_cancel' order.order_id%}">
         {% csrf_token %}
         {% if order.status == 'canceled' %}
@@ -13,16 +13,16 @@
             <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
         {% endif %}
 
-    <p><strong>注文番号:</strong>{{ order.order_id }}</p>
-    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
-    <p><strong>納品希望日:</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}</p>
+    <p><strong>注文番号：</strong>{{ order.order_id }}</p>
+    <p><strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
+    <p><strong>納品希望：</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}</p>
     <div class="table-responsive">
         <table class="thead-light">
             <tr>
                 <th class="d-none d-sm-table-cell">商品名</th>
                 <th class="d-none d-sm-table-cell">等級</th>
                 <th class="d-none d-sm-table-cell">階級</th>
-                <th class="d-none d-sm-table-cell">荷姿</th>
+                <th class="d-none d-sm-table-cell">ユニット</th>
                 <th class="d-none d-sm-table-cell">数量</th>
                 <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
             </tr>
@@ -38,11 +38,11 @@
                 </tr>
                 {% endif %}
             {% endfor %}
-
         </table>
     </div>
+    <p><strong>特記事項：</strong>{{ order.remarks }}</p>
     <hr>
-    <p><strong>合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）</p>
+    <p><strong>税込合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）</p>
     </form>
 
     <!--<p><a href="{% url 'order_invoice_pdf' order.order_id %}" target="_blank">請求書</a></p>-->
