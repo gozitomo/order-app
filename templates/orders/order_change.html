@@ -139,32 +139,107 @@
 
             tbody.appendChild(newRow);
             attachUpdater(newRow, rowIndex);
+            handleGradeChange(newRow, rowIndex);
             rowIndex++;
         }
 
-        function attachUpdater(row, index){
+
+        function updateSelectStyles(select, validOptions){
+            [...select.options].forEach(option => {
+                if(validOptions.includes(option.value)){
+                    option.disabled = false;
+                } else {
+                    option.disabled = true;
+                }
+            });
+        }
+
+        function updatePrice(row, index){
             const grade = row.querySelector(`select[name="grade_${index}"]`);
             const size = row.querySelector(`select[name="size_${index}"]`);
             const unit = row.querySelector(`select[name="unit_${index}"]`);
             const price = row.querySelector('.price_display');
 
-            const update = () => {
-                const match = priceData.find(opt =>
-                    opt.grade === grade.value &&
-                    opt.size === size.value &&
-                    opt.unit === unit.value
-                    );
-                    price.textContent = match ? match.price : '-';
-            };
-
-
-            grade.addEventListener('change', update);
-            size.addEventListener('change', update);
-            unit.addEventListener('change', update);
-
-            // Immediately update once on load
-            update();
+            const match = priceData.find(p => p.grade === grade.value
+                                        && p.size === size.value
+                                        && p.unit === unit.value);
+            price.textContent = match ? Number(match.price).toLocaleString(): '-';
         }
+
+        function handleGradeChange(row, index) {
+            const grade = row.querySelector(`select[name="grade_${index}"]`);
+            const size = row.querySelector(`select[name="size_${index}"]`);
+            const unit = row.querySelector(`select[name="unit_${index}"]`);
+
+            const selectedGrade = grade.value;
+
+            const validSizes = [...new Set(priceData
+                .filter(p => p.grade === selectedGrade)
+                .map(p => p.size))];
+
+            const validUnits = [...new Set(priceData
+                .filter(p => p.grade === selectedGrade)
+                .map(p => p.unit))]; 
+
+            updateSelectStyles(size, validSizes);
+            updateSelectStyles(unit, validUnits);
+
+            updatePrice(row, index);
+        }
+
+        function handleSizeChange(row, index) {
+            const grade = row.querySelector(`select[name="grade_${index}"]`);
+            const size = row.querySelector(`select[name="size_${index}"]`);
+            const unit = row.querySelector(`select[name="unit_${index}"]`);
+
+            const selectedSize = size.value;
+
+            const validGrades = [...new Set(priceData
+                .filter(p => p.size === selectedSize)
+                .map(p => p.grade))];
+
+            const validUnits = [...new Set(priceData
+                .filter(p => p.size === selectedSize)
+                .map(p => p.unit))]; 
+
+            updateSelectStyles(grade, validGrades);
+            updateSelectStyles(unit, validUnits);
+
+            updatePrice(row, index);
+        }
+
+        function handleUnitChange(row, index) {
+            const grade = row.querySelector(`select[name="grade_${index}"]`);
+            const size = row.querySelector(`select[name="size_${index}"]`);
+            const unit = row.querySelector(`select[name="unit_${index}"]`);
+
+            const selectedUnit = unit.value;
+
+            const validSizes = [...new Set(priceData
+                .filter(p => p.unit === selectedUnit)
+                .map(p => p.size))];
+
+            const validGrades = [...new Set(priceData
+                .filter(p => p.unit === selectedUnit)
+                .map(p => p.grade))]; 
+
+            updateSelectStyles(size, validSizes);
+            updateSelectStyles(grade, validGrades);
+
+            updatePrice(row, index);
+        }
+
+        function attachUpdater(row, index){
+
+            const grade = row.querySelector(`select[name="grade_${index}"]`)
+            const size = row.querySelector(`select[name="size_${index}"]`)
+            const unit = row.querySelector(`select[name="unit_${index}"]`)
+
+            grade.addEventListener("change", () => handleGradeChange(row, index));
+            size.addEventListener("change", () => handleSizeChange(row, index));
+            unit.addEventListener("change", () => handleUnitChange(row, index));
+        }
+
 
         function handleSubmit(event){
             const inputs = document.querySelectorAll('input[name^="quantity_"]');
