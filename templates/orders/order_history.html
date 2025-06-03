@@ -43,9 +43,9 @@
                         {% if order.pickup_flg == True %}
                             引取り
                         {% elif order.cool_flg == True %}
-                            冷蔵
+                            冷蔵便
                         {% else %}
-                            常温
+                            通常便
                         {% endif %}
                         {% if order.tracking_id %}
                         <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
@@ -55,10 +55,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <td class="text-end">
+                    <td>
                         <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）
                         <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
                     </td> 
+                </tr>
+                <tr>
+                    <td><strong>特記事項:</strong>{{ order.remarks }}</td>
                 </tr>
                 <tr>
                     <td colspan=6>
