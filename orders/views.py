@@ -139,9 +139,19 @@ def order_change(request, order_id):
         ]
 
         if request.method == 'POST':
-            cool_flg = request.POST.get(f'cool_flg') == "true"
-            delivery_id = request.POST.get(f'delivery_date')
+            delivery_type = request.POST.get(f'delivery_type')
+            if delivery_type == "normal":
+                cool_flg = False
+                pickup_flg = False
+            elif delivery_type == "cool":
+                cool_flg = True
+                pickup_flg = False
+            elif delivery_type == 'pickup':
+                cool_flg = False
+                pickup_flg = True
+
             remarks = request.POST.get(f'remarks')
+            delivery_id = request.POST.get('delivery_date')
             delivery_date_obj = get_object_or_404(ProductDeliveryDate, id=delivery_id)
 
             tax8_price = 0
@@ -219,8 +229,13 @@ def order_change(request, order_id):
             order.tax10 = tax10_price / 1.1 * 0.1
             order.total_weight = total_weight
             order.cool_flg = cool_flg
-            order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
-            order.shipping_tax = order.shipping_price / 1.1 * 0.1
+            order.pickup_flg = pickup_flg
+            if(pickup_flg):
+                order.shipping_price = 0
+                order.shipping_tax = 0
+            else:
+                order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
+                order.shipping_tax = shipping_price / 1.1 * 0.1
             order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
             order.status = 'tentative'
             order.remarks = remarks
@@ -284,7 +299,16 @@ def neworder(request, product_id):
     if request.method == 'POST':
         #新しい注文を作成
         order = Order.objects.create(user=request.user)
-        cool_flg = request.POST.get(f'cool_flg') == "true"
+        delivery_type = request.POST.get(f'delivery_type')
+        if delivery_type == "normal":
+            cool_flg = False
+            pickup_flg = False
+        elif delivery_type == "cool":
+            cool_flg = True
+            pickup_flg = False
+        elif delivery_type == 'pickup':
+            cool_flg = False
+            pickup_flg = True
 
         tax8_price = 0
         tax8 = 0
@@ -347,8 +371,18 @@ def neworder(request, product_id):
         order.tax10 = tax10_price / 1.1 * 0.1
         order.total_weight = total_weight
         order.cool_flg = cool_flg
-        order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
-        order.shipping_tax = shipping_price / 1.1 * 0.1
+        order.pickup_flg = pickup_flg
+
+        print(cool_flg)
+        print(pickup_flg)
+
+        if(pickup_flg):
+            order.shipping_price = 0
+            order.shipping_tax = 0
+        else:
+            order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
+            order.shipping_tax = shipping_price / 1.1 * 0.1
+
         order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
         order.remarks = remarks
         order.save()

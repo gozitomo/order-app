@@ -40,7 +40,9 @@
                 <tr>
                     <td colspan=6>
                         <strong>配送区分：</strong>
-                        {% if order.cool_flg == true %}
+                        {% if order.pickup_flg == True %}
+                            引取り
+                        {% elif order.cool_flg == True %}
                             冷蔵
                         {% else %}
                             常温
