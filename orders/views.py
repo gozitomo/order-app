@@ -90,8 +90,8 @@ def sendmail(order, subject):
     【注文内容】
     """
     for item in order.items.all():
-        message += f"-{item.product.name}:{item.price_table.unit}@{item.price_table.price}×{item.quantity}¥r¥n"
-    message += f"/n【合計金額】{order.final_price}円（うち送料{order.shipping_price}円）¥r¥n"
+        message += f"-{item.product.name}:{item.price_table.unit}@{item.price_table.price}×{item.quantity}/r/n"
+    message += f"/n【合計金額】{order.final_price}円（うち送料{order.shipping_price}円）/r/n"
 
     print(message)
     from_email = formataddr(("プログレスファーム（B2B発注アプリ）", settings.DEFAULT_FROM_EMAIL))
