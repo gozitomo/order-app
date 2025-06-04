@@ -17,11 +17,22 @@
             {% endfor%}
         </select>
     </p>
-    <p><strong>配送区分:</strong>           
-        <input type="radio" name="delivery_type" value="normal">通常便
-        <input type="radio" name="delivery_type" value="cool" checked>冷蔵便
-        <input type="radio" name="delivery_type" value="pickup">引取り
+    <p><strong>配送区分:</strong>
+
+        <label style="coursor: pointer;">       
+            <input type="radio" name="delivery_type" value="normal"
+            {% if not order.cool_flg and not order.pickup_flg %}checked{% endif %}>通常便
+        </label>  
+        <label style="coursor: pointer;">     
+            <input type="radio" name="delivery_type" value="cool"
+            {% if order.cool_flg %}checked{% endif %}>冷蔵便
+        </label>  
+        <label style="coursor: pointer;">   
+            <input type="radio" name="delivery_type" value="pickup"
+            {% if order.pickup_flg %}checked{% endif %}>引取り
+        </label>
     </p>
+    </div>
     <div class="table-responsive">
     <table>
         <tr>
