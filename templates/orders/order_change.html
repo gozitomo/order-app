@@ -21,14 +21,23 @@
             {% endfor%}
         </select>
     </p>
-    <p><strong>配送区分:</strong>       
-        <input type="radio" name="delivery_type" value="normal"
-        {% if not order.cool_flg and not order.pickup_flg %}checked{% endif %}>通常便  
-        <input type="radio" name="delivery_type" value="cool"
-        {% if order.cool_flg %}checked{% endif %}>冷蔵便
-        <input type="radio" name="delivery_type" value="pickup"
-        {% if order.pickup_flg %}checked{% endif %}>引取り
+    <div class="d-flex gap-4">
+    <p><strong>配送区分:</strong>
+
+        <label style="coursor: pointer;">       
+            <input type="radio" name="delivery_type" value="normal"
+            {% if not order.cool_flg and not order.pickup_flg %}checked{% endif %}>通常便
+        </label>  
+        <label style="coursor: pointer;">     
+            <input type="radio" name="delivery_type" value="cool"
+            {% if order.cool_flg %}checked{% endif %}>冷蔵便
+        </label>  
+        <label style="coursor: pointer;">   
+            <input type="radio" name="delivery_type" value="pickup"
+            {% if order.pickup_flg %}checked{% endif %}>引取り
+        </label>
     </p>
+    </div>
     <p><strong>品種:</strong>{{ product.name }}</p>
     <div class="table-responsive">
         <table class="thead-light">
@@ -206,7 +215,7 @@
                 .filter(p => p.size === selectedSize)
                 .map(p => p.unit))]; 
 
-            updateSelectStyles(grade, validGrades);
+            //updateSelectStyles(grade, validGrades);
             updateSelectStyles(unit, validUnits);
 
             updatePrice(row, index);
@@ -228,7 +237,7 @@
                 .map(p => p.grade))]; 
 
             updateSelectStyles(size, validSizes);
-            updateSelectStyles(grade, validGrades);
+            //updateSelectStyles(grade, validGrades);
 
             updatePrice(row, index);
         }
