@@ -11,12 +11,12 @@
     justify-content: center;
 }
 
-.login #header h2 {
+.login #header h1 {
     font-size: 1.125rem;
     margin: 0;
 }
 
-.login #header h2 a {
+.login #header h1 a {
     color: var(--header-link-color);
 }
 
