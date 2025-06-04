@@ -142,11 +142,11 @@ p {
     line-height: 140%;
 }
 
-h2,h2,h3,h4,h5 {
+h1,h2,h3,h4,h5 {
     font-weight: bold;
 }
 
-h2 {
+h1 {
     margin: 0 0 20px;
     font-weight: 300;
     font-size: 1.25rem;
@@ -283,7 +283,7 @@ div.help ul {
     cursor: help;
 }
 
-p img, h2 img, h2 img, h3 img, h4 img, td img {
+p img, h1 img, h2 img, h3 img, h4 img, td img {
     vertical-align: middle;
 }
 
@@ -987,7 +987,7 @@ a.deletelink:focus, a.deletelink:hover {
     display: inline;
 }
 
-#-form button {
+#logout-form button {
     background: none;
     border: 0;
     cursor: pointer;
