@@ -54,6 +54,7 @@ def order_history(request):
     notes = OrderHistoryNote.objects.all()
 
     for order in orders:
+        print(order)
 
         #本日注文分でなければ、#納品日まで10日を切ったらキャンセル不可とする
         if  order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
@@ -162,21 +163,21 @@ def order_change(request, order_id):
             final_price = 0
             quantity = 0
             subtotal = 0
+            weights = []
 
             for item in order.items.all():
                 new_qty = request.POST.get(f'quantity_{item.id}')
 
-                print(new_qty)
                 if new_qty is not None:
                     try:
                         qty = int(new_qty)
                         if qty == 0:
                             item.delete()
                             continue
-                        
+
+                        weights.extend([item.price_table.weight] * qty)                   
                         item.quantity = qty
                         item.subtotal = item.price_table.price * item.quantity
-                        total_weight += item.price_table.weight * item.quantity
                         item.save()
 
                         if item.price_table.tax10_flg:
@@ -187,8 +188,6 @@ def order_change(request, order_id):
                     except ValueError:
                         pass
 
-                    print(tax8_price)
-                    print(tax10_price)
             
             i = 0
             while True:
@@ -208,8 +207,7 @@ def order_change(request, order_id):
                     quantity = int(qty)
                     option = options.filter(grade=grade, size=size, unit=unit).first()
                     if option:
-                        weight = option.weight * quantity
-                        total_weight += weight
+                        weights.extend([option.weight] * quantity)
                         subtotal = option.price * quantity
 
                         if option.tax10_flg:
@@ -232,14 +230,14 @@ def order_change(request, order_id):
             order.tax8 = tax8_price / 1.08 * 0.08
             order.tax10_price = tax10_price
             order.tax10 = tax10_price / 1.1 * 0.1
-            order.total_weight = total_weight
+            order.total_weight = sum(weights)
             order.cool_flg = cool_flg
             order.pickup_flg = pickup_flg
             if(pickup_flg):
                 order.shipping_price = 0
                 order.shipping_tax = 0
             else:
-                order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
+                order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
                 order.shipping_tax = shipping_price / 1.1 * 0.1
             order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
             order.status = 'tentative'
@@ -374,12 +372,9 @@ def neworder(request, product_id):
         order.tax8 = tax8_price / 1.08 * 0.08
         order.tax10_price = tax10_price
         order.tax10 = tax10_price / 1.1 * 0.1
-        order.total_weight = total_weight
+        order.total_weight = sum(weights)
         order.cool_flg = cool_flg
         order.pickup_flg = pickup_flg
-
-        print(cool_flg)
-        print(pickup_flg)
 
         if(pickup_flg):
             order.shipping_price = 0

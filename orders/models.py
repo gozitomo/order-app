@@ -108,7 +108,7 @@ class Order(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"注文番号:{self.id} - {self.user.username}"
+        return f"注文番号:{self.order_id} - {self.user.username}"
     
 
 class OrderItem(models.Model):

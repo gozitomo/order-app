@@ -23,6 +23,7 @@ def calculate_shipping_fee(region, weights, cool_flg):
 
     total_fee = 0
     for chunk in chunks:
+        print(chunk)
         rule = ShippingFeeRule.objects.filter(
             region=region,
             cool_flg=cool_flg,
