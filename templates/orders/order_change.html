@@ -123,7 +123,6 @@
         <button type="submit" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-link btn-sm text-decoration-none">
             この注文をキャンセルする
         </button>
-    </form>
     {% elif order.status == 'preparing' or  order.status == 'shipped' %}
         <span style="color: gray;">(キャンセル不可)</span>
     {% elif order.status == 'canceled' %}
@@ -131,6 +130,7 @@
     {% endif %}
     <p><a href="{% url 'order_history' %}">←　注文履歴に戻る</a></p>
     </div>
+    </form>
     <script>
         const priceData = {{ price_data_json|safe }};
         let rowIndex = 1;

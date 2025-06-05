@@ -166,6 +166,7 @@ def order_change(request, order_id):
             for item in order.items.all():
                 new_qty = request.POST.get(f'quantity_{item.id}')
 
+                print(new_qty)
                 if new_qty is not None:
                     try:
                         qty = int(new_qty)
@@ -185,13 +186,17 @@ def order_change(request, order_id):
 
                     except ValueError:
                         pass
+
+                    print(tax8_price)
+                    print(tax10_price)
             
             i = 0
             while True:
                 qty = request.POST.get(f'quantity_{i}')
-                if not qty:
+                print(qty)
+                if qty is None:
                     break
-                if int(qty) == 0:
+                if qty == '' or int(qty) == 0:
                     i += 1
                     continue
                 
@@ -320,6 +325,7 @@ def neworder(request, product_id):
         final_price = 0
         quantity = 0
         subtotal = 0
+        weights = []
 
         delivery_id = request.POST.get(f'delivery_date')
         delivery_date_obj = get_object_or_404(ProductDeliveryDate, id=delivery_id)
@@ -339,13 +345,11 @@ def neworder(request, product_id):
             size = request.POST.get(f'size_{i}')
             unit = request.POST.get(f'unit_{i}')
 
-
             if int(qty) > 0:
                 quantity = int(qty)
                 option = options.filter(grade=grade, size=size, unit=unit).first()
                 if option:
-                    weight = option.weight * quantity
-                    total_weight += weight
+                    weights.extend([option.weight] * quantity)
                     subtotal = option.price * quantity
 
                     if option.tax10_flg:
@@ -363,6 +367,7 @@ def neworder(request, product_id):
                     )
             i += 1
 
+        weights.sort(reverse=True)
 
         order.product_delivery_date=delivery_date_obj
         order.tax8_price = tax8_price
@@ -380,7 +385,7 @@ def neworder(request, product_id):
             order.shipping_price = 0
             order.shipping_tax = 0
         else:
-            order.shipping_price = calculate_shipping_fee(user_region, total_weight, cool_flg)
+            order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
             order.shipping_tax = shipping_price / 1.1 * 0.1
 
         order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
