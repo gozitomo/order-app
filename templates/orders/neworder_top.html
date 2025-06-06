@@ -18,7 +18,7 @@
             <span style="min-width: 7em; font-weight: normal;">{{ product.name }}</span><span>{{ product.earliest_date|date:"Y/m/d" }}  〜</span>
         </div>
         </a>
-        {% else %}
+        {% elif product.earliest_date  %}
         <div class="d-flex justify-content-center align-items-baseline text-dark bg-light p-1 border border-secondary-subtle gap-2">
             <span class="test-muted" style="min-width: 7em;">{{ product.name }}</span>
             <span class="test-muted">（{{ product.season }}　準備中）</span>
