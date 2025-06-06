@@ -35,9 +35,56 @@ th, td {
 }
 
 .card-rounded {
-    border: 1px solid #ff69b4;
-  background-color: #fff5f8; /* 桃を意識した淡い背景色 */
-  border-radius: 1rem; /* ←ここで丸みを強調 */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 軽い影 */
-  padding: 1.5rem;
+    border: 2px solid #0d6efd;
+    background-color: #f8f9fa;
+    border-radius: 1rem; /* ←ここで丸みを強調 */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 軽い影 */
+    padding: 1.5rem;
+}
+
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #f8f9fa;
+}
+
+.custom-table th,
+.custom-table td {
+    text-align: center;
+}
+
+.custom-table tr + tr {
+    border-top: 1px solid #0d6efd; /* ←行区切り線のみ */
+}
+
+
+select {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    border: 1px solid #DDDDDD;  /* ←ここ！枠線を薄グレーに */
+    border-radius: 2%;
+    margin: 0;
+    padding: 0.25rem 0.5rem;  /* ←少し見やすくする */
+    background: none transparent;
+    vertical-align: middle;
+    font-size: inherit;
+    color: inherit;
+    box-sizing: content-box;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
+}
+
+.custom {
+  overflow: hidden; /* 伸ばした分を隠す */
+}
+
+/*おしゃれラベル*/
+.stylish-label {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: #f3f6f9;
+    border: 2px solid #0d6efd;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 300;
 }

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
+from .models import FruitKind, ProductName, PriceTable, ProductDeliveryDate, DispKind
 
 # Register your models here.
 
@@ -14,3 +14,4 @@ class PriceTableAdmin(admin.ModelAdmin):
 
 admin.site.register(ProductName)
 admin.site.register(ProductDeliveryDate)
+admin.site.register(DispKind)

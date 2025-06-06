@@ -2,6 +2,15 @@ from django.db import models
 from users.models import UserGroup
 
 # Create your models here.
+
+class DispKind(models.Model):
+    """ kind of fruit for display, like 桃, プラム, 栗, etc """
+    name = models.CharField(max_length=50)
+    sort_no = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.sort_no}-{self.name}"
+
 class FruitKind(models.Model):
     """ kind of fruit, like Peach, Plum, Chestnut, etc"""
     STATUS_CHOICES = [
@@ -10,7 +19,7 @@ class FruitKind(models.Model):
     ]
     name = models.CharField(max_length=50)
     status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='available')
-
+    disp_kind = models.ForeignKey(DispKind, on_delete=models.CASCADE, related_name="kinds", null=True)
 
     def __str__(self):
         return self.name

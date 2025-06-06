@@ -1,34 +1,30 @@
 {% extends "base.html" %}
 {% block title %}発注{% endblock %}
 {% block content %}
-<div class="ps-1">
 <h2 class="m-0">発注</h2>
 
 {% for note in notes%}
     {{ note.content|safe }}
 {% endfor %}
-<table>
-    <tbody>
-        {% for kind in kinds %}
-        <tr>
-            <td class="text-left nowrap">
-                {{ kind.name }}
-            </td>
-        </tr>
-            {% for product in kind.products.all %}
-        <tr>
-            <td align="center">
-                {% if product.status != 'closed' %}
-                    <a href="{% url 'new_order' product.id%}" class="btn btn-sm btn-primary" style="padding: 2px 8px; font-size: 0.75rem;">注文</a>
-                {% else %}
-                    <span class="test-muted">（準備中）</span>
-                {% endif %}
-            </td>
-            <td align="left" nowrap><strong>{{ product.name }}</strong>（{{ product.season }}）</td>
-            {% endfor %}
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-</div>
+{% for disp in disp_kinds %}
+    <div class="d-flex justify-content-center align-items-center text-light p-1" style="background-color: #343a40;">
+        {{ disp.name }}
+    </div>
+    {% for kind in disp.kinds.all %}
+    {% for product in kind.prefetched_products %}
+        {% if product.status != 'closed' and product.earliest_date %}
+        <a href="{% url 'new_order' product.id%}" class="text-decoration-none">
+        <div class="d-flex justify-content-center align-items-baseline text-dark bg-light p-1 border border-secondary-subtle gap-2">
+            <span style="min-width: 7em; font-weight: normal;">{{ product.name }}</span><span>{{ product.earliest_date|date:"Y/m/d" }}  〜</span>
+        </div>
+        </a>
+        {% else %}
+        <div class="d-flex justify-content-center align-items-baseline text-dark bg-light p-1 border border-secondary-subtle gap-2">
+            <span class="test-muted" style="min-width: 7em;">{{ product.name }}</span>
+            <span class="test-muted">（{{ product.season }}　準備中）</span>
+        </div>
+        {% endif %}
+    {% endfor %}
+    {% endfor %}
+{% endfor %}
 {% endblock %}
