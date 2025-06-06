@@ -9,7 +9,7 @@
     {% if orders %}
         {% for order in orders %}
             {% ifchanged order.product_delivery_date.date %}
-                <div class="py-0 px-0" style="margin-left: 0; margin-right: calc(-50vw + 50%); width: auto;">
+                <div class="py-0 px-0">
                     <div class="d-flex justify-content-start align-items-center text-light p-2 mb-3" style="background-color: #343a40;">
                         <div class="mb-0">
                             <strong>納品希望：</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}

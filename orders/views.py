@@ -12,12 +12,12 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.core.mail import send_mail
 from django.conf import settings
 from django.db import models
-from django.db.models import Sum, Q
+from django.db.models import Sum, Q, Prefetch, Min
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
 from email.utils import formataddr
 from .models import Order, OrderItem, Invoice
-from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
+from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate, DispKind
 from sitecontent.models import OrderNote, OrderHistoryNote
 from users.models import UserProfile, UserGroup
 from users.models import UserProfile
@@ -36,12 +36,24 @@ def admin_required(view_func):
 
 @login_required
 def order_top(request):
-    kinds = FruitKind.objects.all().order_by('id')
-    products = ProductName.objects.select_related('kind').all().order_by('-sort_no')
+    product_qs = ProductName.objects.annotate(
+        earliest_date=Min('available_dates__date')
+    ).order_by('earliest_date')
+
+    disp_kinds = DispKind.objects.prefetch_related(
+        Prefetch(
+            'kinds__products',
+            queryset=product_qs,
+            to_attr='prefetched_products'
+        ),
+        Prefetch(
+            'kinds__products__available_dates',
+            to_attr='prefetched_dates')
+        ).order_by('sort_no')
+
     notes = OrderNote.objects.all()
     return render(request, 'orders/neworder_top.html', {
-        'kinds': kinds,
-        'products': products,
+        'disp_kinds': disp_kinds,
         'notes': notes
         })
 
