@@ -143,9 +143,6 @@ def order_change(request, order_id):
             tax8_price = 0
             tax10_price = 0
             total_weight = 0
-            shipping_price = 0
-            shipping_tax = 0
-            final_price = 0
             quantity = 0
             subtotal = 0
             weights = []
@@ -223,7 +220,7 @@ def order_change(request, order_id):
                 order.shipping_tax = 0
             else:
                 order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
-                order.shipping_tax = shipping_price / 1.1 * 0.1
+                order.shipping_tax = order.shipping_price / 1.1 * 0.1
             order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
             if admin_flg:
                 order.status = 'recieved'
@@ -304,13 +301,8 @@ def neworder(request, product_id):
             pickup_flg = True
 
         tax8_price = 0
-        tax8 = 0
         tax10_price = 0
-        tax10 = 0
         total_weight = 0
-        shipping_price = 0
-        shipping_tax = 0
-        final_price = 0
         quantity = 0
         subtotal = 0
         weights = []
@@ -371,7 +363,7 @@ def neworder(request, product_id):
             order.shipping_tax = 0
         else:
             order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
-            order.shipping_tax = shipping_price / 1.1 * 0.1
+            order.shipping_tax = order.shipping_price / 1.1 * 0.1
 
         order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
         order.remarks = remarks
