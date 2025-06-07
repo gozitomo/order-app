@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 from django.db import models
-from django.db.models import Sum, Q, Prefetch, Min
+from django.db.models import Sum, Q, Prefetch, Min, Max
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
 
@@ -37,7 +37,8 @@ def admin_required(view_func):
 @login_required
 def order_top(request):
     product_qs = ProductName.objects.annotate(
-        earliest_date=Min('available_dates__date')
+        earliest_date=Min('available_dates__date'),
+        latest_date=Max('available_dates__date')
     ).order_by('earliest_date')
 
     disp_kinds = DispKind.objects.prefetch_related(
