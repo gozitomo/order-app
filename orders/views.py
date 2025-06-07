@@ -9,16 +9,16 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.mail import send_mail
 from django.conf import settings
 from django.db import models
 from django.db.models import Sum, Q, Prefetch, Min
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
-from email.utils import formataddr
+
 from .models import Order, OrderItem, Invoice
 from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate, DispKind
-from sitecontent.models import OrderNote, OrderHistoryNote
+from sitecontent.models import OrderNote, OrderHistoryNote, ErrMsg, ErrLog, MailTemplate
+from sitecontent.utils import sendmail
 from users.models import UserProfile, UserGroup
 from users.models import UserProfile
 from users.models import User
@@ -85,42 +85,15 @@ def order_detail(request, order_id):
         'order': order,
         })
 
-
-def sendmail(order, subject):
-    """
-    注文情報をメール送信
-    """
-
-    print(order.order_id)
-    print(subject)
-
-
-    message = f"""
-    【注文番号】{order.order_id}
-    【注文者】{order.user.userprofile.company_name}
-    【納品予定日】{order.product_delivery_date.date.strftime("%Y/%m/%d")}
-
-    【注文内容】
-    """
-    for item in order.items.all():
-        message += f"{item.product.name}:{item.price_table.unit}@{item.price_table.price}×{item.quantity}\n"
-    message += f"【合計金額】{order.final_price}円（うち送料{order.shipping_price}円）\n"
-
-    print(message)
-    from_email = formataddr(("プログレスファーム（B2B発注アプリ）", settings.DEFAULT_FROM_EMAIL))
-    send_mail(
-        subject=subject,
-        message=message,
-        from_email=from_email,
-        recipient_list=[order.user.email],
-        fail_silently=False
-    )
-
-
 @login_required
 def order_change(request, order_id):
-    order = get_object_or_404(Order, order_id=order_id, user=request.user)
-    user_profile = getattr(request.user, 'userprofile', None)
+    admin_flg = request.user.is_superuser
+    if admin_flg:
+        order = get_object_or_404(Order, order_id=order_id)
+    else:
+        order = get_object_or_404(Order, order_id=order_id, user=request.user)
+    target_user = order.user
+    user_profile = getattr(target_user, 'userprofile', None)
     user_group = getattr(user_profile, 'user_group', None)
     user_region = getattr(user_profile, 'region', None)
     today = localdate()
@@ -252,12 +225,17 @@ def order_change(request, order_id):
                 order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
                 order.shipping_tax = shipping_price / 1.1 * 0.1
             order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
-            order.status = 'tentative'
+            if admin_flg:
+                order.status = 'recieved'
+                template = MailTemplate.objects.filter(key="order_confirm_with_change").first()
+            else:
+                order.status = 'tentative'
+                template = MailTemplate.objects.filter(key="order_change").first()
             order.remarks = remarks
             order.save()
 
             try:
-                sendmail(order, subject="【注文変更確定（仮注文）】ご注文内容を変更しました")
+                sendmail(order, template)
             except Exception as e:
                 print('メール送信エラー：', e)
 
@@ -399,9 +377,9 @@ def neworder(request, product_id):
         order.remarks = remarks
         order.save()
 
+        template = MailTemplate.objects.filter(key="new_order").first()
         print('注文保存完了、メールを送ります')
-
-        sendmail(order, subject="【仮注文確定】ご注文ありがとうございます")
+        sendmail(order, template)
 
 
         return redirect('order_detail', order_id = order.order_id)
@@ -471,6 +449,11 @@ def order_cancel(request, order_id):
         order.status = 'キャンセル'
         order.save()
         messages.success(request, "注文をキャンセルしました。")
+
+        template = MailTemplate.objects.filter(key="order_cancel").first()
+        print('注文キャンセル完了、メールを送ります')
+
+        sendmail(order, template)
 
     #リダイレクト先は注文詳細
     return redirect('order_detail', order_id=order.order_id)

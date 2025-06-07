@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import HeroContent, HomeContent, OrderNote, OrderHistoryNote, ErrLog, ErrMsg
+from .models import HeroContent, HomeContent, OrderNote, OrderHistoryNote, ErrLog, ErrMsg, MailTemplate
 
 # Register your models here.
 
@@ -7,6 +7,11 @@ admin.site.register(HeroContent)
 admin.site.register(HomeContent)
 admin.site.register(OrderNote)
 admin.site.register(OrderHistoryNote)
+
+@admin.register(MailTemplate)
+class MailTemplateAdmin(admin.ModelAdmin):
+    list_display=('key', 'subject')
+    search_field=('key', 'subject')
 
 @admin.register(ErrLog)
 class ErrLogAdmin(admin.ModelAdmin):

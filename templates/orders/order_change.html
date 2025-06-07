@@ -18,9 +18,9 @@
             <p style="color: red;"><strong>この注文は納品希望日まで10日を切りましたので、キャンセル不可となります。
             <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
         {% endif %} 
-    <p><strong>注文番号:</strong>{{ order.order_id }}</p>
-    <p><strong>注文日時:</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
-    <p><strong>納品希望:</strong>
+    <p><strong>注文番号：</strong>{{ order.order_id }}</p>
+    <p><strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
+    <p><strong>納品希望：</strong>
         <select name="delivery_date">
             {% for date in delivery_dates %}
             <option value="{{ date.value }}">{{ date.label }}</option>
@@ -28,7 +28,7 @@
         </select>
     </p>
     <div class="d-flex gap-4">
-    <p><strong>配送区分:</strong>
+    <p><strong>配送区分：</strong>
 
         <label style="coursor: pointer;">       
             <input type="radio" name="delivery_type" value="normal"
@@ -110,7 +110,7 @@
     <br>
     <button type="button" class="btn btn-sm me-2 text-light" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5" onclick="addRow()">+ 行を追加</button>
     <br><br>
-    <strong>特記事項</strong>
+    <strong>特記事項：</strong>
     <input type=text name="remarks" value="{{order.remarks}}" class="form-control" style="max-width: 450px;">
     <br>
     <!-- <hr>
