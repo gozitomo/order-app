@@ -35,7 +35,7 @@ th, td {
 }
 
 .card-rounded {
-    border: 2px solid #0d6efd;
+    border: 2px solid #EEEEEE;
     background-color: #f8f9fa;
     border-radius: 1rem; /* ←ここで丸みを強調 */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 軽い影 */
@@ -54,7 +54,7 @@ th, td {
 }
 
 .custom-table tr + tr {
-    border-top: 1px solid #0d6efd; /* ←行区切り線のみ */
+    border-top: 1px solid #EB7000; /* ←行区切り線のみ */
 }
 
 
@@ -65,15 +65,11 @@ select {
     border: 1px solid #DDDDDD;  /* ←ここ！枠線を薄グレーに */
     border-radius: 2%;
     margin: 0;
-    padding: 0.25rem 0.5rem;  /* ←少し見やすくする */
+    padding: 0.25rem 0.25rem;  /* ←少し見やすくする */
     background: none transparent;
     vertical-align: middle;
     font-size: inherit;
     color: inherit;
     box-sizing: content-box;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
-}
-
-.custom {
-  overflow: hidden; /* 伸ばした分を隠す */
 }
