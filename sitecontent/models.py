@@ -33,6 +33,14 @@ class OrderHistoryNote(models.Model):
     def __str__(self):
         return f"注文履歴ページの内容"
 
+class MailTemplate(models.Model):
+    key = models.CharField(max_length=100, unique=True)
+    subject = models.CharField(max_length=255, blank=True)
+    body = models.TextField(help_text="メール冒頭や署名など")
+
+    def __str__(self):
+        return self.key
+
 class ErrMsg(models.Model):
     key = models.CharField(max_length=100, unique=True, help_text="テンプレート側で使うキー")
     message = models.TextField(help_text="表示するメッセージ本文（html可）")

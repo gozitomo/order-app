@@ -16,6 +16,8 @@ from sitecontent.models import OrderNote, OrderHistoryNote
 from users.models import UserProfile, UserGroup
 from users.models import UserProfile
 from users.models import User
+from sitecontent.models import MailTemplate
+from sitecontent.utils import sendmail
 
 # Create decorators
 
@@ -218,6 +220,13 @@ def order_confirm(request, order_id=None):
         order = get_object_or_404(Order, order_id=order_id)
         order.status = 'recieved'
         order.save()
+
+        template = MailTemplate.objects.filter(key="order_confirm").first()
+
+        try:
+            sendmail(order, template)
+        except Exception as e:
+            print("メール送信エラー：", e)
 
         return redirect('order_confirm')
 
