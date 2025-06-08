@@ -36,11 +36,12 @@
     <div class="table-responsive">
     <table>
         <tr>
-             <th class="text-center d-none d-sm-table-cell">等級</th>
-             <th class="text-center d-none d-sm-table-cell">階級</th>
-             <th class="text-center d-none d-sm-table-cell">ユニット</th>
-             <th class="text-center d-none d-sm-table-cell">税込価格</th>
-             <th class="text-center d-none d-sm-table-cell">数量</th>
+            <th></th>
+            <th class="text-center d-none d-sm-table-cell">等級</th>
+            <th class="text-center d-none d-sm-table-cell">階級</th>
+            <th class="text-center d-none d-sm-table-cell">ユニット</th>
+            <th class="text-center d-none d-sm-table-cell">税込価格</th>
+            <th class="text-center d-none d-sm-table-cell">数量</th>
         </tr>
         <tbody id="order-body">
             <tr class="order-row">
@@ -95,13 +96,21 @@
     let rowIndex = 1;
 
     function updateSelectStyles(select, validOptions){
+        let firstValidFound = null;
         [...select.options].forEach(option => {
             if(validOptions.includes(option.value)){
                 option.disabled = false;
+                if (firstValidFound === null){
+                    firstValidFound = option.value;
+                }
             } else {
                 option.disabled = true;
             }
         });
+
+        if (!validOptions.includes(select.value)){
+            select.value = firstValidFound
+        }
     }
 
     function updatePrice(row, index){
