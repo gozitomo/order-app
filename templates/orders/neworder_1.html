@@ -246,11 +246,9 @@
         let startX = 0;        
         row.addEventListener('touchstart', e => {
             startX = e.touches[0].clientX;
-            alert("touchstart", startX);
         });
         row.addEventListener('touchmove', e => {
             let moveX = e.touches[0].clientX;
-            alert("touchmove", moveX);
             if (startX-moveX > 50) {
                 row.classList.add('active');
             }
