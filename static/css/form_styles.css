@@ -89,7 +89,7 @@ select {
     .delete-btn{
         display: none !important;
     }
-    .slide-delete-btn {
+    .order-row.swipe-delete .slide-delete-btn {
         display: flex;
         position: absolute;
         right: -80px;
@@ -102,7 +102,11 @@ select {
         align-items: center;
         justify-content: center;
         transition: right 0.3s ease;
-        z-index: 0;
+        z-index: 1;
+    }
+
+    .order-row.swipe-delete.active .slide-delete-btn {
+        right: 0;
     }
 
     .order-row td:first-child {
