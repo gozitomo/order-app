@@ -43,8 +43,8 @@
              <th class="text-center d-none d-sm-table-cell">数量</th>
         </tr>
         <tbody id="order-body">
-            <tr class="order-row swipe-delete">
-                <td class="delete-cell">
+            <tr class="order-row">
+                <td>
                     <button type="button" class="btn btn-outline-danger btn-sm delete-btn" title="削除">
                         <i class="bi bi-trash"></i>
                     </button>
@@ -75,9 +75,6 @@
                 </td>
                 <td>
                     <input inputmode="numeric" name="quantity_0" value="" min="0" class="form-control" style="min-width: 20px; max-width: 50px;">
-                </td>
-                <td class="delete-cell" style="width:30px">
-                    <div class="slide-delete-btn"><i class="bi bi-trash"></i></div>
                 </td>
             </tr>
         </tbody>
@@ -211,7 +208,7 @@
         attachUpdater(newRow, rowIndex);
         handleGradeChange(newRow, rowIndex);
         attachDeleteButton(newRow); 
-        attachSwipeDelete(newRow);
+        //attachSwipeDelete(newRow);
         rowIndex++;
     }
 
@@ -244,7 +241,7 @@
     }
     }
 
-    function attachSwipeDelete(row) {
+    {% comment %} function attachSwipeDelete(row) {
         let startX = 0;        
         row.addEventListener('touchstart', e => {
             startX = e.touches[0].clientX;
@@ -265,7 +262,7 @@
                 row.remove();
             });
         }
-    }
+    } {% endcomment %}
 
 
     document.addEventListener("DOMContentLoaded", function(){
@@ -283,7 +280,7 @@
         const rows = document.querySelectorAll('.order-row');
         rows.forEach(row => {
             attachDeleteButton(row);
-            attachSwipeDelete(row);
+            //attachSwipeDelete(row);
         });
     });
 

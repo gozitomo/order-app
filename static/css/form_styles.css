@@ -75,16 +75,16 @@ select {
 }
 
 /* PCではボタン表示 */
-@media (min-width: 768px){
+/* @media (min-width: 768px){
     .slide-delete-btn {
         display: none !important;
     }
     .delete-btn {
         display: inline-block !important;
     }
-}
+} */
 
-/* スマホではスワイプ可能エリアだけ表示 */
+/* スマホではスワイプ可能エリアだけ表示
 @media (max-width: 767px){
     .delete-btn{
         display: none !important;
@@ -107,7 +107,7 @@ select {
         transition: transform 0.3s ease;
         z-index: 1;
     }
-    /*アクティブ時に左へスライドして重なる*/
+    アクティブ時に左へスライドして重なる
     .order-row.swipe-delete.active .slide-delete-btn {
         right: 0;
     }
@@ -116,4 +116,4 @@ select {
         position: relative;
         overflow: hidden;
     }
-}
+} */
