@@ -43,7 +43,13 @@
              <th class="text-center d-none d-sm-table-cell">数量</th>
         </tr>
         <tbody id="order-body">
-            <tr>
+            <tr class="order-row swipe-delete">
+                <td class="delete-cell">
+                    <button type="button" class="btn btn-outline-danger btn-sm delete-btn" title="削除">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                    <div class="slide-delete-btn">削除</div>
+                </td>
                 <td>
                     <select name="grade_0">
                         {% for grade in grades %}
@@ -202,6 +208,8 @@
         tbody.appendChild(newRow);
         attachUpdater(newRow, rowIndex);
         handleGradeChange(newRow, rowIndex);
+        attachDeleteButton(newRow); 
+        attachSwipeDelete(newRow);
         rowIndex++;
     }
 
@@ -234,6 +242,30 @@
     }
     }
 
+    function attachSwipeDelete(row) {
+        let startX = 0;        
+        row.addEventListener('touchstart', e => {
+            startX = e.touches[0].clientX;
+        });
+        row.addEventListener('touchmove', e => {
+            let moveX = e.touches[0].clientX;
+            if (startX-moveX > 50) {
+                row.classList.add('active');
+            }
+            if (moveX-startX > 50) {
+                row.classList.remove('active');
+            }
+        });
+
+        const slideDeleteBtn = row.querySelector('.slide-delete-btn');
+        if (slideDeleteBtn) {
+            slideDeleteBtn.addEventListener('click', function(){
+                row.remove();
+            });
+        }
+    }
+
+
     document.addEventListener("DOMContentLoaded", function(){
         // すべての input に対して Enter キーをブロック
         const inputs = document.querySelectorAll('input');
@@ -246,6 +278,11 @@
                 }
             });
         });
+        const rows = document.querySelectorAll('.order-row');
+        rows.forEach(row => {
+            attachDeleteButton(row);
+            attachSwipeDelete(row);
+        });
     });
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -253,6 +290,15 @@
         handleGradeChange(firstRow, 0);
         attachUpdater(firstRow, 0);
     });
+
+    function attachDeleteButton(row){
+        const btn = row.querySelector('.delete-btn');
+        if (btn) {
+            btn.addEventListener('click', () => {
+                row.remove();
+            });
+        }
+    }
 
 </script>
 {% endblock %}

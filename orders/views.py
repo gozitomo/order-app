@@ -63,11 +63,11 @@ def order_history(request):
     orders = Order.objects.filter(
         user=request.user,
         total_weight__gt=0).prefetch_related('items').order_by('product_delivery_date')
+    
     today = localdate()
     notes = OrderHistoryNote.objects.all()
 
     for order in orders:
-        print(order)
 
         #本日注文分でなければ、#納品日まで10日を切ったらキャンセル不可とする
         if  order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
