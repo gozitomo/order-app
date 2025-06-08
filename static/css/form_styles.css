@@ -91,7 +91,7 @@ select {
     }
     .order-row.swipe-delete .slide-delete-btn {
         position: absolute;
-        right: -80px;
+        left: 100%;
         top: 0;
         height: 100%;
         width: 80px;
@@ -102,6 +102,11 @@ select {
         justify-content: center;
         transition: right 0.3s ease;
         z-index: 1;
+        transform: translateX(0);
+    }
+    /*アクティブ時に左へスライドして重なる*/
+    .order-row.swipe-delete.active .slide-delete-btn {
+        transform: translateX(-80px);
     }
 
     .order-row.swipe-delete.active .slide-delete-btn {
