@@ -90,7 +90,6 @@ select {
         display: none !important;
     }
     .order-row.swipe-delete .slide-delete-btn {
-        display: flex;
         position: absolute;
         right: -80px;
         top: 0;
@@ -109,7 +108,7 @@ select {
         right: 0;
     }
 
-    .order-row td:first-child {
+    .delete-cell {
         position: relative;
         overflow: hidden;
     }
