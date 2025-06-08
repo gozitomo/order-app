@@ -73,3 +73,40 @@ select {
     box-sizing: content-box;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* 軽い影 */
 }
+
+/* PCではボタン表示 */
+@media (min-width: 768px){
+    .slide-delete-btn {
+        display: none !important;
+    }
+    .delete-btn {
+        display: inline-block !important;
+    }
+}
+
+/* スマホではスワイプ可能エリアだけ表示 */
+@media (max-width: 767px){
+    .delete-btn{
+        display: none !important;
+    }
+    .slide-delete-btn {
+        display: flex;
+        position: absolute;
+        right: -80px;
+        top: 0;
+        height: 100%;
+        width: 80px;
+        background: red;
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: right 0.3s ease;
+        z-index: 0;
+    }
+
+    .order-row td:first-child {
+        position: relative;
+        overflow: hidden;
+    }
+}
