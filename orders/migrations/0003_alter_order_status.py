@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='order',
             name='status',
-            field=models.CharField(choices=[('tentative', '仮注文'), ('recieved', '確認済み'), ('preparing', '準備中'), ('shipped', '発送済'), ('canceled', 'キャンセル済')], default='tentative', max_length=50),
+            field=models.CharField(choices=[('tentative', '仮注文'), ('received', '確認済み'), ('preparing', '準備中'), ('shipped', '発送済'), ('canceled', 'キャンセル済')], default='tentative', max_length=50),
         ),
     ]

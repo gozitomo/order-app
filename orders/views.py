@@ -204,7 +204,7 @@ def order_change(request, order_id):
                 order.shipping_tax = order.shipping_price / 1.1 * 0.1
             order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
             if admin_flg:
-                order.status = 'recieved'
+                order.status = 'received'
                 template = MailTemplate.objects.filter(key="order_confirm_with_change").first()
             else:
                 order.status = 'tentative'
