@@ -16,23 +16,28 @@
     <p><strong>注文番号：</strong>{{ order.order_id }}</p>
     <p><strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
     <p><strong>納品希望：</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}</p>
+    <p><strong>注文内容：</strong>{{ order.items.first.product.name }}（{{ order.items.first.product.kind.name }}）・
+                        {% if order.pickup_flg == True %}引取り
+                        {% elif order.cool_flg == True %}冷蔵便
+                        {% else %}通常便
+                        {% endif %}</p>
     <div class="table-responsive">
-        <table class="thead-light">
+        <table class="thead-custom">
             <tr>
-                <th class="d-none d-sm-table-cell">商品名</th>
-                <th class="d-none d-sm-table-cell">等級</th>
-                <th class="d-none d-sm-table-cell">階級</th>
-                <th class="d-none d-sm-table-cell">ユニット</th>
-                <th class="d-none d-sm-table-cell">数量</th>
+                    <th class="text-center d-none d-sm-table-cell">等級</th>
+                    <th class="text-center d-none d-sm-table-cell">階級</th>
+                    <th class="text-center d-none d-sm-table-cell">ユニット</th>
+                    <th class="text-center d-none d-sm-table-cell">単価</th>
+                    <th class="text-center d-none d-sm-table-cell">数量</th>
                 <!--<th class="d-none d-sm-table-cell">小計(内税) </th>-->
             </tr>
             {% for item in order.items.all %}
                 {% if item.quantity > 0 %}
                 <tr>
-                    <td class="text-center nowrap"> {{ item.product.name }} </td>
                     <td class="text-center nowrap"> {{ item.price_table.grade }} </td>
                     <td class="text-center nowrap"> {{ item.price_table.size }} </td>
-                    <td class="text-center nowrap"> {{ item.price_table.unit }} @ {{ item.price_table.price|intcomma }}円 </td>
+                    <td class="text-center nowrap"> {{ item.price_table.unit }} </td>
+                    <td class="text-center nowrap"> @ {{ item.price_table.price|intcomma }}円 </td>
                     <td class="text-center nowrap"> ×{{ item.quantity }} </td>
                    <!-- <td style="text-align:right width:10%">{{ item.subtotal|intcomma }}円</td>-->
                 </tr>

@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
+{% if mode == 'edit' %}
+<h2>注文変更</h2>
+{% else %}
+<h2>新規注文</h2>
+{% endif %}
 <div class="card-rounded">
 <table>
     <tr>
-        <td nowrap class="fs-5">{{ product.name }}
-        <span class="text-body-secondary fs-6">
-        {% if mode == 'edit' %}（注文変更）
-        {% else %}（新規注文）
-        {% endif %}
-        </span>
-        </td>
+        <td nowrap class="fs-5">{{ product.name }}</td>
         <!--<td nowrap class="small">（{{ product.season }}）</td>-->
     </tr>
 </table>
@@ -17,6 +16,9 @@
 
 <form id="order-form" method="post" onsubmit="return handleSubmit(event)">
     {% csrf_token %}
+    {% if order %}
+    <p><strong>注文番号：</strong>{{ order.order_id }}
+    {% endif %}
     <p><strong>納品希望：</strong>
         <select name="delivery_date">
             {% for date in delivery_dates %}
