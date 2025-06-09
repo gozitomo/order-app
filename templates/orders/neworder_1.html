@@ -3,7 +3,13 @@
 <div class="card-rounded">
 <table>
     <tr>
-        <td nowrap class="fs-5">{{ product.name }} </td>
+        <td nowrap class="fs-5">{{ product.name }}
+        <span class="text-body-secondary fs-6">
+        {% if mode == 'edit' %}（注文変更）
+        {% else %}（新規注文）
+        {% endif %}
+        </span>
+        </td>
         <!--<td nowrap class="small">（{{ product.season }}）</td>-->
     </tr>
 </table>
@@ -44,9 +50,56 @@
             <th class="text-center d-none d-sm-table-cell">数量</th>
         </tr>
         <tbody id="order-body">
+            {% if order.items.all and order.items.all|length > 0 %}
+            {% for item in order.items.all %}
             <tr class="order-row">
                 <td>
-                    <button type="button" class="btn btn-outline-danger btn-sm delete-btn" title="削除">
+                    <button type="button" class="btn  border-0 btn-sm delete-btn" title="削除">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+                <td>
+                    <select name="grade_{{ forloop.counter0 }}">
+                        {% for grade in grades %}
+                        <option value="{{ grade }}"
+                        {% if grade == item.price_table.grade %}
+                            selected
+                        {% endif %}>{{ grade }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="size_{{ forloop.counter0 }}">
+                        {% for size in sizes %}
+                        <option value="{{ size }}"
+                        {% if size == item.price_table.size %}
+                        selected
+                        {% endif %}>{{ size }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td>
+                    <select name="unit_{{ forloop.counter0 }}">
+                        {% for unit in units %}
+                        <option value="{{ unit }}"
+                        {% if unit == item.price_table.unit %}
+                        selected
+                        {% endif %}>{{ unit }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td style="white-space: nowrap;">
+                    <span class="price_display">-</span>円
+                </td>
+                <td>
+                    <input inputmode="numeric" name="quantity_{{ forloop.counter0 }}" value="{{ item.quantity|default:"" }}" min="0" class="form-control" style="min-width: 20px; max-width: 50px;">
+                </td>
+            </tr>
+            {% endfor %}
+            {% else %}
+            <tr class="order-row">
+                <td>
+                    <button type="button" class="btn  border-0 btn-sm delete-btn" title="削除">
                         <i class="bi bi-trash"></i>
                     </button>
                 </td>
@@ -78,6 +131,7 @@
                     <input inputmode="numeric" name="quantity_0" value="" min="0" class="form-control" style="min-width: 20px; max-width: 50px;">
                 </td>
             </tr>
+            {% endif %}
         </tbody>
     </table>
     </div>
@@ -85,15 +139,18 @@
     <button type="button" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5;" onclick="addRow()">+ 行を追加</button>
     <br><br>
     <strong>特記事項：</strong>
-    <input type=text name="remarks" class="form-control" style="max-width: 450px;">
+    <input type=text name="remarks" class="form-control" value="{{ order.remarks|default:""}}" style="max-width: 450px;">
     <br>
+    {% if mode == 'edit' %}
+    <button type="submit" id="kari-order" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5;">注文変更</button>
+    {% else %}
     <button type="submit" id="kari-order" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5;">仮注文</button>
-
+    {% endif %}
 </form>
 </div>
 <script>
     const priceData = {{ price_data_json|safe }};
-    let rowIndex = 1;
+    let rowIndex = {{ order.items.all|length|default:1}};
 
     function updateSelectStyles(select, validOptions){
         let firstValidFound = null;
@@ -294,16 +351,22 @@
     });
 
     document.addEventListener('DOMContentLoaded', () => {
-        const firstRow = document.getElementById('order-body').querySelector('tr');
-        handleGradeChange(firstRow, 0);
-        attachUpdater(firstRow, 0);
+        const rows = document.querySelectorAll('#order-body .order-row');
+        rows.forEach((row, index)=>{
+            handleGradeChange(row, index);
+            attachUpdater(row, index);
+        })
     });
 
     function attachDeleteButton(row){
         const btn = row.querySelector('.delete-btn');
         if (btn) {
-            btn.addEventListener('click', () => {
-                row.remove();
+            btn.addEventListener('click', () => { 
+                if (document.querySelectorAll('.order-row').length > 1){
+                    row.remove();
+                }else{
+                    alert("これ以上削除できません");
+                }
             });
         }
     }

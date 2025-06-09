@@ -114,6 +114,7 @@ def order_change(request, order_id):
         sizes_data = list(unique_sizes)
         unique_units = options.values_list('unit', flat=True).distinct()
         units_data = list(unique_units)
+        items_data = list(order.items.all()) if order else []
 
         delivery_dates_raw = ProductDeliveryDate.objects.filter(product=product).order_by('date')
 
@@ -147,46 +148,23 @@ def order_change(request, order_id):
             quantity = 0
             subtotal = 0
             weights = []
+            order.items.all().delete()
 
-            for item in order.items.all():
-                new_qty = request.POST.get(f'quantity_{item.id}')
-
-                if new_qty is not None:
-                    try:
-                        qty = int(new_qty)
-                        if qty == 0:
-                            item.delete()
-                            continue
-
-                        weights.extend([item.price_table.weight] * qty)                   
-                        item.quantity = qty
-                        item.subtotal = item.price_table.price * item.quantity
-                        item.save()
-
-                        if item.price_table.tax10_flg:
-                            tax10_price += item.subtotal
-                        else:
-                            tax8_price += item.subtotal
-
-                    except ValueError:
-                        pass
-
-            
             i = 0
             while True:
                 qty = request.POST.get(f'quantity_{i}')
                 print(qty)
                 if qty is None:
                     break
-                if qty == '' or int(qty) == 0:
+                if qty == "" or int(qty) == 0:
                     i += 1
                     continue
-                
+
                 grade = request.POST.get(f'grade_{i}')
                 size = request.POST.get(f'size_{i}')
                 unit = request.POST.get(f'unit_{i}')
 
-                if int(qty)>0:
+                if int(qty) > 0:
                     quantity = int(qty)
                     option = options.filter(grade=grade, size=size, unit=unit).first()
                     if option:
@@ -204,9 +182,11 @@ def order_change(request, order_id):
                             price_table=option,
                             product=product,
                             quantity=quantity,
-                            subtotal=subtotal,                            
+                            subtotal=subtotal,
                         )
                 i += 1
+
+            weights.sort(reverse=True)
 
             order.product_delivery_date=delivery_date_obj
             order.tax8_price = tax8_price
@@ -247,8 +227,7 @@ def order_change(request, order_id):
             'return_url' : 'order_history'
         })
 
-
-    return render(request, 'orders/order_change.html', {
+    return render(request, 'orders/neworder_1.html', {
         'product': product,
         'price_data_json': json.dumps(price_data, cls=DjangoJSONEncoder),
         'grades': grades_data,
@@ -256,6 +235,8 @@ def order_change(request, order_id):
         'units': units_data,
         'delivery_dates': delivery_dates,
         'order': order,
+        'items_data': items_data,
+        'mode': 'edit',
     })
 
 @login_required
@@ -388,6 +369,7 @@ def neworder(request, product_id):
         'sizes': sizes_data,
         'units': units_data,
         'delivery_dates': delivery_dates,
+        'mode': 'new',
         })
 
 
