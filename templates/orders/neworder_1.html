@@ -150,7 +150,6 @@
     {% endif %}
 </form>
     {% if mode == 'edit' %}
-    <button type="submit" id="kari-order" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5;">注文変更</button>
         {% if order.status == 'tentative' or order.status == 'received' %}
         <form method="POST" action="{% url 'order_cancel' order.order_id %}">
             {% csrf_token %}
