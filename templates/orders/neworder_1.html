@@ -150,10 +150,10 @@
     {% endif %}
 </form>
     {% if mode == 'edit' %}
-        {% if order.status == 'tentative' or order.status == 'received' %}
+        {% if order.status == 'tentative' or order.status == 'recieved' %}
         <form method="POST" action="{% url 'order_cancel' order.order_id %}">
             {% csrf_token %}
-            <button type="submit" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5;">
+            <button type="submit" id="cancel-order" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5;">
                 キャンセル
             </button>
         </form>
