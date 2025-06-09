@@ -218,7 +218,7 @@ def gyoumu_menu(request):
 def order_confirm(request, order_id=None):
     if request.method == 'POST' and order_id is not None:
         order = get_object_or_404(Order, order_id=order_id)
-        order.status = 'recieved'
+        order.status = 'received'
         order.save()
 
         template = MailTemplate.objects.filter(key="order_confirm").first()
