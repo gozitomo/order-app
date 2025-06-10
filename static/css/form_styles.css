@@ -53,8 +53,9 @@ th, td {
     text-align: center;
 }
 
-.custom-table tr + tr {
-    border-top: 1px solid #EB7000; /* ←行区切り線のみ */
+.custom-table tr {
+    border-top: 1px solid #EB7000;
+    border-bottom: 1px solid #EB7000; /* ←区切り線のみ */
 }
 
 select {
