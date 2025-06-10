@@ -22,7 +22,7 @@ def sendmail(order, template):
     """
     for item in order.items.all():
         message += f"{item.product.name}:{item.price_table.unit}@{item.price_table.price}×{item.quantity}\n"
-    message += f"【合計金額】{order.final_price}円（うち送料{order.shipping_price}円）\n"
+    message += f"【合計金額】{order.final_price}円（別途送料{order.shipping_price}円）\n"
     message += base_sign.body
 
     print(message)
