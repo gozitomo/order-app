@@ -4,6 +4,7 @@
 {% block content %}
 {% csrf_token %}
     <h2>仮注文受付</h2>
+    <div class="card-rounded">
     <form method="POST" action="{% url 'order_cancel' order.order_id%}">
         {% csrf_token %}
         {% if order.status == 'canceled' %}
@@ -22,7 +23,7 @@
                         {% else %}通常便
                         {% endif %}</p>
     <div class="table-responsive">
-        <table class="thead-custom">
+        <table class="custom-table">
             <tr>
                     <th class="text-center d-none d-sm-table-cell">等級</th>
                     <th class="text-center d-none d-sm-table-cell">階級</th>
@@ -52,4 +53,5 @@
 
     <!--<p><a href="{% url 'order_invoice_pdf' order.order_id %}" target="_blank">請求書</a></p>-->
     <p><a href="{% url 'order_history' %}">← 注文履歴</a></p>
+    </div>
 {% endblock %}
