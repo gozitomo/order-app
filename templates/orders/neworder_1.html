@@ -19,7 +19,7 @@
     {% if order %}
     <p><strong>注文番号：</strong>{{ order.order_id }}
     {% endif %}
-    <p><strong>納品希望：</strong>
+    <p><strong>発送見込：</strong>
         <select name="delivery_date">
             {% for date in delivery_dates %}
             <option value="{{ date.value }}">{{ date.label }}</option>
