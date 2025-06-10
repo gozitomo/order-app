@@ -45,9 +45,15 @@
                 {% if order.tracking_id %}
                 <tr>
                     <td colspan=6>
+                        <strong>配送状況：</strong>
+                        {% spaceless %}
+                        {% if order.tracking_id %}
                         <a href="https://member.kms.kuronekoyamato.co.jp/parcel/detail?pno={{order.tracking_id}}" target="_blank" class="text-blue-600 underline" onclick="event.stopPropagation();">
                             ヤマト追跡ページ
                         </a>（追跡番号：{{ order.tracking_id }}）
+                        {% else %}未発送
+                        {% endif %}
+                        {% endspaceless %}
                     </td>
                 </tr>
                 {% endif %}
@@ -130,12 +136,14 @@
                 <tr>
                     <td colspan=6>
                         <strong>配送状況：</strong>
+                        {% spaceless %}
                         {% if order.tracking_id %}
                         <a href="https://member.kms.kuronekoyamato.co.jp/parcel/detail?pno={{order.tracking_id}}" target="_blank" class="text-blue-600 underline" onclick="event.stopPropagation();">
                             ヤマト追跡ページ
                         </a>（追跡番号：{{ order.tracking_id }}）
                         {% else %}未発送
                         {% endif %}
+                        {% endspaceless %}
                     </td>
                 </tr>
                 <tr>
