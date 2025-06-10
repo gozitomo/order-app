@@ -318,7 +318,7 @@
         if (total === 0){
             alert("数量を1以上にしてください。");
             event.preventDefault(); //フォーム送信をブロック
-        }
+        }else{
         const btn = document.getElementById('kari-order');
         btn.disabled = true;
         btn.innerText = "送信中..."
