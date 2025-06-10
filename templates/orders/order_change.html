@@ -15,12 +15,12 @@
         {% if order.status == 'キャンセル' %}
             <p style="color: red;"><strong>この注文はキャンセルされました。</strong></p>
         {% elif order.status == 'キャンセル不可' %}
-            <p style="color: red;"><strong>この注文は納品希望日まで10日を切りましたので、キャンセル不可となります。
+            <p style="color: red;"><strong>この注文は発送見込日まで10日を切りましたので、キャンセル不可となります。
             <br>Lineまたはお電話にてお問い合わせくださいませ</strong></p>
         {% endif %} 
         <p><strong>注文番号：</strong>{{ order.order_id }}</p>
         <p><strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}</p>
-        <p><strong>納品希望：</strong>
+        <p><strong>発送見込：</strong>
         {% if order.custom_deli_date %}
             {{ order.custom_deli_date|date:"Y/m/d" }}
         {% else %}

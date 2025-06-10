@@ -15,7 +15,7 @@
                <div class="py-0 px-0">
                     <div class="d-flex justify-content-start align-items-center text-light p-2 mb-3" style="background-color: #20AEE5;border-radius: 0.5rem;">
                         <div class="mb-0">
-                            <strong>納品希望：</strong>{{ order.custom_deli_date|date:"Y/m/d" }}（カスタム）
+                            <strong>発送見込：</strong>{{ order.custom_deli_date|date:"Y/m/d" }}（カスタム）
                         </div>      
                     </div>
                 </div>
@@ -100,7 +100,7 @@
                 <div class="py-0 px-0">
                     <div class="d-flex justify-content-start align-items-center text-light p-2 mb-3" style="background-color: #20AEE5;border-radius: 0.5rem;">
                         <div class="mb-0">
-                            <strong>納品希望：</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}
+                            <strong>発送見込：</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}
                         </div>      
                     </div>
                 </div>
