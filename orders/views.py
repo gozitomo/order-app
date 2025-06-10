@@ -202,7 +202,7 @@ def order_change(request, order_id):
             else:
                 order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
                 order.shipping_tax = order.shipping_price / 1.1 * 0.1
-            order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
+            order.final_price = order.tax8_price + order.tax10_price
             if admin_flg:
                 order.status = 'received'
                 template = MailTemplate.objects.filter(key="order_confirm_with_change").first()
@@ -347,7 +347,7 @@ def neworder(request, product_id):
             order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
             order.shipping_tax = order.shipping_price / 1.1 * 0.1
 
-        order.final_price = order.tax8_price + order.tax10_price + order.shipping_price
+        order.final_price = order.tax8_price + order.tax10_price
         order.remarks = remarks
         order.save()
 

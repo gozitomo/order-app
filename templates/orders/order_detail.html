@@ -48,7 +48,7 @@
     </div>
     <p><strong>特記事項：</strong>{{ order.remarks }}</p>
     <hr>
-    <p><strong>税込合計：</strong>{{ order.final_price|intcomma }}円（うち送料{{ order.shipping_price|intcomma }}円）</p>
+    <p><strong>税込合計：</strong>{{ order.final_price|intcomma }}円（別途送料{{ order.shipping_price|intcomma }}円）</p>
     </form>
 
     <!--<p><a href="{% url 'order_invoice_pdf' order.order_id %}" target="_blank">請求書</a></p>-->
