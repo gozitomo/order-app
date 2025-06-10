@@ -302,6 +302,7 @@
 
     function handleSubmit(event){
         //submit元が明確でない場合、処理を中断
+  
         if (event.submitter && event.submitter.id !== "kari-order") {
             return false;
         }
@@ -313,8 +314,7 @@
             if (!isNaN(val)){
                 total += val;
             }
-        });
-
+        });    
         if (total === 0){
             alert("数量を1以上にしてください。");
             event.preventDefault(); //フォーム送信をブロック
@@ -324,6 +324,7 @@
         btn.innerText = "送信中..."
 
         return true;
+    }
     }
     }
 
