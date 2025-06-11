@@ -77,10 +77,10 @@ class Order(models.Model):
 
     STATUS_CHOICES = [
         ('tentative', '仮注文'),
-        ('received', '確認済み'),
+        ('received', '確認済'),
         ('preparing', '準備中'), #キャンセル不可
         ('shipped', '発送済'), #キャンセル不可
-        ('canceled', 'キャンセル済'),
+        ('canceled', '取消済'),
     ]
     order_id = models.CharField(primary_key=True, max_length=6)
     user = models.ForeignKey(User, on_delete=models.CASCADE)

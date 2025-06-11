@@ -52,6 +52,9 @@
     </form>
 
     <!--<p><a href="{% url 'order_invoice_pdf' order.order_id %}" target="_blank">請求書</a></p>-->
-    <p><a href="{% url 'order_history' %}">← 注文履歴</a></p>
+    {% with order.items.first.product.id as product_id %}
+    <button type=button class="btn btn-sm text-light mb-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5;" onclick="location.href='{% url 'new_order' product_id %}'">同品種をさらに注文</button>
+    {% endwith %}
+    <button type=button class="btn btn-sm text-light mb-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #20AEE5;" onclick="location.href='{% url 'order_top' %}'">別品種を注文</button>
     </div>
 {% endblock %}

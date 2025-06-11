@@ -11,7 +11,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.serializers.json import DjangoJSONEncoder
 from django.conf import settings
 from django.db import models
-from django.db.models import Sum, Q, Prefetch, Min, Max
+from django.db.models import Sum, Q, Prefetch, Min, Max, F
+from django.db.models.functions import Coalesce
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
 
@@ -60,16 +61,22 @@ def order_top(request):
 
 @login_required
 def order_history(request):
-    orders = Order.objects.filter(
+    orders = (Order.objects.filter(
         user=request.user,
-        total_weight__gt=0).prefetch_related('items').order_by('product_delivery_date')
+        total_weight__gt=0
+        )
+        .exclude(status='canceled')
+        .annotate(sort_date=Coalesce('custom_deli_date', F('product_delivery_date__date')))
+        .prefetch_related('items').order_by('product_delivery_date')
+        .order_by('sort_date')
+    )
     
     today = localdate()
     notes = OrderHistoryNote.objects.all()
 
     for order in orders:
 
-        #本日注文分でなければ、#納品日まで10日を切ったらキャンセル不可とする
+        #本日注文分でなければ、#納品日まで3日を切ったらキャンセル不可とする
         if  order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
             order.status = 'preparing'
             order.save()
@@ -416,12 +423,12 @@ def my_invoices(request):
 @require_POST
 def order_cancel(request, order_id):
     order = get_object_or_404(Order, order_id=order_id, user=request.user)
-    if order.status == 'キャンセル':
+    if order.status == 'canceled':
         messages.info(request, "すでにキャンセル済みです。")
-    elif order.status == 'キャンセル不可':
-        messages.error(request, "この注文は当日以外キャンセルできません。/n Lineまたはお電話にてお問い合わせくださいませ。")
+    elif order.status == 'preparing' or order.status == 'shipped':
+        messages.error(request, "この注文は納品日まで3日以内のためキャンセルできません。/n Lineまたはお電話にてお問い合わせくださいませ。")
     else:
-        order.status = 'キャンセル'
+        order.status = 'canceled'
         order.save()
         messages.success(request, "注文をキャンセルしました。")
 
