@@ -9,6 +9,8 @@
     {% endfor %}
     {% if orders %}
         {% for order in orders %}
+        {% with first_item=order.items.first %}
+            {% if first_item %}
             {% ifchanged order.product_delivery_date.date %}
                 <div class="bg-light text-dark py-0 px-0" style="margin-left: 0; margin-right: calc(-50vw + 50%); width: auto;">
                     <div class="d-flex justify-content-start bg-light align-items-center text-dark p-2 mb-3">
@@ -18,32 +20,77 @@
                     </div>
                 </div>
             {% endifchanged %}
-            <table class="thead-light" style="margin-left: 5%">
+            <div  class="card-rounded" onclick="this.closest('form').submit();" style="cursor: pointer;">
+            <table>
+                <tr>
+                    <td colspan=6>
+                        <strong>注文番号：</strong>{{ order.order_id }}
+                        <span>（{{ order.get_status_display }}）</span>
+                    </td>
+                </tr>
                 <tr>
                     <td colspan=6>
                         <div class="d-flex justify-content-start">
-                            <strong>注文番号：</strong>{{ order.order_id }}
-                            <span>（{{ order.get_status_display }}）</span>
-                            {% if order.status == 'tentative' %}
-                                <form method="GET" action="{% url 'order_change' order.order_id %}">
-                                    <button id="change" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
-                                </form>
-                                <form method="POST" action="{% url 'order_confirm' order.order_id %}">
-                                    {% csrf_token %}
-                                    <button id="confirm" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">確定</button>
-                                </form>
+                        {% if order.status != 'shipped' %}
+                            <form method="GET" action="{% url 'order_change' order.order_id %}">
+                                {% csrf_token %}
+                                <button id="change" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
+                            </form>
+                        {% endif %}
+                        {% if order.status == 'tentative' %}
+                            <form method="POST" action="{% url 'order_confirm' order.order_id %}">
+                                {% csrf_token %}
+                                <button id="confirm" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">確定</button>
+                            </form>
+                        {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% if order.tracking_id %}
+                <tr>
+                    <td colspan=6>
+                        {% if order.status == 'shipped' %}
+                        {% if order.pickup_flg %}        
+                        {% else %}
+                        <a href="https://member.kms.kuronekoyamato.co.jp/parcel/detail?pno={{order.tracking_id}}" target="_blank" class="text-blue-600 underline" onclick="event.stopPropagation();">
+                            ヤマト追跡ページ
+                        </a>（追跡番号：{{ order.tracking_id }}）
+                        {% endif %}
+                        {% endif %}
+                    </td>
+                {% else %}
+                </tr>
+                <tr>
+                    <td colspan=6>
+                            {% if order.status == 'received' %}
+                                <form method="POST" action="{% url 'ship_comp' order.order_id %}">
+                                {% csrf_token %}
+                            {% if order.pickup_flg %}
+                                    <input type="hidden" name="tracking_id" value=0>
+                                    <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">納品</button>
+                            {% else %}
+                                <div class="d-flex justify-content-start">
+                                    <input inputmode="numeric" name="tracking_id" class="form-control" style="max-width: 100px;">
+                                    <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">登録</button>
+                                </div>
+                            {% endif %}
+                            </form>
                             {% endif %}
                         </div>
                     </td>
                 </tr>
+                {% endif %}
                 <tr>
                     <td colspan=6>
-                        <strong>お客様名：</strong>{{ order.user }}
+                        <strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}
                     </td>
                 </tr>
                 <tr>
-                    <td colspan=6>
-                        <strong>配送地域：</strong>{{ order.userprofile.region }}
+                    <td colspan=4>
+                        <strong>お客様名：</strong>{{ order.user }}
+                    </td>
+                    <td colspan=2>
+                        （{{ order.userprofile.region }}）
                     </td>
                 </tr>
                 <tr>
@@ -58,11 +105,12 @@
                 </tr>
                 <tr>
                     <td colspan=6>
-                        <strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}
+                        <strong>注文内容：</strong>{{ first_item.product.name }}
                     </td>
                 </tr>
+                </table>
+                <table class="custom-table">
                 <tr>
-                    <th class="text-center d-none d-sm-table-cell">商品名</th>
                     <th class="text-center d-none d-sm-table-cell">等級</th>
                     <th class="text-center d-none d-sm-table-cell">階級</th>
                     <th class="text-center d-none d-sm-table-cell">ユニット</th>
@@ -73,7 +121,6 @@
                 {% for item in order.items.all %}
                     {% if item.quantity > 0 %}
                     <tr>
-                        <td class="text-center nowrap">{{ item.product.name }}</td>
                         <td class="text-center nowrap">{{ item.price_table.grade }}</td>
                         <td class="text-center nowrap">{{ item.price_table.size }}</td>
                         <td class="text-center nowrap">{{ item.price_table.unit }}</td>
@@ -83,24 +130,18 @@
                     </tr>
                     {% endif %}
                 {% endfor %}
+                </table>
                 <tr>
                     <td colspan=5>
                         <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（別途送料{{ order.shipping_price|intcomma }}円）
                         <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
-                        <br><br>
-                    </td>    
-                </tr>
-                {% if order.tracking_id %}
-                <tr>
-                    <td colspan=6>
-                        <a href="https://toi.kuronekoyamato.co.jp/cgi-bin/tneko" target="_blank" class="text-blue-600 underline">
-                            ヤマト追跡ページ
-                        </a>（追跡番号：{{ order.tracking_id }}）
                     </td>
                 </tr>
-                {% endif %}
-            {% endfor %}
             </table>
+        </div>
+        {% endif %}
+        {% endwith %}
+        {% endfor %}
     {% else %}
         <p>注文履歴はまだありません。</p>
     {% endif %}
