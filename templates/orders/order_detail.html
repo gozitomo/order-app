@@ -46,8 +46,8 @@
             {% endfor %}
         </table>
     </div>
+    <br>
     <p><strong>特記事項：</strong>{{ order.remarks }}</p>
-    <hr>
     <p><strong>税込合計：</strong>{{ order.final_price|intcomma }}円（別途送料{{ order.shipping_price|intcomma }}円）</p>
     </form>
 

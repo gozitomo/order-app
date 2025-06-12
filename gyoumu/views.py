@@ -9,6 +9,8 @@ from django.contrib import messages
 from django.core.mail import send_mail
 from django.http import HttpResponse
 from django.utils.timezone import localdate, now
+from django.db.models import Sum, Q, Prefetch, Min, Max, F
+from django.db.models.functions import Coalesce
 
 from orders.models import Order, OrderItem, Invoice
 from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate
@@ -230,8 +232,13 @@ def order_confirm(request, order_id=None):
 
         return redirect('order_confirm')
 
-    orders = Order.objects.filter(
-        total_weight__gt=0).prefetch_related('items').order_by('product_delivery_date')
+    orders = (Order.objects.filter(
+        total_weight__gt=0)
+        .exclude(status='canceled')
+        .annotate(sort_date=Coalesce('custom_deli_date', F('product_delivery_date__date')))
+        .prefetch_related('items').order_by('product_delivery_date')
+        .order_by('sort_date', 'user')
+    )
     today = localdate()
     notes = OrderHistoryNote.objects.all()
 
@@ -247,3 +254,18 @@ def order_confirm(request, order_id=None):
         'orders': orders,
         'notes': notes,
         })
+
+
+@admin_required
+def ship_comp(request, order_id):
+
+    if request.method == 'POST':
+        order = get_object_or_404(Order, order_id=order_id)
+        tracking_id = request.POST.get(f'tracking_id')
+        order.status = 'shipped'
+        print(order_id, tracking_id)
+
+        if int(tracking_id) > 0:
+            order.tracking_id = tracking_id
+        order.save()
+    return redirect('order_confirm')

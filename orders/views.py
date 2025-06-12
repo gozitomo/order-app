@@ -301,13 +301,9 @@ def neworder(request, product_id):
         remarks = request.POST.get(f'remarks')
 
 
-        i = 0
-        while True:
+        for i in range(20):
             qty = request.POST.get(f'quantity_{i}')
-            if not qty:
-                break
-            if int(qty) == 0:
-                i += 1
+            if qty is None or qty == '' or int(qty) == 0:
                 continue
 
             grade = request.POST.get(f'grade_{i}')
