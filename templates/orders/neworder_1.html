@@ -12,8 +12,9 @@
         <!--<td nowrap class="small">（{{ product.season }}）</td>-->
     </tr>
 </table>
+{% if mode == 'new' %}
 <p class="small text-muted">{{ product.description|safe }}</p>
-
+{% endif %}
 <form id="order-form" method="post" onsubmit="return handleSubmit(event)">
     {% csrf_token %}
     {% if order %}
