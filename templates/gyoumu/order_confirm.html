@@ -109,7 +109,7 @@
                             <form method="POST" action="{% url 'order_cancel' order.order_id %}">
                                 {% csrf_token %}
                                 <button type="submit" id="cancel-order" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #EB7000;">
-                                    注文取消
+                                    取消
                                 </button>
                             </form>
                             <form method="GET" action="{% url 'order_change' order.order_id %}">
