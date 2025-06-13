@@ -21,28 +21,13 @@
             <div  class="card-rounded" onclick="this.closest('form').submit();" style="cursor: pointer;">
             <table>
                 <tr>
-                    <td colspan=6>
+                    <td colspan=5>
                         <strong>注文番号：</strong>{{ order.order_id }}
                         <span>（{{ order.get_status_display }}）</span>
                     </td>
                 </tr>
-                {% if order.tracking_id %}
                 <tr>
-                    <td colspan=6>
-                        {% if order.status == 'shipped' %}
-                            {% if order.pickup_flg %}        
-                            {% else %}
-                            <a href="https://member.kms.kuronekoyamato.co.jp/parcel/detail?pno={{order.tracking_id}}" target="_blank" class="text-blue-600 underline" onclick="event.stopPropagation();">
-                                ヤマト追跡ページ
-                            </a>（追跡番号：{{ order.tracking_id }}）
-                            {% endif %}
-                        {% endif %}
-                    </td>
-                </tr>
-                {% else %}
-                {% endif %}
-                <tr>
-                    <td colspan=6>
+                    <td colspan=5>
                         <strong>注文日時：</strong>{{ order.created_at|date:"Y/m/d H:i" }}
                     </td>
                 </tr>
@@ -55,7 +40,33 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan=6>
+                    <td colspan=5>
+                        <strong>配送状況：</strong>
+                        {% if order.status == 'shipped' %}
+                            {% if order.pickup_flg %}   
+                                納品済     
+                            {% else %}
+                            {% if order.tracking_id %}
+                            <a href="https://member.kms.kuronekoyamato.co.jp/parcel/detail?pno={{order.tracking_id}}" target="_blank" class="text-blue-600 underline" onclick="event.stopPropagation();">
+                                発送済
+                            </a>（追跡番号：{{ order.tracking_id }}）
+                            {% else %}
+                                発送済
+                            {% endif %}
+                            {% endif %}
+                        {% else %}
+                            未発送
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=5>
+                        <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（別途送料{{ order.shipping_price|intcomma }}円）
+                        <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=5>
                         <strong>注文内容：</strong>{{ first_item.product.name }}・
                         {% if order.pickup_flg%}
                             引取り
@@ -93,14 +104,14 @@
                 </table>
                 <tr>
                     <td colspan=5>
-                        <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（別途送料{{ order.shipping_price|intcomma }}円）
-                        <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan=6>
-                        <div class="d-flex justify-content-start">
+                        <div class="d-flex justify-content-start" style="padding: 10px 0;">
                         {% if order.status != 'shipped' %}
+                            <form method="POST" action="{% url 'order_cancel' order.order_id %}">
+                                {% csrf_token %}
+                                <button type="submit" id="cancel-order" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #EB7000;">
+                                    注文取消
+                                </button>
+                            </form>
                             <form method="GET" action="{% url 'order_change' order.order_id %}">
                                 {% csrf_token %}
                                 <button id="change" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
@@ -109,7 +120,7 @@
                         {% if order.status == 'tentative' %}
                             <form method="POST" action="{% url 'order_confirm' order.order_id %}">
                                 {% csrf_token %}
-                                <button id="confirm" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">確定</button>
+                                <button id="confirm" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">受注</button>
                             </form>
                         {% endif %}
                         {% if order.status == 'received' %}
