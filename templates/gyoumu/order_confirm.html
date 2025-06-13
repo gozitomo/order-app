@@ -4,9 +4,6 @@
 {% block content %}
     <h2>受注管理</h2>
     <br>
-    {% for note in notes%}
-        {{ note.content|safe }}
-    {% endfor %}
     {% if orders %}
         {% for order in orders %}
         {% with first_item=order.items.first %}
@@ -32,11 +29,9 @@
                     </td>
                 </tr>
                 <tr>
-                    <td colspan=4>
+                    <td colspan=5>
                         <strong>お客様名：</strong>{{ order.user }}
-                    </td>
-                    <td colspan=2>
-                        （{{ order.userprofile.region }}）
+                        <span>（{{ order.userprofile.region }}）</span>
                     </td>
                 </tr>
                 <tr>
@@ -64,6 +59,9 @@
                         <strong>税込合計：</strong>{{ order.final_price|intcomma }}円（別途送料{{ order.shipping_price|intcomma }}円）
                         <!--<p><strong>総計：</strong>{{ order.final_total|intcomma }}円</p>-->
                     </td>
+                </tr>
+                <tr>
+                    <td><strong>特記事項：</strong>{{ order.remarks }}</td>
                 </tr>
                 <tr>
                     <td colspan=5>
@@ -131,7 +129,7 @@
                                 <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">納品</button>
                             {% else %}
                             <div class="d-flex justify-content-start">
-                                <input inputmode="numeric" name="tracking_id" class="form-control" style="max-width: 100px;">
+                                <input inputmode="numeric" name="tracking_id" class="form-control" style="max-width: 130px;">
                                 <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">登録</button>
                             </div>
                             {% endif %}
