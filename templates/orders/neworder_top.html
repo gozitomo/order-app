@@ -9,7 +9,7 @@
     <div class="d-flex justify-content-center align-items-center text-light p-1" style="background-color: #20AEE5;">
         {{ disp.name }}
     </div>
-    {% for product in disp.prefetched_products %}
+    {% for product in disp.sorted_products %}
         {% if product.status != 'closed' and product.earliest_date %}
         <a href="{% url 'new_order' product.id%}" class="text-decoration-none">
         <div class="d-flex justify-content-center align-items-baseline text-dark bg-light p-1 border border-secondary-subtle gap-2">
