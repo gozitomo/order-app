@@ -122,14 +122,14 @@
                             </form>
                         {% endif %}
                         {% if order.status == 'received' %}
-                        <form method="POST" action="{% url 'ship_comp' order.order_id %}">
+                        <form method="POST" onsubmit="return validateTrackingId(event, this)" action="{% url 'ship_comp' order.order_id %}">
                             {% csrf_token %}
                             {% if order.pickup_flg %}
                                 <input type="hidden" name="tracking_id" value=0>
                                 <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">納品</button>
                             {% else %}
                             <div class="d-flex justify-content-start">
-                                <input inputmode="numeric" name="tracking_id" class="form-control" style="max-width: 130px;">
+                                <input type="text" inputmode="numeric" name="tracking_id" maxlength="12" class="form-control" style="max-width: 130px;">
                                 <button type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">登録</button>
                             </div>
                             {% endif %}
@@ -146,4 +146,23 @@
     {% else %}
         <p>注文履歴はまだありません。</p>
     {% endif %}
+<script>
+    function validateTrackingId(event, form){
+        const target = form.tracking_id
+        if(!target || target.type === 'hidden'){
+            return true;
+        }
+        else{
+        target_num = target.value.trim();
+
+        if (!/^\d{12}$/.test(target_num)){
+            alert("追跡番号は12桁の数字で入力してください。");
+            event.preventDefault();
+            return false;
+        }
+    
+        return true;
+    }
+    }
+</script>
 {% endblock %}
