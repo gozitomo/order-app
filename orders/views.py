@@ -1,5 +1,6 @@
 from datetime import date, timedelta, datetime
 from io import TextIOWrapper
+from itertools import chain
 from django.apps import apps
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404
