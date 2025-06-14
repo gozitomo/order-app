@@ -12,13 +12,11 @@
             {% if first_item %}
             {% if order.custom_deli_date %}
             {% ifchanged order.product_delivery_date.date %}
-               <div class="py-0 px-0">
-                    <div class="d-flex justify-content-start align-items-center text-light p-2 mb-3" style="background-color: #20AEE5;border-radius: 0.5rem;">
-                        <div class="mb-0">
-                            <strong>発送見込：</strong>{{ order.custom_deli_date|date:"Y/m/d" }}（カスタム）
-                        </div>      
-                    </div>
-                </div>
+            <div class="d-flex justify-content-start align-items-center text-light p-2 mb-3" style="background-color: #20AEE5;border-radius: 0.5rem;">
+                <div class="mb-0">
+                    <strong>発送見込：</strong>{{ order.custom_deli_date|date:"Y/m/d" }}（カスタム）
+                </div>      
+            </div>
             {% endifchanged %}
             <form method="GET" action="{% url 'order_change' order.order_id %}">
             {% csrf_token %}

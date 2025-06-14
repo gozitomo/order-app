@@ -3,17 +3,16 @@
 {% block title %}受注管理{% endblock %}
 {% block content %}
     <h2>受注管理</h2>
-    <br>
     {% if orders %}
         {% for order in orders %}
         {% with first_item=order.items.first %}
             {% if first_item %}
             {% ifchanged order.product_delivery_date.date %}
-                <div class="d-flex justify-content-start bg-dark align-items-center text-light p-2 mb-3" style="border-radius: 0.5rem;">
-                    <div class="mb-0">
-                        <strong>発送見込：</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}
-                    </div>      
-                </div>
+            <div class="d-flex justify-content-start bg-dark align-items-center text-light p-2 mb-3" style="border-radius: 0.5rem;">
+                <div class="mb-0">
+                    <strong>発送見込：</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}
+                </div>      
+            </div>
             {% endifchanged %}
             <div  class="card-rounded">
             <table>
@@ -140,6 +139,7 @@
                 </tr>
             </table>
         </div>
+        <br>
         {% endif %}
         {% endwith %}
         {% endfor %}
