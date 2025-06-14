@@ -41,9 +41,15 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'order_top' %}">発注</a>
                         </li>
+                        {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'order_confirm' %}">受注管理</a>
+                        </li>
+                            {% else %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'order_history' %}">注文履歴</a>
                         </li>
+                        {% endif %}
                         {% if user.is_superuser %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'gyoumu_menu' %}">業務メニュー</a>

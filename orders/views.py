@@ -387,6 +387,62 @@ def neworder(request, product_id):
         })
 
 
+
+@admin_required
+def order_confirm(request, order_id=None):
+    if request.method == 'POST' and order_id is not None:
+        order = get_object_or_404(Order, order_id=order_id)
+        order.status = 'received'
+        order.save()
+
+        template = MailTemplate.objects.filter(key="order_confirm").first()
+
+        try:
+            sendmail(order, template)
+        except Exception as e:
+            print("メール送信エラー：", e)
+
+        return redirect('order_confirm')
+
+    orders = (Order.objects.filter(
+        total_weight__gt=0)
+        .exclude(status='canceled')
+        .annotate(sort_date=Coalesce('custom_deli_date', F('product_delivery_date__date')))
+        .prefetch_related('items').order_by('product_delivery_date')
+        .order_by('sort_date', 'user')
+    )
+    today = localdate()
+    notes = OrderHistoryNote.objects.all()
+
+    for order in orders:
+
+        #本日注文分でなければ、#納品日まで10日を切ったらキャンセル不可とする
+        if  order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
+            order.status = 'preparing'
+            order.save()
+        order.userprofile = getattr(order.user, 'userprofile', None)
+
+    return render(request, 'orders/order_confirm.html', {
+        'orders': orders,
+        'notes': notes,
+        })
+
+
+@admin_required
+def ship_comp(request, order_id):
+
+    if request.method == 'POST':
+        order = get_object_or_404(Order, order_id=order_id)
+        tracking_id = request.POST.get(f'tracking_id')
+        order.status = 'shipped'
+        print(order_id, tracking_id)
+
+        if int(tracking_id) > 0:
+            order.tracking_id = tracking_id
+        order.save()
+    return redirect('order_confirm')
+
+
 @login_required
 def order_invoice_pdf(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)

@@ -166,7 +166,11 @@
     </div>
 </form>
     {% if mode == 'edit' %}
+    {% if user.is_superuser %}
+    <p class="ps-0 mb-2"><a href="{% url 'order_confirm' %}">←　受注管理に戻る</a></p>
+    {% else %}
     <p class="ps-0 mb-2"><a href="{% url 'order_history' %}">←　注文履歴に戻る</a></p>
+    {% endif %}
     {% endif %}
 </div>
 <script>

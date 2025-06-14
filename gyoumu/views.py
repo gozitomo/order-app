@@ -1,5 +1,7 @@
 from io import TextIOWrapper
 import csv
+from collections import defaultdict
+from datetime import date
 
 from django.apps import apps
 from django.shortcuts import render, redirect, get_object_or_404
@@ -160,55 +162,160 @@ def export_model_csv(request, app_label=None, model_name=None):
     return render(request, 'gyoumu/export_model_csv.html')
 
 @admin_required
-def monthly_invoice_pdf(request):
-    today = date.today()
-    today = today - timedelta(days=60)
-    first_day_this_month = today.replace(day=1)
-    last_day_last_month = first_day_this_month - timedelta(days=1)
-    first_day_last_month = last_day_last_month.replace(day=1)
+def bulk_delinote_export(request):
+    today = date(2025,7,22)
     users = User.objects.all()
+    all_summaries = []
+
+    print(today)
 
     for user in users:
 
-        items = OrderItem.objects.filter(
-            order__user=user,
-            invoice_id__isnull=True,
-            delivery_date__gte=first_day_last_month,
-            delivery_date__lte=last_day_last_month,
-            order__status__in=['未処理', '完了', 'キャンセル不可'] #キャンセル除外
-        )
+        print(user)
 
-        if not items.exists():
+        orders = Order.objects.filter(
+            user=user,
+            deli_note_id__isnull=True,
+            product_delivery_date__isnull=False,
+            product_delivery_date__date=today,
+            status="preparing",
+        ).prefetch_related('items')
+
+        if not orders.exists():
+            print("orderなし")
             continue
 
-        invoice = Invoice.objects.create(
-            user = user,
-            invoice_type = 'monthly',
-            invoice_id = Invoice.generate_invoice_number(),
-            issued_date = today,
-            period_start = first_day_last_month,
-            period_end = last_day_last_month,
-            total_price = sum(item.subtotal for item in items),
-            tax8 = sum(item.tax for item in items),
-            shipping_fee = sum(item.shipping_fee for item in items),
-            tax10 = sum(item.shipping_tax for item in items),
-            total_extax = 0,
-            shipping_extax = 0,
-            final_price = 0,
-            final_tax = 0,
-            final_extax = 0,
-        )
-        invoice.total_extax = invoice.total_price - invoice.tax8
-        invoice.shipping_extax = invoice.shipping_fee - invoice.tax10
-        invoice.final_price = invoice.total_price + invoice.shipping_fee
-        invoice.final_tax = invoice.tax8 + invoice.tax10
-        invoice.final_extax = invoice.final_price - invoice.final_tax
+        summary = {
+                'items': defaultdict(lambda: {'quantity': 0}),
+                'tax8_price': 0,
+                'tax10_price': 0,
+                'total_weight': 0,
+                'shipping_price': 0,
+                'final_price': 0,
+                'orders': [],
+                'user': user,
+                'delivery_date': today,
+            }
 
-        invoice.save()
 
-        items.update(invoice_id=invoice)
+        for order in orders:
+            summary['tax8_price'] += order.tax8_price or 0
+            summary['tax10_price'] += order.tax10_price or 0
+            summary['total_weight'] += order.total_weight or 0
+            summary['shipping_price'] += order.shipping_price or 0
+            summary['final_price'] += order.final_price or 0
+            summary['orders'].append(order)
+
+            print(summary)
+
+            for item in order.items.all():
+                pt_key = item.price_table.id
+                summary['items'][pt_key]['quantity'] += item.quantity
+                summary['items'][pt_key]['item'] = item
+
+                print(summary)
+
+        #まとめたアイテムをリストに変換して格納
+        for pt_id, data in summary['items'].items():
+            item = data['item']
+            pt = item.price_table
+            product = item.product
+            total_qty = data['quantity']
+            
+            all_summaries.append({
+                'user': summary['user'],
+                'delivery_date': summary['delivery_date'],
+                'product': product,
+                'grade': pt.grade,
+                'size': pt.size,
+                'unit': pt.unit,
+                'price': pt.price,
+                'quantity': total_qty,
+                'tax10_flg': pt.tax10_flg,
+                'tax8_price': summary['tax8_price'],
+                'tax10_price': summary['tax10_price'],
+                'total_weight': summary['total_weight'],
+                'shipping_price': summary['shipping_price'],
+                'final_price': summary['final_price'],
+            })
+
+            response = HttpResponse(content_type='text/csv; charset=utf-8-sig')
+            response['Content-Disposition'] = f'attachment; filename="納品書_{today}.csv'
+
+            writer = csv.writer(response)
+            writer.writerow([
+                "csv_type(変更不可)","行形式","取引先名称","件名","納品日","納品書番号","メモ","タグ","小計","消費税","源泉徴収税","合計金額","取引先敬称","取引先郵便番号","取引先都道府県","取引先住所1","取引先住所2","取引先部署","取引先担当者役職","取引先担当者氏名","自社担当者氏名","備考","納品ステータス","メール送信ステータス","郵送ステータス","ダウンロードステータス","品名","品目コード","単価","数量","単位","詳細","金額","源泉徴収","品目消費税率"
+            ])
+
+            for row in all_summaries:
+                user = row["user"]
+                row_cnt = 0
+                if user != row["user"]:
+                    row_cnt = 0
+
+                if row_cnt == 0:
+                    writer.writerow([
+                        "40201",
+                        "納品書",
+                        row["user"],
+                        row["delivery_date"],
+                        '1',
+                        "",
+                        "",
+                        row["final_price"] / 1.08,
+                        row["final_price"] / 1.08 * 0.08,
+                        "",
+                        row["final_price"],""
+                        ,"","","","","","","","","","","","",""
+                    ])
+                else:
+                    writer.writerow([
+                        "40201",
+                        "品目",
+                        "","","","","","","","","","","","","","","","","","","","","","","","",
+                        "品目A","",
+                        row["price"],
+                        row["quantity"],"","",
+                        row["price"] * row["quantity"],"",
+                        "軽8%"
+                    ])
+                row_cnt += 1
+
+
+
+
+        print(all_summaries)
+
+    return response
+
+
+    #     deli_note = DeliNote.objects.create(
+    #         user = user,
+    #         deli_note_id = Invoice.generate_invoice_number(),
+    #         issued_date = today,
+    #         period_start = first_day_last_month,
+    #         period_end = last_day_last_month,
+    #         total_price = sum(item.subtotal for item in items),
+    #         tax8 = sum(item.tax for item in items),
+    #         shipping_fee = sum(item.shipping_fee for item in items),
+    #         tax10 = sum(item.shipping_tax for item in items),
+    #         total_extax = 0,
+    #         shipping_extax = 0,
+    #         final_price = 0,
+    #         final_tax = 0,
+    #         final_extax = 0,
+    #     )
+    #     invoice.total_extax = invoice.total_price - invoice.tax8
+    #     invoice.shipping_extax = invoice.shipping_fee - invoice.tax10
+    #     invoice.final_price = invoice.total_price + invoice.shipping_fee
+    #     invoice.final_tax = invoice.tax8 + invoice.tax10
+    #     invoice.final_extax = invoice.final_price - invoice.final_tax
+
+    #     invoice.save()
+
+    #     items.update(invoice_id=invoice)
     
-    return render(request, 'csv_upload')
+    # return render(request, 'csv_upload')
 
 
 @admin_required
@@ -216,56 +323,3 @@ def gyoumu_menu(request):
     return render(request, 'gyoumu/gyoumu.html')
 
 
-@admin_required
-def order_confirm(request, order_id=None):
-    if request.method == 'POST' and order_id is not None:
-        order = get_object_or_404(Order, order_id=order_id)
-        order.status = 'received'
-        order.save()
-
-        template = MailTemplate.objects.filter(key="order_confirm").first()
-
-        try:
-            sendmail(order, template)
-        except Exception as e:
-            print("メール送信エラー：", e)
-
-        return redirect('order_confirm')
-
-    orders = (Order.objects.filter(
-        total_weight__gt=0)
-        .exclude(status='canceled')
-        .annotate(sort_date=Coalesce('custom_deli_date', F('product_delivery_date__date')))
-        .prefetch_related('items').order_by('product_delivery_date')
-        .order_by('sort_date', 'user')
-    )
-    today = localdate()
-    notes = OrderHistoryNote.objects.all()
-
-    for order in orders:
-
-        #本日注文分でなければ、#納品日まで10日を切ったらキャンセル不可とする
-        if  order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
-            order.status = 'preparing'
-            order.save()
-        order.userprofile = getattr(order.user, 'userprofile', None)
-
-    return render(request, 'gyoumu/order_confirm.html', {
-        'orders': orders,
-        'notes': notes,
-        })
-
-
-@admin_required
-def ship_comp(request, order_id):
-
-    if request.method == 'POST':
-        order = get_object_or_404(Order, order_id=order_id)
-        tracking_id = request.POST.get(f'tracking_id')
-        order.status = 'shipped'
-        print(order_id, tracking_id)
-
-        if int(tracking_id) > 0:
-            order.tracking_id = tracking_id
-        order.save()
-    return redirect('order_confirm')

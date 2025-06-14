@@ -4,12 +4,9 @@
     <h2>業務メニュー</h2>
     <div class="card-rounded">
     <ul>
-        <li><a href="{% url 'order_confirm' %}">受注管理</a></li>
-    </ul>
-    <ul>
         <li><a href='/admin/'>アプリ管理画面</a></li>
         <li><a href='/signup/'>ユーザー登録</a></li>
-        <li><a href="{% url 'generate_monthly_invoice' %}">月次請求書を一括発行</a></li>
+        <li><a href="{% url 'test_delinote' %}">納品書一括発行</a></li>
         <li><a href="{% url 'csv_upload' %}">csvアップロード</a></li>
         <li><a href="{% url 'export_model_csv' %}">CSV Export</a></li>
     </ul>
