@@ -45,7 +45,7 @@ def order_top(request):
     disp_kinds = DispKind.objects.prefetch_related(
         Prefetch(
             'kinds__products',
-            queryset=product_qs,
+            queryset=product_qs.order_by('earliest_date'),
             to_attr='prefetched_products'
         ),
         Prefetch(
