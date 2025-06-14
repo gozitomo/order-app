@@ -10,7 +10,7 @@
         {{ disp.name }}
     </div>
     {% for kind in disp.kinds.all %}
-    {% for product in kind.prefetched_products %}
+    {% for product in kind.prefetched_products|dictsort:"earliest_date" %}
         {% if product.status != 'closed' and product.earliest_date %}
         <a href="{% url 'new_order' product.id%}" class="text-decoration-none">
         <div class="d-flex justify-content-center align-items-baseline text-dark bg-light p-1 border border-secondary-subtle gap-2">
