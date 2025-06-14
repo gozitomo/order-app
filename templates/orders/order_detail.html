@@ -20,7 +20,7 @@
     <p><strong>注文内容：</strong>{{ order.items.first.product.name }}（{{ order.items.first.product.kind.name }}）・
                         {% if order.pickup_flg == True %}引取り
                         {% elif order.cool_flg == True %}冷蔵便
-                        {% else %}通常便
+                        {% else %}常温便
                         {% endif %}</p>
     <div class="table-responsive">
         <table class="custom-table">
