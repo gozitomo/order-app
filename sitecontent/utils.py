@@ -14,8 +14,14 @@ def sendmail(order, template):
     subject = f"""{template.subject}（注文番号：{order.order_id}）"""
     base_sign = MailTemplate.objects.filter(key="base_sign").first()
     item = order.items.filter(quantity__gt=0).first()
+    try:
+        company_name = order.user.userprofile.company_name
+        if not company_name:
+            raise ValueError("会社名が未登録です")      
+    except (AttributteError, ValueError) as e:
+        company_name = "(会社名未登録)"
 
-    product_name = item.product
+    product_name = item.product.name
     if order.pickup_flg:
         mail_kbn = "引取り"
     elif order.cool_flg:
@@ -23,18 +29,20 @@ def sendmail(order, template):
     else:
         mail_kbn = "通常便"
 
-    message = dedent(f"""
+    message = dedent(f"""{company_name}
+ご担当者様
+
 {template.body}
 
-【お客様名】{order.user.userprofile.company_name}
+【お客様名】{company_name}
 【注文番号】{order.order_id}
 【発送見込】{order.product_delivery_date.date.strftime("%Y/%m/%d")}
 【注文内容】{product_name}（{item.product.kind}）・{mail_kbn}
 """)
     for i in order.items.all():
-        message += dedent(f"　　　　　　{item.price_table.grade}　{item.price_table.unit}@{item.price_table.price|intcomma}×{item.quantity}\n")
+        message += dedent(f"　　　　　　{item.price_table.grade}　{item.price_table.size}　{item.price_table.unit}@{item.price_table.price:,}×{item.quantity}\n")
     message += dedent(f"【特記事項】{order.remarks}\n")
-    message += dedent(f"【合計金額】{order.final_price|intcomma}円（別途送料{order.shipping_price|intcomma}円）\n\r\n")
+    message += dedent(f"【税込合計】{order.final_price:,}円（別途送料{order.shipping_price:,}円）\n\r\n")
     message += base_sign.body
     
 
