@@ -53,6 +53,16 @@ def order_top(request):
             to_attr='prefetched_dates')
         ).order_by('sort_no')
 
+    for disp in disp_kinds:
+        all_products = list(chain.from_iterable(
+            kind.prefetched_products for kind in disp.kinds.all()
+        ))
+        # earliest_date でソート（Noneは最後）
+        disp.sorted_products = sorted(
+            [p for p in all_products if p.earliest_date],
+            key=lambda x: x.earliest_date
+        )
+
     notes = OrderNote.objects.all()
     return render(request, 'orders/neworder_top.html', {
         'disp_kinds': disp_kinds,
