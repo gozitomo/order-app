@@ -71,7 +71,7 @@
                         <strong>注文内容：</strong>{{ first_item.product.name }}（{{ first_item.product.kind.name }}）・
                         {% if order.pickup_flg == True %}引取り
                         {% elif order.cool_flg == True %}冷蔵便
-                        {% else %}通常便
+                        {% else %}常温便
                         {% endif %}
                     </td>
                 </tr>
@@ -160,7 +160,7 @@
                         <strong>注文内容：</strong>{{ first_item.product.name }}（{{ first_item.product.kind.name }}）・
                         {% if order.pickup_flg == True %}引取り
                         {% elif order.cool_flg == True %}冷蔵便
-                        {% else %}通常便
+                        {% else %}常温便
                         {% endif %}
                     </td>
                 </tr>

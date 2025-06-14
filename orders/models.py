@@ -8,9 +8,22 @@ from django.utils.timezone import now
 
 
 def generate_order_id():
-    this_year = now().year %100
+    this_year = now().year % 100
     prefix = f"{this_year:02d}"
-    print(prefix)
+
+    last_order = Order.objects.filter(order_id__startswith=prefix).order_by('-order_id').first()
+    if last_order:
+        last_number = int(last_order.order_id[-4:])
+        new_number = last_number + 1
+    else:
+        new_number = 1
+    return f"{prefix}{new_number:04d}"
+
+def generate_delinote_id():
+    this_year = now().year % 100
+    prefix = f"{this_year:02d}"
+    last_order = Order.objects.filter()
+
     last_order = Order.objects.filter(order_id__startswith=prefix).order_by('-order_id').first()
     if last_order:
         last_number = int(last_order.order_id[-4:])

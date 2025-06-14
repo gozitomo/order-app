@@ -27,7 +27,7 @@ def sendmail(order, template):
     elif order.cool_flg:
         mail_kbn = "冷蔵便"
     else:
-        mail_kbn = "通常便"
+        mail_kbn = "常温便"
 
     message = dedent(f"""{company_name}
 ご担当者様
