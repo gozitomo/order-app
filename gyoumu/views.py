@@ -166,6 +166,7 @@ def bulk_delinote_export(request):
     today = date(2025,7,7)
     users = User.objects.all()
     all_summaries = []
+    response = None
 
     print(today)
 
