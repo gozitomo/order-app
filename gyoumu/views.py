@@ -282,11 +282,9 @@ def bulk_delinote_export(request):
                 row_cnt += 1
 
     if response:
-        continue
+        print(all_summaries)
     else:
         response = HttpResponse("NG")
-
-        print(all_summaries)
 
     return response
 
