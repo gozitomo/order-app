@@ -163,7 +163,7 @@ def export_model_csv(request, app_label=None, model_name=None):
 
 @admin_required
 def bulk_delinote_export(request):
-    today = date(2025,7,22)
+    today = date(2025,7,7)
     users = User.objects.all()
     all_summaries = []
 
@@ -281,8 +281,10 @@ def bulk_delinote_export(request):
                     ])
                 row_cnt += 1
 
-
-
+    if response:
+        continue
+    else:
+        response = HttpResponse("NG")
 
         print(all_summaries)
 
