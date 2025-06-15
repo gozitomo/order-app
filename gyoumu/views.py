@@ -172,8 +172,6 @@ def bulk_delinote_export(request):
 
     for user in users:
 
-        print(user)
-
         orders = Order.objects.filter(
             user=user,
             deli_note_id__isnull=True,
@@ -183,7 +181,6 @@ def bulk_delinote_export(request):
         ).prefetch_related('items')
 
         if not orders.exists():
-            print("orderなし")
             continue
 
         summary = {
