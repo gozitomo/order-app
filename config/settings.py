@@ -66,6 +66,41 @@ MIDDLEWARE = [
 ROOT_URLCONF = 'config.urls'
 WSGI_APPLICATION = 'config.wsgi.application'
 
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+
+    'formatters': {
+        'verbose': {
+            'format': '[{asctime}] {levelname} {name} - {message}',
+            'style': '{',
+        },
+    },
+
+    'handlers': {
+        'auth_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'logs', 'auth.log'),
+            'formatter': 'verbose',
+        },
+    },
+
+    'loggers': {
+        'django.security.Authentication': {
+            'handlers': ['auth_file'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
+
+CSRF_FAILURE_VIEW = 'core.views.custom_csrf_failure'
+
+
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -169,8 +204,11 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 #https本番運用
 SECURE_SSL_REDIRECT = False
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = False
 SECURE_BROWSER_XSS_FILTER = True
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+CSRF_COOKIE_SAMESITE = None
+SESSION_COOKIE_SAMESITE = None

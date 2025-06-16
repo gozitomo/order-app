@@ -22,6 +22,7 @@ from django.views.generic import TemplateView
 
 from django.conf.urls import handler404, handler500, handler403, handler400
 from core import views as core_views
+from sitecontent.views import CustomLoginView
 
 
 urlpatterns = [
@@ -32,7 +33,8 @@ urlpatterns = [
     path('', include('orders.urls')),
     path('', include('sitecontent.urls')),
     path('', include('gyoumu.urls')),
-    path('accounts/login/', auth_views.LoginView.as_view(template_name='sitecontent/login.html'), name='login'),
+    path('accounts/login/', CustomLoginView.as_view(template_name='sitecontent/login.html'), name='login'),
+    #path('accounts/login/', auth_views.LoginView.as_view(template_name='sitecontent/login.html'), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
 
