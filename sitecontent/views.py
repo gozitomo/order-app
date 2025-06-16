@@ -1,3 +1,9 @@
+import logging
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import authenticate
+from django.contrib.auth.models import User
+from django.contrib import messages
+from django.utils.timezone import now
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import CustomSignupForm
@@ -32,3 +38,26 @@ def signup(request):
     else:
         form = CustomSignupForm()
     return render(request, 'sitecontent/signup.html', {'form': form})
+
+
+logger = logging.getLogger('django.security.Authentication')
+
+class CustomLoginView(LoginView):
+    template_name = 'sitecontent/login.html'
+
+    def form_invalid(self, form):
+        username = form.cleaned_data.get('username') or self.request.POST.get('username')
+        ip = self.request.META.get('REMOTE_ADDR')
+
+        try:
+            user = User.objects.get(username=username)
+            if not user.is_active:
+                reason = 'account is inactive'
+            else:
+                reason = 'incorrect password'
+        except User.DoesNotExist:
+            reason = 'user does not exist'
+
+        logger.warning(f"[LOGIN FAILED] user={username!r} ip={ip} reason={reason}")
+        messages.error(self.request, "ログインに失敗しました。ユーザー名またはパスワードをご確認ください。")
+        return super().form_invalid(form)
