@@ -18,7 +18,7 @@ def sendmail(order, template):
         company_name = order.user.userprofile.company_name
         if not company_name:
             raise ValueError("会社名が未登録です")      
-    except (AttributteError, ValueError) as e:
+    except (AttributeError, ValueError) as e:
         company_name = "(会社名未登録)"
 
     product_name = item.product.name
@@ -40,7 +40,7 @@ def sendmail(order, template):
 【注文内容】{product_name}（{item.product.kind}）・{mail_kbn}
 """)
     for i in order.items.all():
-        message += dedent(f"　　　　　　{item.price_table.grade}　{item.price_table.size}　{item.price_table.unit}@{item.price_table.price:,}×{item.quantity}\n")
+        message += dedent(f"　　　　　　{i.price_table.grade}　{i.price_table.size}　{i.price_table.unit}@{i.price_table.price:,}×{i.quantity}\n")
     message += dedent(f"【特記事項】{order.remarks}\n")
     message += dedent(f"【税込合計】{order.final_price:,}円（別途送料{order.shipping_price:,}円）\n\r\n")
     message += base_sign.body
