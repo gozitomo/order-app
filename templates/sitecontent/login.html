@@ -5,14 +5,14 @@
 <div class="container mt-5" style="max-width: 400px">
     <h2 class="text-center" mb-4>ログイン</h2>
     {% if form.errors %}
-        <div class="alert alert-danger">ユーザー名またはパスワードが正しくありません。</div>
+        <div class="alert alert-danger">メールアドレスまたはパスワードが正しくありません。</div>
     {% endif %}
 
     <form method="post" novalidate>
         {% csrf_token %}
         {% load my_filters %}
         <div class="mb-3">
-            <label for="id_username" class="form-label">ユーザー名</label>
+            <label for="id_username" class="form-label">メールアドレス</label>
             {{ form.username|add_class:"form-control" }}
         </div>
         <div class="mb-3">
@@ -20,8 +20,11 @@
             {{ form.password|add_class:"form-control" }}
         </div>
         <div class="d-grid">
-            <button type="submit"  class="btn btn-primary me-2">ログイン</button>
+            <button type="submit"  class="btn btn-primary">ログイン</button>
         </div>
     </form>
+    <div class="alert alert-warning mt-4"  style="max-width: 400px; margin: 0 auto;">
+  LINEやInstagramなどのアプリ内からのログインでエラーになる場合はSafariやChromeなどの外部ブラウザで開いてください。
+    </div>
 </div>
 {% endblock %}
