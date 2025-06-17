@@ -45,6 +45,12 @@ logger = logging.getLogger('django.security.Authentication')
 class CustomLoginView(LoginView):
     template_name = 'sitecontent/login.html'
 
+    def get_initial(self):
+        initial = super().get_initial()
+        if 'username' in self.request.GET:
+            initial['username'] = self.request.GET.get('username')
+        return initial
+
     def form_invalid(self, form):
         username = form.cleaned_data.get('username') or self.request.POST.get('username')
         ip = self.request.META.get('REMOTE_ADDR')
