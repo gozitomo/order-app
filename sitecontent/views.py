@@ -65,5 +65,5 @@ class CustomLoginView(LoginView):
             reason = 'user does not exist'
 
         logger.warning(f"[LOGIN FAILED] user={username!r} ip={ip} reason={reason}")
-        messages.error(self.request, "ログインに失敗しました。ユーザー名またはパスワードをご確認ください。")
+        messages.error(self.request, "ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。")
         return super().form_invalid(form)
