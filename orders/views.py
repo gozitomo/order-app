@@ -168,14 +168,9 @@ def order_change(request, order_id):
             weights = []
             order.items.all().delete()
 
-            i = 0
-            while True:
+            for i in range(20):
                 qty = request.POST.get(f'quantity_{i}')
-                print(qty)
-                if qty is None:
-                    break
-                if qty == "" or int(qty) == 0:
-                    i += 1
+                if qty is None or qty == '' or int(qty) == 0:
                     continue
 
                 grade = request.POST.get(f'grade_{i}')
@@ -202,7 +197,6 @@ def order_change(request, order_id):
                             quantity=quantity,
                             subtotal=subtotal,
                         )
-                i += 1
 
             weights.sort(reverse=True)
 
@@ -341,7 +335,6 @@ def neworder(request, product_id):
                         quantity=quantity,
                         subtotal=subtotal,
                     )
-            i += 1
 
         weights.sort(reverse=True)
 
