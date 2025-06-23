@@ -99,7 +99,10 @@ def order_history(request):
 
 @login_required
 def order_detail(request, order_id):
-    order = get_object_or_404(Order, order_id=order_id, user=request.user)
+    if request.user.is_superuser:
+        order = get_object_or_404(Order, order_id=order_id)
+    else:
+        order = get_object_or_404(Order, order_id=order_id, user=request.user)
     return render(request, 'orders/order_detail.html', {
         'order': order,
         })
@@ -478,7 +481,12 @@ def my_invoices(request):
 @login_required
 @require_POST
 def order_cancel(request, order_id):
-    order = get_object_or_404(Order, order_id=order_id, user=request.user)
+
+    if request.user.is_superuser:
+        order = get_object_or_404(Order, order_id=order_id)
+    else:
+        order = get_object_or_404(Order, order_id=order_id, user=request.user)
+        
     if order.status == 'canceled':
         messages.info(request, "すでにキャンセル済みです。")
     elif order.status == 'preparing' or order.status == 'shipped':
