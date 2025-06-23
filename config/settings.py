@@ -23,8 +23,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = [*[host.strip() for host in config('ALLOWED_HOSTS', default='localhost,127.0.0.1').split(',')],]
