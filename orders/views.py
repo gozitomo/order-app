@@ -413,8 +413,8 @@ def order_confirm(request, order_id=None):
 
     for order in orders:
 
-        #本日注文分でなければ、#納品日まで10日を切ったらキャンセル不可とする
-        if  order.sort_date and (order.sort_date - today).days < 3 and order.created_at.date()!=today:
+        #本日注文分でなければ、#納品日まで3日を切ったらキャンセル不可とする
+        if  order.sort_date and (order.sort_date - today).days < 3 and (order.sort_date - today).days >= 0 and order.created_at.date()!=today:
             order.status = 'preparing'
             order.save()
         order.userprofile = getattr(order.user, 'userprofile', None)
