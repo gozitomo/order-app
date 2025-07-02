@@ -7,7 +7,7 @@ from django.utils.timezone import now
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import CustomSignupForm
-from .models import HeroContent, HomeContent
+from .models import HeroContent, HomeContent, ErrLog
 from users.models import UserProfile, UserGroup
 from users.models import UserProfile
 from users.models import User
@@ -63,7 +63,17 @@ class CustomLoginView(LoginView):
                 reason = 'incorrect password'
         except User.DoesNotExist:
             reason = 'user does not exist'
+            user_obj = None
 
         logger.warning(f"[LOGIN FAILED] user={username!r} ip={ip} reason={reason}")
+
+        ErrLog.objects.create(
+            timestamp=now(),
+            level='WARNING',
+            module='auth.login',
+            message=f"[LOGIN FAILED] user={username!r} ip={ip} reason={reason}",
+            traceback=f"REMOTE_ADDR={ip}"
+        )
+
         messages.error(self.request, "ログインに失敗しました。メールアドレスまたはパスワードをご確認ください。")
         return super().form_invalid(form)

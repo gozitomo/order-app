@@ -2,7 +2,6 @@
 {% load humanize %}
 {% block title %}仮注文受付{% endblock %}
 {% block content %}
-{% csrf_token %}
     <h2>仮注文受付</h2>
     <div class="card-rounded">
     <form method="POST" action="{% url 'order_cancel' order.order_id%}">
