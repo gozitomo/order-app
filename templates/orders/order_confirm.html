@@ -7,10 +7,10 @@
         {% for order in orders %}
         {% with first_item=order.items.first %}
             {% if first_item %}
-            {% ifchanged order.product_delivery_date.date %}
+            {% ifchanged order.sort_date %}
             <div class="d-flex justify-content-start bg-dark align-items-center text-light p-2 mb-3" style="border-radius: 0.5rem;">
                 <div class="mb-0">
-                    <strong>発送見込：</strong>{{ order.product_delivery_date.date|date:"Y/m/d" }}
+                    <strong>発送見込：</strong>{{ order.sort_date|date:"Y/m/d" }}
                 </div>      
             </div>
             {% endifchanged %}
@@ -29,7 +29,7 @@
                 </tr>
                 <tr>
                     <td colspan=5>
-                        <strong>お客様名：</strong>{{ order.user }}
+                        <strong>お客様名：</strong>{{ order.userprofile.company_name }}
                         <span>（{{ order.userprofile.region }}）</span>
                     </td>
                 </tr>
@@ -110,7 +110,6 @@
                                 </button>
                             </form>
                             <form method="GET" action="{% url 'order_change' order.order_id %}">
-                                {% csrf_token %}
                                 <button id="change" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">変更</button>
                             </form>
                         {% endif %}
@@ -120,7 +119,7 @@
                                 <button id="confirm" type="submit" class="btn btn-sm btn-primary me-2" style="padding: 2px 8px; font-size: 0.75rem;">受注</button>
                             </form>
                         {% endif %}
-                        {% if order.status == 'received' %}
+                        {% if order.status == 'received' or order.status == 'preparing' %}
                         <form method="POST" onsubmit="return validateTrackingId(event, this)" action="{% url 'ship_comp' order.order_id %}">
                             {% csrf_token %}
                             {% if order.pickup_flg %}

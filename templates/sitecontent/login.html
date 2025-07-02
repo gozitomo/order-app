@@ -1,14 +1,12 @@
 {% extends "base.html" %}
 {% block title %}ログイン{% endblock %}
-
 {% block content %}
 <div class="container mt-5" style="max-width: 400px">
     <h2 class="text-center" mb-4>ログイン</h2>
     {% if form.errors %}
         <div class="alert alert-danger">メールアドレスまたはパスワードが正しくありません。</div>
     {% endif %}
-
-    <form method="post" novalidate>
+    <form method="POST" novalidate>
         {% csrf_token %}
         {% load my_filters %}
         <div class="mb-3">

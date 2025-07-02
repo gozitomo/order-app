@@ -15,7 +15,7 @@
 {% if mode == 'new' %}
 <p class="small text-muted">{{ product.description|safe }}</p>
 {% endif %}
-<form id="order-form" method="post" onsubmit="return handleSubmit(event)">
+<form id="order-form" method="POST" onsubmit="return handleSubmit(event)">
     {% csrf_token %}
     {% if order %}
     <p><strong>注文番号：</strong>{{ order.order_id }}

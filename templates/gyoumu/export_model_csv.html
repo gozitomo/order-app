@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 <h2>CSV Export</h2>
-<form method="post">
+<form method="POST">
     {% csrf_token %}
     アプリ名：<input type="text" name="app_label">
     モデル名：<input type="text" name="model_name">

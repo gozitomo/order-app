@@ -19,7 +19,6 @@
             </div>
             {% endifchanged %}
             <form method="GET" action="{% url 'order_change' order.order_id %}">
-            {% csrf_token %}
             <div  class="card-rounded" onclick="this.closest('form').submit();" style="cursor: pointer;">
             <table>
                 <tr>
@@ -110,7 +109,6 @@
                 </div>
             {% endifchanged %}
             <form method="GET" action="{% url 'order_change' order.order_id %}">
-            {% csrf_token %}
             <div  class="card-rounded" onclick="this.closest('form').submit();" style="cursor: pointer;">
             <table>
                 <tr>

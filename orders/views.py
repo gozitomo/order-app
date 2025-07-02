@@ -16,6 +16,7 @@ from django.db.models import Sum, Q, Prefetch, Min, Max, F
 from django.db.models.functions import Coalesce
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
+from django.views.decorators.csrf import csrf_protect
 
 from .models import Order, OrderItem, Invoice
 from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate, DispKind
@@ -383,7 +384,7 @@ def neworder(request, product_id):
         })
 
 
-
+@csrf_protect
 @admin_required
 def order_confirm(request, order_id=None):
     if request.method == 'POST' and order_id is not None:
@@ -404,7 +405,7 @@ def order_confirm(request, order_id=None):
         total_weight__gt=0)
         .exclude(status='canceled')
         .annotate(sort_date=Coalesce('custom_deli_date', F('product_delivery_date__date')))
-        .prefetch_related('items').order_by('product_delivery_date')
+        .prefetch_related('items')
         .order_by('sort_date', 'user')
     )
     today = localdate()
@@ -413,7 +414,7 @@ def order_confirm(request, order_id=None):
     for order in orders:
 
         #本日注文分でなければ、#納品日まで10日を切ったらキャンセル不可とする
-        if  order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
+        if  order.sort_date and (order.sort_date - today).days < 3 and order.created_at.date()!=today:
             order.status = 'preparing'
             order.save()
         order.userprofile = getattr(order.user, 'userprofile', None)
@@ -503,4 +504,3 @@ def order_cancel(request, order_id):
 
     #リダイレクト先は注文詳細
     return redirect('order_detail', order_id=order.order_id)
-
