@@ -8,7 +8,7 @@ from sitecontent.models import ErrLog
 def custom_bad_request(request, exception):
     ip = request.META.get('REMOTE_ADDR')
     path = request.path
-    user = request.user
+    user = request.user if request.user.is_authenticated else None
     ErrLog.objects.create(
         timestamp=now(),
         level='WARNING',
@@ -22,7 +22,7 @@ def custom_bad_request(request, exception):
 def custom_permission_denied(request, exception):
     ip = request.META.get('REMOTE_ADDR')
     path = request.path
-    user = request.user
+    user = request.user if request.user.is_authenticated else None
     ErrLog.objects.create(
         timestamp=now(),
         level='WARNING',
@@ -40,7 +40,7 @@ def custom_page_not_found(request, exception):
     else:
         ip = request.META.get('REMOTE_ADDR')
         path = request.path
-        user = request.user
+        user = request.user if request.user.is_authenticated else None
         ErrLog.objects.create(
             timestamp=now(),
             level='WARNING',
@@ -55,7 +55,7 @@ def custom_page_not_found(request, exception):
 def custom_server_error(request):
     ip = request.META.get('REMOTE_ADDR')
     path = request.path
-    user = request.user
+    user = request.user if request.user.is_authenticated else None
     ErrLog.objects.create(
         timestamp=now(),
         level='WARNING',
