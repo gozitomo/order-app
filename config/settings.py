@@ -184,7 +184,7 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 SECRET_KEY = config('SECRET_KEY')
 
 #DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-DEBUG = True
+DEBUG = False
 
 #if DEBUG:
 #    INSTALLED_APPS += ["django_browser_reload"]
@@ -201,7 +201,7 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 
 #https本番運用
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = True
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
