@@ -184,24 +184,24 @@ LOGOUT_REDIRECT_URL = '/accounts/login/'
 SECRET_KEY = config('SECRET_KEY')
 
 #DEBUG = os.environ.get('DEBUG', 'True') == 'True'
-DEBUG = False
+DEBUG = True
 
 #if DEBUG:
 #    INSTALLED_APPS += ["django_browser_reload"]
 #    MIDDLEWARE += ["django_browser_reload.middleware.BrowserReloadMiddleware"]
 
-#Zohomail設定
+#gmail設定
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 
 
 #https本番運用
-SECURE_SSL_REDIRECT = True
+SECURE_SSL_REDIRECT = False
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 SECURE_BROWSER_XSS_FILTER = True
