@@ -89,7 +89,7 @@ def order_history(request):
     for order in orders:
 
         #本日注文分でなければ、#納品日まで3日を切ったらキャンセル不可とする
-        if  order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
+        if  order.status != 'shipped' and order.product_delivery_date and (order.product_delivery_date.date - today).days < 3 and order.created_at.date()!=today:
             order.status = 'preparing'
             order.save()
 
