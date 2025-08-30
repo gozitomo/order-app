@@ -32,28 +32,38 @@
 
 ### 1.リポジトリをクローンします。
 
+```bash
 git clone https://github.com/gozitomo/order-app.git
 cd order-app
+```
 
 ### 2.Djangoセットアップ
 
+```bash
 pip install -r requirements.txt
 python manage.py migrate
+```
 
 ### 3.データベースの初期設定
-### アプリの管理ユーザーを作成
+アプリの管理ユーザーを作成
 
+```bash
 python create_superuser.py
+```
 
 ### 商品データの登録
 
+```bash
 python create_initial_products.py
-
+```
 
 ### ユーザーグループの登録
 
+```bash
 python create_initial_usergroup.py
+```
 
 ### 4.サーバーを起動します
-
+```bash
 python manage.py runserver
+```
