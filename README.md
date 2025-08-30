@@ -29,22 +29,31 @@
 データベース：SQLite3
 
 ## セットアップ方法
-リポジトリをクローンします。
+- リポジトリをクローンします。
 
 ```Bash
 git clone https://github.com/gozitomo/order-app.git
 cd order-app
-フロントエンドのセットアップ
+
+- Djangoセットアップ
 
 ```Bash
-cd frontend
-npm install
-npm start
-
-バックエンドのセットアップ
-
-```Bash
-cd backend
 pip install -r requirements.txt
 python manage.py migrate
+
+- データベースの初期設定
+-- アプリの管理ユーザーを作成
+```Bash
+python create_superuser.py
+
+-- 商品データの登録
+```Bash
+python create_initial_products.py
+
+-- ユーザーグループの登録
+```Bash
+python create_initial_usergroup.py
+
+- サーバーを起動します
+```Bash
 python manage.py runserver
