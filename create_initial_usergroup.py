@@ -9,7 +9,7 @@ django.setup()
 from users.models import UserGroup
 
 #任意のsuperuser情報
-names = ["Forall", "ヒラノ", "アサヌマ"]
+names = ["Forall", "A", "B"]
 
 for name in names:
     if not UserGroup.objects.filter(name=name).exists():
