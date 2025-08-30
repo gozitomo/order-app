@@ -40,7 +40,6 @@ cd order-app
 cd frontend
 npm install
 npm start
-*もしフロントエンドに別の技術（例えば、Vue.jsや純粋なJavaScriptなど）をご使用の場合は、上記のコマンドを適宜変更してください。
 
 バックエンドのセットアップ
 
