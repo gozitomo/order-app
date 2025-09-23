@@ -15,8 +15,24 @@
 {% if mode == 'new' %}
 <p class="small text-muted">{{ product.description|safe }}</p>
 {% endif %}
+{% if user.is_superuser and mode == 'new' %}
+<form id="user-select-form" method="get" class="mb-3">
+    <label><strong>注文ユーザー：</strong>
+        <select name="user_id" onchange="this.form.submit()">
+            {% for selectable_user in available_users %}
+            <option value="{{ selectable_user.id }}" {% if selectable_user.id == selected_user.id %}selected{% endif %}>
+                {{ selectable_user.get_full_name|default:selectable_user.username }}
+            </option>
+            {% endfor %}
+        </select>
+    </label>
+</form>
+{% endif %}
 <form id="order-form" method="POST" onsubmit="return handleSubmit(event)">
     {% csrf_token %}
+    {% if user.is_superuser and mode == 'new' %}
+    <input type="hidden" name="user_id" value="{{ selected_user.id }}">
+    {% endif %}
     {% if order %}
     <p><strong>注文番号：</strong>{{ order.order_id }}
     {% endif %}
