@@ -229,7 +229,7 @@ def order_change(request, order_id):
             order.save()
 
             try:
-                sendmail(order, template)
+                sendmail(order, template, recipient=target_user)
             except Exception as e:
                 print('メール送信エラー：', e)
 
@@ -383,7 +383,7 @@ def neworder(request, product_id):
 
         template = MailTemplate.objects.filter(key="new_order").first()
         print('注文保存完了、メールを送ります')
-        sendmail(order, template)
+        sendmail(order, template, recipient=selected_user)
 
 
         return redirect('order_detail', order_id = order.order_id)
@@ -416,7 +416,7 @@ def order_confirm(request, order_id=None):
         template = MailTemplate.objects.filter(key="order_confirm").first()
 
         try:
-            sendmail(order, template)
+            sendmail(order, template, recipient=order.user)
         except Exception as e:
             print("メール送信エラー：", e)
 
@@ -521,7 +521,7 @@ def order_cancel(request, order_id):
         template = MailTemplate.objects.filter(key="order_cancel").first()
         print('注文キャンセル完了、メールを送ります')
 
-        sendmail(order, template)
+        sendmail(order, template, recipient=order.user)
 
     #リダイレクト先は注文詳細
     return redirect('order_detail', order_id=order.order_id)

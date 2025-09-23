@@ -6,7 +6,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from email.utils import formataddr
 from .models import MailTemplate
 
-def sendmail(order, template):
+
+def sendmail(order, template, recipient=None):
     """
     注文情報をメール送信
     """
@@ -48,10 +49,26 @@ def sendmail(order, template):
 
     print(message)
     from_email = formataddr(("プログレスファーム（B2B発注アプリ）", settings.DEFAULT_FROM_EMAIL))
+
+    if recipient is not None and hasattr(recipient, "email"):
+        recipient_email = recipient.email
+    elif isinstance(recipient, str):
+        recipient_email = recipient
+    else:
+        recipient_email = getattr(getattr(order, "user", None), "email", None)
+
+    recipient_list = []
+    if recipient_email:
+        recipient_list.append(recipient_email)
+
+    default_email = settings.DEFAULT_FROM_EMAIL
+    if default_email and default_email not in recipient_list:
+        recipient_list.append(default_email)
+
     send_mail(
         subject=subject,
         message=message,
         from_email=from_email,
-        recipient_list=[order.user.email, from_email],
+        recipient_list=recipient_list,
         fail_silently=False
     )
