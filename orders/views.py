@@ -17,6 +17,7 @@ from django.db.models.functions import Coalesce
 from django.views.decorators.http import require_POST
 from django.utils.timezone import localdate, now
 from django.views.decorators.csrf import csrf_protect
+from django.urls import reverse
 
 from .models import Order, OrderItem, Invoice
 from products.models import FruitKind, ProductName, PriceTable, ProductDeliveryDate, DispKind
@@ -118,7 +119,6 @@ def order_change(request, order_id):
     target_user = order.user
     user_profile = getattr(target_user, 'userprofile', None)
     user_group = getattr(user_profile, 'user_group', None)
-    user_region = getattr(user_profile, 'region', None)
     today = localdate()
     item = order.items.first()
     try:
@@ -166,11 +166,10 @@ def order_change(request, order_id):
 
             tax8_price = 0
             tax10_price = 0
-            total_weight = 0
             quantity = 0
             subtotal = 0
             weights = []
-            order.items.all().delete()
+            new_items_data = []
 
             for i in range(20):
                 qty = request.POST.get(f'quantity_{i}')
@@ -190,21 +189,29 @@ def order_change(request, order_id):
 
                         if option.tax10_flg:
                             tax10_price += subtotal
-
                         else:
                             tax8_price += subtotal
 
-                        OrderItem.objects.create(
-                            order=order,
-                            price_table=option,
-                            product=product,
-                            quantity=quantity,
-                            subtotal=subtotal,
-                        )
+                        new_items_data.append({
+                            'price_table': option,
+                            'quantity': quantity,
+                            'subtotal': subtotal,
+                        })
 
             weights.sort(reverse=True)
 
-            order.product_delivery_date=delivery_date_obj
+            if pickup_flg:
+                order.shipping_price = 0
+                order.shipping_tax = 0
+            else:
+                shipping_price = calculate_shipping_fee(target_user, weights, cool_flg)
+                if shipping_price is None:
+                    messages.error(request, "対象ユーザーに配送地域が設定されていないため送料を計算できません。プロフィールの地域を設定してください。")
+                    return redirect('order_change', order_id=order.order_id)
+                order.shipping_price = shipping_price
+                order.shipping_tax = order.shipping_price / 1.1 * 0.1
+
+            order.product_delivery_date = delivery_date_obj
             order.tax8_price = tax8_price
             order.tax8 = tax8_price / 1.08 * 0.08
             order.tax10_price = tax10_price
@@ -212,12 +219,6 @@ def order_change(request, order_id):
             order.total_weight = sum(weights)
             order.cool_flg = cool_flg
             order.pickup_flg = pickup_flg
-            if(pickup_flg):
-                order.shipping_price = 0
-                order.shipping_tax = 0
-            else:
-                order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
-                order.shipping_tax = order.shipping_price / 1.1 * 0.1
             order.final_price = order.tax8_price + order.tax10_price
             if admin_flg:
                 order.status = 'received'
@@ -227,6 +228,16 @@ def order_change(request, order_id):
                 template = MailTemplate.objects.filter(key="order_change").first()
             order.remarks = remarks
             order.save()
+
+            order.items.all().delete()
+            for item_data in new_items_data:
+                OrderItem.objects.create(
+                    order=order,
+                    price_table=item_data['price_table'],
+                    product=product,
+                    quantity=item_data['quantity'],
+                    subtotal=item_data['subtotal'],
+                )
 
             try:
                 sendmail(order, template, recipient=target_user)
@@ -279,7 +290,6 @@ def neworder(request, product_id):
 
     user_profile = getattr(selected_user, 'userprofile', None)
     user_group = getattr(user_profile, 'user_group', None)
-    user_region = getattr(user_profile, 'region', None)
     options = product.kind.options.filter(
         Q(user_group=user_group) | Q(user_group__name='Forall'),
         status = 'available'
@@ -304,8 +314,6 @@ def neworder(request, product_id):
     ]
 
     if request.method == 'POST':
-        #新しい注文を作成
-        order = Order.objects.create(user=selected_user)
         delivery_type = request.POST.get(f'delivery_type')
         if delivery_type == "normal":
             cool_flg = False
@@ -319,15 +327,14 @@ def neworder(request, product_id):
 
         tax8_price = 0
         tax10_price = 0
-        total_weight = 0
         quantity = 0
         subtotal = 0
         weights = []
+        new_items_data = []
 
         delivery_id = request.POST.get(f'delivery_date')
         delivery_date_obj = get_object_or_404(ProductDeliveryDate, id=delivery_id)
         remarks = request.POST.get(f'remarks')
-
 
         for i in range(20):
             qty = request.POST.get(f'quantity_{i}')
@@ -347,44 +354,58 @@ def neworder(request, product_id):
 
                     if option.tax10_flg:
                         tax10_price += subtotal
-
                     else:
                         tax8_price += subtotal
 
-                    OrderItem.objects.create(
-                        order=order,
-                        price_table=option,
-                        product=product,
-                        quantity=quantity,
-                        subtotal=subtotal,
-                    )
+                    new_items_data.append({
+                        'price_table': option,
+                        'quantity': quantity,
+                        'subtotal': subtotal,
+                    })
 
         weights.sort(reverse=True)
 
-        order.product_delivery_date=delivery_date_obj
-        order.tax8_price = tax8_price
-        order.tax8 = tax8_price / 1.08 * 0.08
-        order.tax10_price = tax10_price
-        order.tax10 = tax10_price / 1.1 * 0.1
-        order.total_weight = sum(weights)
-        order.cool_flg = cool_flg
-        order.pickup_flg = pickup_flg
-
-        if(pickup_flg):
-            order.shipping_price = 0
-            order.shipping_tax = 0
+        if pickup_flg:
+            shipping_price = 0
+            shipping_tax = 0
         else:
-            order.shipping_price = calculate_shipping_fee(user_region, weights, cool_flg)
-            order.shipping_tax = order.shipping_price / 1.1 * 0.1
+            shipping_price = calculate_shipping_fee(selected_user, weights, cool_flg)
+            if shipping_price is None:
+                messages.error(request, "対象ユーザーに配送地域が設定されていないため送料を計算できません。プロフィールの地域を設定してください。")
+                redirect_url = reverse('neworder', args=[product.id])
+                if admin_flg:
+                    redirect_url = f"{redirect_url}?user_id={selected_user.id}"
+                return redirect(redirect_url)
+            shipping_tax = shipping_price / 1.1 * 0.1
 
-        order.final_price = order.tax8_price + order.tax10_price
-        order.remarks = remarks
-        order.save()
+        order = Order.objects.create(
+            user=selected_user,
+            product_delivery_date=delivery_date_obj,
+            tax8_price=tax8_price,
+            tax8=tax8_price / 1.08 * 0.08,
+            tax10_price=tax10_price,
+            tax10=tax10_price / 1.1 * 0.1,
+            total_weight=sum(weights),
+            cool_flg=cool_flg,
+            pickup_flg=pickup_flg,
+            shipping_price=shipping_price,
+            shipping_tax=shipping_tax,
+            final_price=tax8_price + tax10_price,
+            remarks=remarks,
+        )
+
+        for item_data in new_items_data:
+            OrderItem.objects.create(
+                order = order,
+                price_table=item_data['price_table'],
+                product=product,
+                quantity=item_data['quantity'],
+                subtotal=item_data['subtotal'],
+            )
 
         template = MailTemplate.objects.filter(key="new_order").first()
         print('注文保存完了、メールを送ります')
         sendmail(order, template, recipient=selected_user)
-
 
         return redirect('order_detail', order_id = order.order_id)
         #リダイレクト先は注文確認画面
