@@ -193,10 +193,12 @@
     {% endif %}
     </div>
 </form>
-{% if mode == 'edit' and (order.status == 'tentative' or order.status == 'received') %}
-<form id="cancel-order-form" method="POST" action="{% url 'order_cancel' order.order_id %}" class="d-none">
-    {% csrf_token %}
-</form>
+{% if mode == 'edit' %}
+    {% if order.status == 'tentative' or order.status == 'received' %}
+        <form id="cancel-order-form" method="POST" action="{% url 'order_cancel' order.order_id %}" class="d-none">
+            {% csrf_token %}
+        </form>
+    {% endif %}
 {% endif %}
     {% if mode == 'edit' %}
     {% if user.is_superuser %}
