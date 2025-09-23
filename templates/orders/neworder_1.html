@@ -177,12 +177,9 @@
     <div class="d-flex gap-2 align-items-center mt-3">
     {% if mode == 'edit' %}
         {% if order.status == 'tentative' or order.status == 'received' %}
-        <form method="POST" action="{% url 'order_cancel' order.order_id %}">
-            {% csrf_token %}
-            <button type="submit" id="cancel-order" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #EB7000;">
+            <button type="submit" id="cancel-order" form="cancel-order-form" onclick="return confirm('この注文をキャンセルしますか？');" class="btn btn-sm text-light me-2" style="padding: 2px 8px; font-size: 0.75rem; background-color: #EB7000;">
                 取消
             </button>
-        </form>
         {% elif order.status == 'preparing' or  order.status == 'shipped' %}
             <p class="text-muted ps-0 mb-2">(キャンセル不可)</span>
         {% elif order.status == 'canceled' %}
@@ -196,6 +193,11 @@
     {% endif %}
     </div>
 </form>
+{% if mode == 'edit' and (order.status == 'tentative' or order.status == 'received') %}
+<form id="cancel-order-form" method="POST" action="{% url 'order_cancel' order.order_id %}" class="d-none">
+    {% csrf_token %}
+</form>
+{% endif %}
     {% if mode == 'edit' %}
     {% if user.is_superuser %}
     <p class="ps-0 mb-2"><a href="{% url 'order_confirm' %}">←　受注管理に戻る</a></p>
