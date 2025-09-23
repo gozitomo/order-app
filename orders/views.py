@@ -258,7 +258,26 @@ def order_change(request, order_id):
 @login_required
 def neworder(request, product_id):
     product = get_object_or_404(ProductName, id=product_id)
-    user_profile = getattr(request.user, 'userprofile', None)
+
+    admin_flg = request.user.is_superuser
+    available_users = []
+    selected_user = request.user
+
+    if admin_flg:
+        available_users_qs = (
+            User.objects.filter(is_active=True, userprofile__isnull=False)
+            .select_related('userprofile')
+            .order_by('username')
+        )
+        available_users = list(available_users_qs)
+
+        user_id_param = request.POST.get('user_id') or request.GET.get('user_id')
+        if user_id_param:
+            selected_user = get_object_or_404(available_users_qs, id=user_id_param)
+        elif available_users:
+            selected_user = available_users[0]
+
+    user_profile = getattr(selected_user, 'userprofile', None)
     user_group = getattr(user_profile, 'user_group', None)
     user_region = getattr(user_profile, 'region', None)
     options = product.kind.options.filter(
@@ -286,7 +305,7 @@ def neworder(request, product_id):
 
     if request.method == 'POST':
         #新しい注文を作成
-        order = Order.objects.create(user=request.user)
+        order = Order.objects.create(user=selected_user)
         delivery_type = request.POST.get(f'delivery_type')
         if delivery_type == "normal":
             cool_flg = False
@@ -381,6 +400,8 @@ def neworder(request, product_id):
         'units': units_data,
         'delivery_dates': delivery_dates,
         'mode': 'new',
+        'available_users': available_users,
+        'selected_user': selected_user,
         })
 
 
